@@ -17,9 +17,7 @@ import {
   Award,
 } from "lucide-react";
 
-import { FinancialTicker } from "./components/FinancialTicker";
-
-
+// import { FinancialTicker } from "./components/FinancialTicker";
 
 /* ===============================================================
    1. GLOBAL STYLES
@@ -126,21 +124,21 @@ const TickerItem = ({ symbol, price, change, changesPercentage }) => {
 };
 
 
-// const FinancialTicker = () => {
-//   const { data, loading } = useFinancialData();
-//   const items = [...data, ...data];
-//   return (
-//     <div className="fixed top-0 left-0 right-0 h-12 bg-gray-900 text-white backdrop-blur-md border-b border-gray-800 z-50 overflow-hidden">
-//       <div className="absolute top-0 left-0 flex items-center h-full animate-scroll-left">
-//         {loading ? (
-//           <div className="px-6 text-gray-400">Loading...</div>
-//         ) : (
-//           items.map((item, i) => <TickerItem key={i} {...item} />)
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
+const FinancialTicker = () => {
+  const { data, loading } = useFinancialData();
+  const items = [...data, ...data];
+  return (
+    <div className="fixed top-0 left-0 right-0 h-12 bg-gray-900 text-white backdrop-blur-md border-b border-gray-800 z-50 overflow-hidden">
+      <div className="absolute top-0 left-0 flex items-center h-full animate-scroll-left">
+        {loading ? (
+          <div className="px-6 text-gray-400">Loading...</div>
+        ) : (
+          items.map((item, i) => <TickerItem key={i} {...item} />)
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Header = ({ scrollY }) => (
   <nav
@@ -215,43 +213,63 @@ const MonteCarloBackground = () => {
         walkers.push(w);
       }
     };
-
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // solid white background every frame
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       walkers.forEach((w) => {
         if (!w.started) return;
 
-        // Calculate drift motion (smooth, independent)
+        // motion update
         const drift =
           w.drift + Math.sin(Date.now() * w.driftFreq + w.driftPhase) * 0.3;
         const step = (Math.random() - 0.5) * w.volatility + drift;
         w.y = Math.max(0, Math.min(canvas.height, w.y + step));
+
+        // add new point
         w.history.push({ x: w.x, y: w.y });
 
-        // Line drawing
+        // start fade when it reaches the right edge
+        if (w.x > canvas.width && !w.fading) {
+          w.fading = true;
+          w.fadeAlpha = 1.0;
+        }
+
+        // choose opacity
+        let alpha = 0.7;
+        if (w.fading) {
+          w.fadeAlpha -= 0.02; // slower = longer fade
+          alpha = Math.max(w.fadeAlpha, 0);
+        }
+
+        // draw single translucent stroke
         ctx.beginPath();
-        ctx.strokeStyle = w.color;
         ctx.lineWidth = 2.5;
+        ctx.strokeStyle = w.color.replace(/[\d.]+\)$/g, `${alpha})`);
         ctx.moveTo(w.history[0].x, w.history[0].y);
         for (let i = 1; i < w.history.length; i++) {
           ctx.lineTo(w.history[i].x, w.history[i].y);
         }
         ctx.stroke();
 
-        // Increment x position
-        w.x += 1;
-        if (w.x > canvas.width + 50) {
-          // Reset line smoothly
+        // advance or reset
+        if (!w.fading) {
+          w.x += 1;
+        } else if (w.fadeAlpha <= 0) {
+          // reset after fade completes
+          w.fading = false;
           w.x = 0;
           w.history = [];
           w.y = canvas.height * (0.3 + Math.random() * 0.4);
-          w.driftPhase = Math.random() * Math.PI * 2; // re-randomize path
+          w.driftPhase = Math.random() * Math.PI * 2;
         }
       });
 
       animationFrameId = requestAnimationFrame(draw);
     };
+
+
 
     setup();
     draw();
@@ -278,6 +296,7 @@ const HeroSection = () => (
   >
     <div className="absolute inset-0 overflow-hidden">
       <MonteCarloBackground />
+      <div className="absolute inset-0 bg-white/65"></div>
     </div>
 
     <div className="relative z-10 text-center px-6 max-w-4xl">

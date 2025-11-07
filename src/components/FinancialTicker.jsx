@@ -1,6 +1,6 @@
 import React from "react";
 import { TrendingUp } from "lucide-react";
-import { useFinancialData } from "../hooks/useFinancialData";
+import useFinancialData from "../hooks/useFinancialData";
 
 /* ===============================================================
    1. TICKER ITEM
@@ -34,7 +34,6 @@ const TickerItem = ({ symbol, price, change, changesPercentage }) => {
 ================================================================ */
 export const FinancialTicker = () => {
   const { data, loading } = useFinancialData(["NVDA", "AMD", "MSFT", "GOOG", "META", "AAPL", "AMZN", "TSLA", "INTC", "SMCI"]);
-
   // Duplicate data for infinite loop scroll
   const items = [...data, ...data];
 
