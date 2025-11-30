@@ -8,7 +8,8 @@ export default {
     extend: {
 
       fontFamily: {
-        sans: ["Manrope", "ui-sans-serif", "system-ui"],
+        sans: ["Inter", "ui-sans-serif", "system-ui"],
+        mono: ["JetBrains Mono", "Fira Code", "ui-monospace", "monospace"],
       },
 
       keyframes: {
