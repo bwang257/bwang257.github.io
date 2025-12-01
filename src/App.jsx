@@ -276,15 +276,6 @@ const SystemMonitorWindow = () => {
             </div>
           </div>
         </div>
-        <div className="pt-4 border-t border-white/10">
-          <motion.div
-            onHoverStart={() => setHoveredStatus(true)}
-            onHoverEnd={() => setHoveredStatus(false)}
-            className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-sm text-xs text-green-400 font-mono inline-block uppercase tracking-wider"
-          >
-            {hoveredStatus ? "Targeting: Quant & Swe Roles" : "Open to Work"}
-          </motion.div>
-      </div>
     </div>
 );
 };
@@ -313,6 +304,7 @@ const RunningServicesWindow = () => {
       pid: "PID-003",
       name: "Algorithmic Trading System",
       problem: "Curiosity about trading systems required building one.",
+      link: "https://digital.wpi.edu/concern/student_works/nz806420r?locale=en",
       github: "https://github.com/bwang257/IQP-2524-Stock-Market-Simulation",
       access: "public"
     }
