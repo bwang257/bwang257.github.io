@@ -57,32 +57,45 @@ The app will be available at `http://localhost:5173`
 
 ## Deployment
 
-### GitHub Pages
+### GitHub Pages (User Page: bwang257.github.io)
 
-1. Build the project:
+This repository is configured for GitHub Pages deployment. Follow these steps:
+
+1. **Build the project:**
 ```bash
 npm run build
 ```
 
-2. Deploy to GitHub Pages:
+2. **Deploy to GitHub Pages:**
 ```bash
 npm run deploy
 ```
 
-### Custom Base Path
+This will:
+- Build your React app for production
+- Deploy the `dist` folder to the `gh-pages` branch
+- Your site will be available at `https://bwang257.github.io`
 
-If deploying to a subdirectory (e.g., `username.github.io/repo-name`), set the base path:
+3. **Configure GitHub Pages (if not already done):**
+   - Go to your repository: `https://github.com/bwang257/bwang257.github.io`
+   - Click **Settings** → **Pages**
+   - Under **Source**, select **Deploy from a branch**
+   - Choose **gh-pages** branch and **/ (root)** folder
+   - Click **Save**
 
-1. Create a `.env.production` file:
-```
-VITE_BASE_PATH=/repo-name/
-```
+4. **Wait for deployment:**
+   - GitHub Pages typically takes 1-2 minutes to update
+   - Your site will be live at `https://bwang257.github.io`
 
-2. Build and deploy:
+### Updating Your Site
+
+After making changes:
 ```bash
 npm run build
 npm run deploy
 ```
+
+Your changes will be live in a few minutes!
 
 ## Project Structure
 

@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Circle,
   Lock,
+  FileText,
 } from "lucide-react";
 
 /* ===============================================================
@@ -21,11 +22,12 @@ const SYSTEM_DATA = {
   location: "Worcester, MA",
   uptime: "20 Years",
   horizon: {
-    building: "Portfolio Optimization Engine (v2)",
-    learning: "Stochastic Calculus & Rust",
-    goal: "Deploy Mean-Reversion Algo to Paper Trading"
+    building: "Portfolio Optimization App - full-stack",
+    learning: "Operating Systems, Linear Algebra, & Stochastic Calculus",
+    goal: "Develop impactful applications used by real users"
+
   },
-  timeDistribution: { coding: 60, markets: 30, misc: 10 }
+  timeDistribution: { coding: 59, mathematics: 31, misc: 10 }
 };
 
 /* ===============================================================
@@ -147,25 +149,38 @@ const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize,
 ================================================================ */
 const UserProfileWindow = () => {
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-[#e5e5e5] mb-2 tracking-tight">Brian Wang</h2>
-        <p className="text-[#e5e5e5]/80 text-sm leading-relaxed">
-          Math/CS double major at WPI. Building high-performance systems and solving complex problems through the intersection of abstract theory and practical engineering.
-        </p>
-      </div>
-      <div className="pt-4 border-t border-white/10">
-        <p className="text-xs font-mono text-[#e5e5e5]/60 mb-2 uppercase tracking-wider">STATUS:</p>
-        <div className="flex items-center gap-2">
-          <div className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-sm text-xs text-green-400 font-mono uppercase tracking-wider">
-            OPERATIONAL
+        <h2 className="text-2xl font-bold text-[#e5e5e5] mb-4 tracking-tight">Brian Wang</h2>
+        
+        {/* README-style Bio Sections */}
+        <div className="font-mono text-sm space-y-4">
+          <div>
+            <span className="text-[#e5e5e5]/50 font-bold"># BIO</span>
+            <p className="mt-1 text-[#e5e5e5] leading-relaxed">
+              CS/Math sophomore exploring pure math and messy code.
+            </p>
           </div>
-          <span className="text-xs text-[#e5e5e5]/60">Uptime: {SYSTEM_DATA.uptime}</span>
+          
+          <div>
+            <span className="text-[#e5e5e5]/50 font-bold"># MISSION</span>
+            <p className="mt-1 text-[#e5e5e5] leading-relaxed">
+              I like building things to understand how they work, from low-level systems to quantitative trading strategies.
+            </p>
+          </div>
+
+          <div>
+            <span className="text-[#e5e5e5]/50 font-bold"># STATUS</span>
+            <p className="mt-1 text-[#e5e5e5] leading-relaxed">
+              Currently running on Celsius and looking for a Summer 2026 internship.
+            </p>
+          </div>
         </div>
       </div>
+      
       <div className="pt-4 border-t border-white/10">
         <p className="text-xs font-mono text-[#e5e5e5]/60 mb-2 uppercase tracking-wider">CONNECTIONS:</p>
-        <div className="flex gap-3">
+        <div className="flex gap-3 mb-3">
           <a href="https://github.com/bwang257" target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#ff3333] transition-colors">
             <Github size={18} />
           </a>
@@ -176,20 +191,14 @@ const UserProfileWindow = () => {
             <Mail size={18} />
           </a>
         </div>
-      </div>
-      <div className="pt-4 border-t border-white/10">
-        <p className="text-xs font-mono text-[#e5e5e5]/60 mb-2 uppercase tracking-wider">DIGITAL IDENTITY:</p>
-        <div className="space-y-1">
-          <div className="text-[10px] font-mono text-[#e5e5e5]/30 leading-relaxed">
-            PUBKEY: 4d 1a 92 3f 7c 8e 2b 9a 5d 4c 1f 6e 3a 8b 2c 7d
-          </div>
-          <div className="text-[10px] font-mono text-[#e5e5e5]/30 leading-relaxed">
-            FINGERPRINT: A1B2 C3D4 E5F6 7890 ABCD EF12 3456 7890 ABCD EF12
-          </div>
-          <div className="text-[10px] font-mono text-[#e5e5e5]/30 leading-relaxed">
-            ALGORITHM: RSA 4096 | EXPIRES: 2026-12-31
-          </div>
-        </div>
+        <a 
+          href="/resume.pdf" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-xs font-mono text-[#e5e5e5]/60 hover:text-[#00ff00] transition-colors inline-block"
+        >
+          &gt; [DOWNLOAD_RESUME]
+        </a>
       </div>
     </div>
 );
@@ -239,13 +248,13 @@ const SystemMonitorWindow = () => {
     </div>
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-[#e5e5e5]/80">Markets</span>
-                <span className="text-[#e5e5e5]/60">{SYSTEM_DATA.timeDistribution.markets}%</span>
+                <span className="text-[#e5e5e5]/80">Mathematics</span>
+                <span className="text-[#e5e5e5]/60">{SYSTEM_DATA.timeDistribution.mathematics}%</span>
     </div>
               <div className="h-2 bg-white/5 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${SYSTEM_DATA.timeDistribution.markets}%` }}
+                  animate={{ width: `${SYSTEM_DATA.timeDistribution.mathematics}%` }}
                   transition={{ duration: 1, delay: 0.4 }}
                   className="h-full bg-[#ff3333]"
                 />
@@ -288,22 +297,22 @@ const RunningServicesWindow = () => {
     {
       pid: "PID-001",
       name: "Portfolio Optimization Engine",
-      problem: "Manual rebalancing was tedious.",
+      problem: "People shouldn’t need a quant degree to optimize their portfolios.",
       link: "https://portfolio-optimization-app.vercel.app/",
-      github: "https://github.com/bwang257/portfolio-optimization-app",
+      github: "https://github.com/bwang257/PortfolioOptimizationApp",
       access: "public"
     },
     {
       pid: "PID-002",
       name: "Gamified Productivity Platform",
-      problem: "Internship tracking lacked structure.",
+      problem: "Students needed motivation + structure in their internship search.",
       github: null,
       access: "private"
     },
     {
       pid: "PID-003",
-      name: "Algorithmic Logic Core",
-      problem: "Needed modular trading system architecture.",
+      name: "Algorithmic Trading System",
+      problem: "Curiosity about trading systems required building one.",
       github: "https://github.com/bwang257/IQP-2524-Stock-Market-Simulation",
       access: "public"
     }
@@ -367,30 +376,39 @@ const RunningServicesWindow = () => {
 const InstalledPackagesWindow = () => {
   const skillCategories = {
     "~/lib/languages/": [
-      { name: "Python", ver: "v3.0", desc: "Data Analysis & Backend" },
+      { name: "Python", ver: "v3.5", desc: "ML, Data Analysis, Backend" },
+      { name: "Java", ver: "v2.0", desc: "Object-Oriented Development" },
+      { name: "C/C++", ver: "v2.0", desc: "Systems Programming" },
       { name: "JavaScript", ver: "v2.5", desc: "Frontend Development" },
-      { name: "TypeScript", ver: "v2.0", desc: "Type-Safe Frontend" },
-      { name: "C++", ver: "v1.5", desc: "Systems Programming" },
-      { name: "SQL", ver: "v2.0", desc: "Database Queries" },
-      { name: "Rust", ver: "v0.5", desc: "Learning" },
+      { name: "TypeScript", ver: "v1.5", desc: "Type-Safe Frontend" },
+      { name: "SQL", ver: "v2.5", desc: "Relational Databases" },
+      { name: "MATLAB", ver: "v1.0", desc: "Numerical Computing" },
+      { name: "R", ver: "v1.0", desc: "Statistical Analysis" }
     ],
+  
     "~/lib/frameworks/": [
       { name: "React", ver: "v2.5", desc: "UI Framework" },
-      { name: "Flask", ver: "v1.5", desc: "Python Web API" },
+      { name: "Flask", ver: "v2.0", desc: "Python REST APIs" },
       { name: "Node.js", ver: "v2.0", desc: "Backend Runtime" },
+      { name: "scikit-learn", ver: "v2.0", desc: "Machine Learning" },
+      { name: "PyTorch", ver: "v1.5", desc: "Deep Learning" }
     ],
+  
     "~/lib/tools/": [
-      { name: "AWS", ver: "v1.5", desc: "Cloud Infrastructure" },
-      { name: "PostgreSQL", ver: "v2.0", desc: "Relational DB" },
-      { name: "MongoDB", ver: "v1.0", desc: "NoSQL Database" },
-      { name: "Docker", ver: "v1.5", desc: "Containerization" },
+      { name: "AWS", ver: "v1.5", desc: "Cloud Deployment" },
+      { name: "Docker", ver: "v2.0", desc: "Containerization" },
       { name: "Git", ver: "v3.0", desc: "Version Control" },
-      { name: "Linux", ver: "v2.5", desc: "System Admin" },
-      { name: "QuantConnect", ver: "v1.5", desc: "Algorithmic Trading" },
-      { name: "Pandas", ver: "v2.0", desc: "Data Manipulation" },
+      { name: "GitHub / GitLab", ver: "v2.5", desc: "DevOps & Collaboration" },
+      { name: "PostgreSQL", ver: "v2.0", desc: "Relational DB" },
+      { name: "MySQL", ver: "v1.5", desc: "Relational DB" },
+      { name: "Jupyter", ver: "v2.0", desc: "Data Science Environment" },
+      { name: "Figma", ver: "v1.0", desc: "UI/UX Design" },
       { name: "NumPy", ver: "v2.0", desc: "Numerical Computing" },
+      { name: "Pandas", ver: "v2.0", desc: "Data Manipulation" },
+      { name: "Matplotlib", ver: "v1.5", desc: "Data Visualization" },
+      { name: "Power BI", ver: "v1.0", desc: "Data Analytics" }
     ]
-  };
+  };  
 
   return (
     <div className="p-6">
@@ -438,7 +456,7 @@ const Console = () => {
       setIsInitialized(true);
       setHistory(["> Welcome Back, User."]);
     } else {
-      setHistory(["> Initializing System..."]);
+      setHistory(["> System Initialized."]);
       localStorage.setItem('brianos_visited', 'true');
     }
 
@@ -494,7 +512,7 @@ const Console = () => {
 
     switch (trimmedCmd) {
       case "help":
-        output = `Available commands:\n  help - Show this help message\n  whoami - Display user philosophy\n  stack - List favorite tech stack\n  horizon - Show current goals\n  clear - Clear console history\n  neofetch - Display system information\n  contact - Show contact information\n  secret-lab - [REDACTED]`;
+        output = `Available commands:\n  help - Show this help message\n  whoami - Display user philosophy\n  stack - List favorite tech stack\n  horizon - Show current goals\n  resume - Download resume (aliases: cv, pdf)\n  clear - Clear console history\n  neofetch - Display system information\n  contact - Show contact information\n  secret-lab - [REDACTED]`;
         break;
       case "whoami":
         output = "> I engineer solutions at the intersection of mathematics and computation.";
@@ -505,6 +523,16 @@ const Console = () => {
       case "horizon":
         output = `> Building: ${SYSTEM_DATA.horizon.building}\n> Learning: ${SYSTEM_DATA.horizon.learning}\n> Goal: ${SYSTEM_DATA.horizon.goal}`;
         break;
+      case "resume":
+      case "cv":
+      case "pdf":
+        output = "> Initiating download sequence for resume.pdf...\n> Success.";
+        setHistory(prev => [...prev, `> ${cmd}`, output]);
+        // Trigger download after a short delay to show the message
+        setTimeout(() => {
+          window.open('/resume.pdf', '_blank');
+        }, 300);
+        return;
       case "clear":
         setHistory([]);
         return;
@@ -597,62 +625,86 @@ const Dock = ({ windows, toggleWindow }) => {
   ];
 
   const [hoveredPath, setHoveredPath] = useState(null);
+  const [hoveredFile, setHoveredFile] = useState(null);
+
+  const handleResumeClick = () => {
+    window.open('/resume.pdf', '_blank');
+  };
 
   return (
     <div className="fixed left-0 top-12 w-32 bg-[#0c0c0c] border-r border-white/10 z-40 flex flex-col py-6 gap-2" style={{ bottom: '300px' }}>
-      {domains.map((domain) => {
-        const window = windows.find(w => w.id === domain.windowId);
-        const status = window?.status || 'closed';
-        const isHovered = hoveredPath === domain.path;
-        
-        // Determine styling based on status
-        let textColor = "text-[#e5e5e5]/30 line-through"; // Closed (default)
-        let prefix = null;
-        
-        if (status === 'open') {
-          textColor = "text-[#00ff00]";
-          prefix = (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-              className="mr-2"
+      {/* Directories Section */}
+      <div className="flex-1">
+        {domains.map((domain) => {
+          const window = windows.find(w => w.id === domain.windowId);
+          const status = window?.status || 'closed';
+          const isHovered = hoveredPath === domain.path;
+          
+          // Determine styling based on status
+          let textColor = "text-[#e5e5e5]/30 line-through"; // Closed (default)
+          let prefix = null;
+          
+          if (status === 'open') {
+            textColor = "text-[#00ff00]";
+            prefix = (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+                className="mr-2"
+              >
+                &gt;
+              </motion.span>
+            );
+          } else if (status === 'minimized') {
+            textColor = "text-[#e5e5e5]/50";
+            prefix = (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 0.8, repeat: Infinity }}
+                className="mr-2"
+              >
+                _
+              </motion.span>
+            );
+          }
+          
+          // Override with hover state
+          if (isHovered && status !== 'open') {
+            textColor = "text-[#e5e5e5]/70";
+          }
+          
+          return (
+            <motion.button
+              key={domain.id}
+              onClick={() => toggleWindow(domain.windowId)}
+              onMouseEnter={() => setHoveredPath(domain.path)}
+              onMouseLeave={() => setHoveredPath(null)}
+              className={`text-left px-4 py-2 font-mono text-xs transition-all relative uppercase tracking-wider ${textColor}`}
             >
-              &gt;
-            </motion.span>
+              {prefix}
+              <span>{domain.path}</span>
+            </motion.button>
           );
-        } else if (status === 'minimized') {
-          textColor = "text-[#e5e5e5]/50";
-          prefix = (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-              className="mr-2"
-            >
-              _
-            </motion.span>
-          );
-        }
-        
-        // Override with hover state
-        if (isHovered && status !== 'open') {
-          textColor = "text-[#e5e5e5]/70";
-        }
-        
-        return (
-          <motion.button
-            key={domain.id}
-            onClick={() => toggleWindow(domain.windowId)}
-            onMouseEnter={() => setHoveredPath(domain.path)}
-            onMouseLeave={() => setHoveredPath(null)}
-            className={`text-left px-4 py-2 font-mono text-xs transition-all relative uppercase tracking-wider ${textColor}`}
-          >
-            {prefix}
-            <span>{domain.path}</span>
-          </motion.button>
-        );
-      })}
+        })}
+      </div>
+
+      {/* Files Section */}
+      <div className="pt-4 border-t border-white/10 mt-auto">
+        <p className="text-[10px] font-mono text-[#e5e5e5]/30 mb-2 px-4 uppercase tracking-wider">FILES</p>
+        <motion.button
+          onClick={handleResumeClick}
+          onMouseEnter={() => setHoveredFile('resume')}
+          onMouseLeave={() => setHoveredFile(null)}
+          className={`text-left px-4 py-2 font-mono text-xs transition-all relative flex items-center gap-2 ${
+            hoveredFile === 'resume' ? 'text-yellow-500' : 'text-yellow-500/60'
+          }`}
+        >
+          <FileText size={12} />
+          <span className="uppercase tracking-wider">resume.pdf</span>
+        </motion.button>
+      </div>
     </div>
   );
 };
