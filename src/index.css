@@ -8,12 +8,12 @@
   }
 
   html {
-    @apply font-sans;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
     scroll-behavior: smooth;
   }
   
   body {
-    @apply bg-deep-space text-gray-100;
+    @apply bg-[#0f0f10] text-white;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
@@ -23,16 +23,36 @@
     width: 100%;
     min-height: 100vh;
   }
+}
 
-  /* Glassmorphism utility */
-  .backdrop-blur-glass {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+@layer utilities {
+  /* Glitch Effect */
+  .glitch-text {
+    position: relative;
+    animation: glitch 0.3s infinite;
   }
 
-  /* Smooth scrolling for anchor links */
-  html {
-    scroll-padding-top: 2rem;
+  @keyframes glitch {
+    0%, 100% {
+      clip-path: inset(0 0 0 0);
+      transform: translate(0);
+    }
+    20% {
+      clip-path: inset(20% 0 60% 0);
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      clip-path: inset(40% 0 20% 0);
+      transform: translate(2px, -2px);
+    }
+    60% {
+      clip-path: inset(60% 0 5% 0);
+      transform: translate(-1px, 1px);
+    }
+    80% {
+      clip-path: inset(5% 0 40% 0);
+      transform: translate(1px, -1px);
+    }
   }
 }
 

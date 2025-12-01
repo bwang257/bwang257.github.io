@@ -1,397 +1,376 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import {
-  Mail,
-  Github,
-  Linkedin,
-  ArrowUpRight,
   Code,
   Database,
-  Cloud,
-  Terminal,
-  GitBranch,
   FlaskConical,
-  Cpu,
-  Server,
-  BarChart3,
-  Zap,
-  FileCode,
+  Terminal,
+  Github,
+  Linkedin,
+  Mail,
   ExternalLink,
-  Sparkles,
-  Layers,
-  Cpu as CpuIcon,
-  Menu,
-  X,
+  Circle,
+  Lock,
 } from "lucide-react";
 
 /* ===============================================================
-   ANIMATED MESH GRADIENT BACKGROUND
+   SYSTEM DATA (The "Memory")
 ================================================================ */
-const MeshGradient = () => {
+const SYSTEM_DATA = {
+  status: "OPERATIONAL",
+  location: "Worcester, MA",
+  uptime: "20 Years",
+  horizon: {
+    building: "Portfolio Optimization Engine (v2)",
+    learning: "Stochastic Calculus & Rust",
+    goal: "Deploy Mean-Reversion Algo to Paper Trading"
+  },
+  timeDistribution: { coding: 60, markets: 30, misc: 10 }
+};
+
+/* ===============================================================
+   TOP BAR (System Tray)
+================================================================ */
+const SystemTray = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isGlitching, setIsGlitching] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (date) => {
+    return date.toUTCString().split(' ')[4];
+  };
+
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-mesh animate-mesh-gradient" />
-      <div className="absolute inset-0 bg-deep-space" style={{ mixBlendMode: 'multiply' }} />
+    <div className="fixed top-0 left-0 right-0 h-12 bg-[#0f0f10] border-b border-white/10 z-50 flex items-center justify-between px-6">
+      <motion.div
+        onHoverStart={() => setIsGlitching(true)}
+        onHoverEnd={() => setIsGlitching(false)}
+        className="font-mono text-sm text-white cursor-pointer relative"
+      >
+        <span className={isGlitching ? "glitch-text" : ""}>BrianOS v1.0</span>
+      </motion.div>
+      <div className="flex items-center gap-6 text-xs font-mono text-white/80">
+        <span>{formatTime(currentTime)} UTC</span>
+        <span>{SYSTEM_DATA.location}</span>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span>System Status: Online</span>
+        </div>
+      </div>
     </div>
   );
 };
 
 /* ===============================================================
-   SIDEBAR NAVIGATION (Glassmorphism)
+   WINDOW COMPONENT WRAPPER (With Controls)
 ================================================================ */
-const Sidebar = ({ activeSection, setActiveSection, mobileMenuOpen, setMobileMenuOpen }) => {
-  const navItems = [
-    { id: "profile", label: "Profile", icon: Sparkles },
-    { id: "projects", label: "Projects", icon: Layers },
-    { id: "contact", label: "Contact", icon: Mail },
-  ];
-
+const Window = ({ id, title, children, onClose, onMinimize, isMinimized }) => {
   return (
-    <>
-      {/* Desktop Sidebar */}
-      <motion.aside
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="hidden md:flex fixed left-0 top-0 h-full w-20 z-40 flex-col items-center py-8"
-      >
-        <div className="backdrop-blur-glass bg-white/5 border-r border-white/10 h-full rounded-r-2xl flex flex-col items-center justify-between py-8">
-          <div className="flex flex-col gap-6">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeSection === item.id;
-              return (
-                <motion.button
-                  key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`relative p-3 rounded-xl transition-all ${
-                    isActive
-                      ? "bg-gradient-electric text-white shadow-lg shadow-blue-500/50"
-                      : "text-gray-400 hover:text-white hover:bg-white/10"
-                  }`}
-                  title={item.label}
-                >
-                  <Icon size={20} />
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeIndicator"
-                      className="absolute inset-0 rounded-xl bg-gradient-electric -z-10"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                </motion.button>
-              );
-            })}
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      className="bg-[#0f0f10] border border-white/10 rounded-lg flex flex-col min-h-[400px]"
+    >
+      {/* Title Bar - Drag Handle */}
+      <div className="flex items-center gap-2 p-3 border-b border-white/10 cursor-grab active:cursor-grabbing select-none">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
+          title="Close"
+        />
+            <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onMinimize();
+          }}
+          className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors"
+          title="Minimize"
+        />
+        <div className="w-3 h-3 rounded-full bg-green-500" />
+        <span className="ml-2 text-xs font-mono text-white/60 flex-1">{title}</span>
+      </div>
+      {/* Window Content */}
+      {!isMinimized && (
+        <div className="flex-1 overflow-auto">
+          {children}
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+/* ===============================================================
+   WINDOW 1: USER PROFILE
+================================================================ */
+const UserProfileWindow = () => {
+  return (
+    <div className="p-6 space-y-4">
+      <div>
+        <h2 className="text-2xl font-bold text-white mb-2">Brian Wang</h2>
+        <p className="text-white/80 text-sm leading-relaxed">
+          Math/CS double major at WPI. Building high-performance systems and solving complex problems through the intersection of abstract theory and practical engineering.
+        </p>
+      </div>
+      <div className="pt-4 border-t border-white/10">
+        <p className="text-xs font-mono text-white/60 mb-2">STATUS:</p>
+        <div className="flex items-center gap-2">
+          <div className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded text-xs text-green-400 font-mono">
+            OPERATIONAL
           </div>
-          <div className="text-xs text-gray-500 font-mono">BW</div>
+          <span className="text-xs text-white/60">Uptime: {SYSTEM_DATA.uptime}</span>
         </div>
-      </motion.aside>
-
-      {/* Mobile Menu Button */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="md:hidden fixed top-4 left-4 z-50 p-3 backdrop-blur-glass bg-white/5 border border-white/10 rounded-xl text-white"
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-      >
-        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-      </motion.button>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ x: -300, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -300, opacity: 0 }}
-            className="md:hidden fixed left-0 top-0 h-full w-64 z-40 backdrop-blur-glass bg-white/5 border-r border-white/10"
-          >
-            <div className="flex flex-col gap-4 p-6 pt-20">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeSection === item.id;
-                return (
-                  <motion.button
-                    key={item.id}
-                    onClick={() => {
-                      setActiveSection(item.id);
-                      setMobileMenuOpen(false);
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
-                      isActive
-                        ? "bg-gradient-electric text-white shadow-lg shadow-blue-500/50"
-                        : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    <Icon size={20} />
-                    <span className="font-medium">{item.label}</span>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-};
-
-/* ===============================================================
-   TECH STACK DOCK (macOS-style)
-================================================================ */
-const TechDock = () => {
-  const techStack = [
-    { name: "Python", icon: Code, color: "text-yellow-400" },
-    { name: "React", icon: FileCode, color: "text-cyan-400" },
-    { name: "C++", icon: CpuIcon, color: "text-blue-400" },
-    { name: "AWS", icon: Cloud, color: "text-orange-400" },
-    { name: "PostgreSQL", icon: Database, color: "text-blue-300" },
-    { name: "Flask", icon: FlaskConical, color: "text-red-400" },
-    { name: "Git", icon: GitBranch, color: "text-orange-300" },
-    { name: "Linux", icon: Terminal, color: "text-green-400" },
-  ];
-
-  const [hoveredTech, setHoveredTech] = useState(null);
-
-  return (
-    <motion.div
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.3, duration: 0.5 }}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden md:block"
-    >
-      <div className="backdrop-blur-glass bg-white/5 border border-white/10 rounded-2xl px-4 md:px-6 py-3 md:py-4 flex items-center gap-2 md:gap-4 shadow-2xl overflow-x-auto max-w-[90vw]">
-        {techStack.map((tech, idx) => {
-          const Icon = tech.icon;
-          return (
-            <motion.div
-              key={tech.name}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.4 + idx * 0.05, type: "spring" }}
-              onHoverStart={() => setHoveredTech(tech.name)}
-              onHoverEnd={() => setHoveredTech(null)}
-              className="relative flex-shrink-0"
-            >
-              <div className={`p-2 md:p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all cursor-default ${tech.color}`}>
-                <Icon size={18} className="md:w-5 md:h-5" />
-              </div>
-              <AnimatePresence>
-                {hoveredTech === tech.name && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute -top-12 left-1/2 -translate-x-1/2 bg-deep-space-light border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white whitespace-nowrap z-50"
-                  >
-                    {tech.name}
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white/20" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        })}
       </div>
-    </motion.div>
-  );
-};
-
-/* ===============================================================
-   BENTO GRID CARD COMPONENT
-================================================================ */
-const BentoCard = ({ children, className = "", span = "col-span-1", delay = 0 }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
-      className={`${span} backdrop-blur-glass bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all group ${className}`}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-/* ===============================================================
-   PROFILE WIDGET (Hero Card)
-================================================================ */
-const ProfileWidget = () => {
-  return (
-    <BentoCard span="col-span-2 row-span-2" delay={0.1}>
-      <div className="h-full flex flex-col justify-between relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-electric opacity-10 blur-3xl" />
-        <div className="relative z-10">
-          <motion.h1
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-6xl md:text-7xl font-bold mb-4 bg-gradient-electric bg-clip-text text-transparent"
-          >
-            Brian Wang.
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-xl text-gray-300 font-light mb-8"
-          >
-            Full-Stack Engineering & Applied Mathematics
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-gray-400 leading-relaxed max-w-2xl"
-          >
-            Math/CS double major at WPI. Building high-performance systems and solving complex problems through the intersection of abstract theory and practical engineering.
-          </motion.p>
-        </div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="relative z-10 flex gap-4 mt-8"
-        >
-          <a
-            href="https://linkedin.com/in/brian372"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 bg-gradient-electric text-white rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/50 transition-all flex items-center gap-2"
-          >
-            <Linkedin size={18} />
-            LinkedIn
-          </a>
-          <a
-            href="https://github.com/bwang257"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 border border-white/20 text-gray-300 rounded-xl font-medium hover:bg-white/10 hover:border-white/40 transition-all flex items-center gap-2"
-          >
+      <div className="pt-4 border-t border-white/10">
+        <p className="text-xs font-mono text-white/60 mb-2">CONNECTIONS:</p>
+        <div className="flex gap-3">
+          <a href="https://github.com/bwang257" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">
             <Github size={18} />
-            GitHub
           </a>
-        </motion.div>
+          <a href="https://linkedin.com/in/brian372" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">
+            <Linkedin size={18} />
+          </a>
+          <a href="mailto:brian.wang372@gmail.com" className="text-white/60 hover:text-white transition-colors">
+            <Mail size={18} />
+          </a>
+        </div>
       </div>
-    </BentoCard>
+      <div className="pt-4 border-t border-white/10">
+        <p className="text-xs font-mono text-white/60 mb-2">SIGNATURE:</p>
+        <div className="text-white/40 italic text-sm">— Brian Wang</div>
+      </div>
+    </div>
   );
 };
 
 /* ===============================================================
-   PROJECT CARD COMPONENT
+   WINDOW 2: SYSTEM MONITOR
 ================================================================ */
-const ProjectCard = ({
-  title,
-  description,
-  techTags,
-  primaryLink,
-  primaryLabel,
-  secondaryLink,
-  featured = false,
-  delay = 0,
-}) => {
+const SystemMonitorWindow = () => {
+  const [hoveredStatus, setHoveredStatus] = useState(false);
+
   return (
-    <BentoCard span={featured ? "col-span-2" : "col-span-1"} delay={delay}>
-      <div className="h-full flex flex-col">
-        <div className="flex items-start justify-between mb-4">
-          <h3 className="text-2xl font-bold text-white">{title}</h3>
-          {primaryLink && (
-            <motion.a
-              href={primaryLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              <ExternalLink size={20} />
-            </motion.a>
-          )}
+    <div className="p-6 space-y-6">
+        <div>
+          <p className="text-xs font-mono text-white/60 mb-3">THE HORIZON:</p>
+          <ul className="space-y-2 text-sm text-white/80">
+            <li className="flex items-start gap-2">
+              <span className="text-[rgb(220,50,50)]">></span>
+              <span>Building: {SYSTEM_DATA.horizon.building}</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-[rgb(220,50,50)]">></span>
+              <span>Learning: {SYSTEM_DATA.horizon.learning}</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-[rgb(220,50,50)]">></span>
+              <span>Goal: {SYSTEM_DATA.horizon.goal}</span>
+            </li>
+          </ul>
         </div>
-        <p className="text-gray-400 mb-6 leading-relaxed flex-grow">{description}</p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {techTags.map((tag) => (
-            <span
-              key={tag}
-              className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-300 font-mono"
-            >
-              {tag}
-            </span>
-          ))}
+        <div>
+          <p className="text-xs font-mono text-white/60 mb-3">RESOURCE USAGE:</p>
+          <div className="space-y-3">
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-white/80">Coding</span>
+                <span className="text-white/60">{SYSTEM_DATA.timeDistribution.coding}%</span>
+              </div>
+              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${SYSTEM_DATA.timeDistribution.coding}%` }}
+                  transition={{ duration: 1, delay: 0.2 }}
+                  className="h-full bg-[rgb(220,50,50)]"
+                />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-white/80">Markets</span>
+                <span className="text-white/60">{SYSTEM_DATA.timeDistribution.markets}%</span>
+              </div>
+              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${SYSTEM_DATA.timeDistribution.markets}%` }}
+                  transition={{ duration: 1, delay: 0.4 }}
+                  className="h-full bg-[rgb(220,50,50)]"
+                />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-white/80">Misc</span>
+                <span className="text-white/60">{SYSTEM_DATA.timeDistribution.misc}%</span>
+              </div>
+              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${SYSTEM_DATA.timeDistribution.misc}%` }}
+                  transition={{ duration: 1, delay: 0.6 }}
+                  className="h-full bg-[rgb(220,50,50)]"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-3 mt-auto">
-          {primaryLink && (
-            <a
-              href={primaryLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 bg-gradient-electric text-white rounded-lg font-medium hover:shadow-lg hover:shadow-blue-500/50 transition-all text-sm flex items-center gap-2"
-            >
-              {primaryLabel || "Launch"}
-              <ArrowUpRight size={14} />
-            </a>
-          )}
-          {secondaryLink && (
-            <a
-              href={secondaryLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 border border-white/20 text-gray-300 rounded-lg font-medium hover:bg-white/10 transition-all text-sm flex items-center gap-2"
-            >
-              <Github size={14} />
-              Code
-            </a>
-          )}
-        </div>
+        <div className="pt-4 border-t border-white/10">
+          <motion.div
+            onHoverStart={() => setHoveredStatus(true)}
+            onHoverEnd={() => setHoveredStatus(false)}
+            className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded text-xs text-green-400 font-mono inline-block cursor-pointer"
+          >
+            {hoveredStatus ? "Targeting: Quant & Swe Roles" : "Open to Work"}
+          </motion.div>
       </div>
-    </BentoCard>
-  );
+    </div>
+);
 };
 
 /* ===============================================================
-   PROJECTS SECTION
+   WINDOW 3: RUNNING SERVICES (Projects)
 ================================================================ */
-const ProjectsSection = () => {
+const RunningServicesWindow = () => {
   const projects = [
     {
-      title: "Portfolio Optimization Engine",
-      description: "Real-time mathematical modeling and data visualization. Constructs optimal investment portfolios using Modern Portfolio Theory with interactive Efficient Frontier visualization.",
-      techTags: ["React", "Math", "FinTech", "Data Viz"],
-      primaryLink: "https://portfolio-optimization-app.vercel.app/",
-      primaryLabel: "Launch App",
-      secondaryLink: "https://github.com/bwang257/portfolio-optimization-app",
-      featured: true,
+      pid: "PID-001",
+      name: "Portfolio Optimization Engine",
+      problem: "Manual rebalancing was tedious.",
+      link: "https://portfolio-optimization-app.vercel.app/",
+      github: "https://github.com/bwang257/portfolio-optimization-app",
+      access: "public"
     },
     {
-      title: "Gamified Productivity Platform",
-      description: "Full-stack Scrum/Agile workflow solution. Led 4-person team building a React frontend with Flask backend, PostgreSQL on AWS RDS.",
-      techTags: ["AWS", "PostgreSQL", "React", "Flask"],
-      featured: false,
+      pid: "PID-002",
+      name: "Gamified Productivity Platform",
+      problem: "Internship tracking lacked structure.",
+      github: null,
+      access: "private"
     },
     {
-      title: "Algorithmic Logic Core",
-      description: "Modular Python architecture for automated decision making. Backtested quantitative strategies including statistical arbitrage on 5 years of historical data.",
-      techTags: ["Python", "QuantConnect", "Backtesting"],
-      secondaryLink: "https://github.com/bwang257/IQP-2524-Stock-Market-Simulation",
-      featured: false,
-    },
+      pid: "PID-003",
+      name: "Algorithmic Logic Core",
+      problem: "Needed modular trading system architecture.",
+      github: "https://github.com/bwang257/IQP-2524-Stock-Market-Simulation",
+      access: "public"
+    }
   ];
 
+  const handlePrivateRepoClick = () => {
+    const errorMsg = "> Access Denied: Repository is private (WPI Academic Policy).";
+    window.dispatchEvent(new CustomEvent('consoleError', { detail: errorMsg }));
+  };
+
   return (
-    <div className="space-y-6">
-      <motion.h2
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-4xl font-bold text-white mb-8"
-      >
-        Deployed Modules
-      </motion.h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="p-6 space-y-4">
         {projects.map((project, idx) => (
-          <ProjectCard key={idx} {...project} delay={0.2 + idx * 0.1} />
+          <div key={idx} className="border-l-2 border-[rgb(220,50,50)] pl-4 py-2">
+            <div className="flex items-start justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <div>
+                  <span className="text-xs font-mono text-white/60">{project.pid}</span>
+                  <span className="text-sm font-mono text-white ml-2">{project.name}</span>
+                </div>
+                {project.access === "private" && (
+                  <span className="text-xs font-mono text-white/40 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                    [CLASSIFIED / ACADEMIC]
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                {project.link && (
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white">
+                    <ExternalLink size={14} />
+                  </a>
+                )}
+                {project.github && project.access === "public" && (
+                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white">
+                    <Github size={14} />
+                  </a>
+                )}
+                {project.access === "private" && (
+                  <button
+                    onClick={handlePrivateRepoClick}
+                    className="text-white/30 hover:text-[rgb(220,50,50)] transition-colors cursor-pointer"
+                    title="Private Repository"
+                  >
+                    <Lock size={14} />
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-white/60 font-mono">
+              &gt; Problem: {project.problem}
+            </p>
+          </div>
+        ))}
+    </div>
+  );
+};
+
+/* ===============================================================
+   WINDOW 4: INSTALLED PACKAGES (Skills - Pip List Style)
+================================================================ */
+const InstalledPackagesWindow = () => {
+  const skillCategories = {
+    "~/lib/languages/": [
+      { name: "Python", ver: "v3.0", desc: "Data Analysis & Backend" },
+      { name: "JavaScript", ver: "v2.5", desc: "Frontend Development" },
+      { name: "TypeScript", ver: "v2.0", desc: "Type-Safe Frontend" },
+      { name: "C++", ver: "v1.5", desc: "Systems Programming" },
+      { name: "SQL", ver: "v2.0", desc: "Database Queries" },
+      { name: "Rust", ver: "v0.5", desc: "Learning" },
+    ],
+    "~/lib/frameworks/": [
+      { name: "React", ver: "v2.5", desc: "UI Framework" },
+      { name: "Flask", ver: "v1.5", desc: "Python Web API" },
+      { name: "Node.js", ver: "v2.0", desc: "Backend Runtime" },
+    ],
+    "~/lib/tools/": [
+      { name: "AWS", ver: "v1.5", desc: "Cloud Infrastructure" },
+      { name: "PostgreSQL", ver: "v2.0", desc: "Relational DB" },
+      { name: "MongoDB", ver: "v1.0", desc: "NoSQL Database" },
+      { name: "Docker", ver: "v1.5", desc: "Containerization" },
+      { name: "Git", ver: "v3.0", desc: "Version Control" },
+      { name: "Linux", ver: "v2.5", desc: "System Admin" },
+      { name: "QuantConnect", ver: "v1.5", desc: "Algorithmic Trading" },
+      { name: "Pandas", ver: "v2.0", desc: "Data Manipulation" },
+      { name: "NumPy", ver: "v2.0", desc: "Numerical Computing" },
+    ]
+  };
+
+  return (
+    <div className="p-6">
+      <div className="font-mono text-xs space-y-4">
+        {Object.entries(skillCategories).map(([category, skills]) => (
+          <div key={category}>
+            <div className="text-white/40 mb-2">{category}</div>
+            <div className="space-y-1">
+              <div className="grid grid-cols-[1fr_80px_1fr] gap-4 text-white/60 mb-1">
+                <div>PKG</div>
+                <div>VER</div>
+                <div>DESC</div>
+              </div>
+              {skills.map((skill, idx) => (
+                <div key={idx} className="grid grid-cols-[1fr_80px_1fr] gap-4 hover:text-white transition-colors">
+                  <div className="text-white/80">{skill.name}</div>
+                  <div className="text-white/60">{skill.ver}</div>
+                  <div className="text-white/60">{skill.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
@@ -399,51 +378,209 @@ const ProjectsSection = () => {
 };
 
 /* ===============================================================
-   CONTACT SECTION
+   CONSOLE COMPONENT (Resizable)
 ================================================================ */
-const ContactSection = () => {
+const Console = () => {
+  const [command, setCommand] = useState("");
+  const [history, setHistory] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [height, setHeight] = useState(300);
+  const [isResizing, setIsResizing] = useState(false);
+  const inputRef = useRef(null);
+  const historyEndRef = useRef(null);
+  const consoleRef = useRef(null);
+
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('brianos_visited');
+    if (hasVisited) {
+      setIsInitialized(true);
+      setHistory(["> Welcome Back, User."]);
+    } else {
+      setHistory(["> Initializing System..."]);
+      localStorage.setItem('brianos_visited', 'true');
+    }
+
+    // Load saved height
+    const savedHeight = localStorage.getItem('console_height');
+    if (savedHeight) {
+      setHeight(parseInt(savedHeight));
+    }
+  }, []);
+
+  useEffect(() => {
+    historyEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [history]);
+
+  useEffect(() => {
+    // Listen for console error events from private repo clicks
+    const handleConsoleError = (e) => {
+      setHistory(prev => [...prev, e.detail]);
+    };
+
+    window.addEventListener('consoleError', handleConsoleError);
+    return () => window.removeEventListener('consoleError', handleConsoleError);
+  }, []);
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e) => {
+      const newHeight = window.innerHeight - e.clientY;
+      const minHeight = 40;
+      const maxHeight = window.innerHeight * 0.8;
+      const clampedHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+      setHeight(clampedHeight);
+      localStorage.setItem('console_height', clampedHeight.toString());
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
+
+  const executeCommand = (cmd) => {
+    const trimmedCmd = cmd.trim().toLowerCase();
+    let output = "";
+
+    switch (trimmedCmd) {
+      case "help":
+        output = `Available commands:\n  help - Show this help message\n  whoami - Display user philosophy\n  stack - List favorite tech stack\n  horizon - Show current goals\n  clear - Clear console history\n  neofetch - Display system information\n  contact - Show contact information\n  secret-lab - [REDACTED]`;
+        break;
+      case "whoami":
+        output = "> I engineer solutions at the intersection of mathematics and computation.";
+        break;
+      case "stack":
+        output = "> Python | React | C++ | AWS | PostgreSQL | QuantConnect";
+        break;
+      case "horizon":
+        output = `> Building: ${SYSTEM_DATA.horizon.building}\n> Learning: ${SYSTEM_DATA.horizon.learning}\n> Goal: ${SYSTEM_DATA.horizon.goal}`;
+        break;
+      case "clear":
+        setHistory([]);
+        return;
+      case "neofetch":
+        output = `     ██████╗ ██████╗ ██╗ █████╗ ███╗   ██╗    ██╗    ██╗██████╗ ██╗\n     ██╔══██╗██╔══██╗██║██╔══██╗████╗  ██║    ██║    ██║██╔══██╗██║\n     ██████╔╝██████╔╝██║███████║██╔██╗ ██║    ██║ █╗ ██║██████╔╝██║\n     ██╔══██╗██╔══██╗██║██╔══██║██║╚██╗██║    ██║███╗██║██╔═══╝ ██║\n     ██████╔╝██║  ██║██║██║  ██║██║ ╚████║    ╚███╔███╔╝██║     ██║\n     ╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝     ╚══╝╚══╝ ╚═╝     ╚═╝\n\n     Uptime: ${SYSTEM_DATA.uptime}\n     Shell: BrianOS v1.0\n     Theme: WPI Cyberpunk\n     Location: ${SYSTEM_DATA.location}`;
+        break;
+      case "contact":
+        output = `> Email: brian.wang372@gmail.com\n> LinkedIn: https://linkedin.com/in/brian372\n> GitHub: https://github.com/bwang257`;
+        break;
+      case "secret-lab":
+        output = "> [ACCESS GRANTED]\n> Under Construction: Quantum Portfolio Optimization\n> Estimated Completion: Q2 2026";
+        break;
+      case "":
+        return;
+      default:
+        output = `> Command not found: ${cmd}\n> Type 'help' for available commands.`;
+    }
+
+    setHistory(prev => [...prev, `> ${cmd}`, output]);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (command.trim()) {
+      executeCommand(command);
+      setCommand("");
+    }
+  };
+
   return (
-    <BentoCard span="col-span-2" delay={0.4}>
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-white mb-4">Get in Touch</h2>
-        <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-          Always open to discussing new opportunities, interesting projects, or connecting with fellow engineers.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <motion.a
-            href="mailto:brian.wang372@gmail.com"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 bg-gradient-electric text-white rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/50 transition-all flex items-center gap-2"
-          >
-            <Mail size={18} />
-            Email Me
-          </motion.a>
-          <motion.a
-            href="https://linkedin.com/in/brian372"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 border border-white/20 text-gray-300 rounded-xl font-medium hover:bg-white/10 transition-all flex items-center gap-2"
-          >
-            <Linkedin size={18} />
-            LinkedIn
-          </motion.a>
-          <motion.a
-            href="https://github.com/bwang257"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 border border-white/20 text-gray-300 rounded-xl font-medium hover:bg-white/10 transition-all flex items-center gap-2"
-          >
-            <Github size={18} />
-            GitHub
-          </motion.a>
-        </div>
+    <div 
+      ref={consoleRef}
+      className="fixed bottom-0 left-0 right-0 bg-[#0f0f10] border-t border-white/10 z-[60] flex flex-col"
+      style={{ height: `${height}px` }}
+    >
+      {/* Resize Handle */}
+      <div
+        onMouseDown={(e) => {
+          e.preventDefault();
+          setIsResizing(true);
+        }}
+        className="h-2 cursor-row-resize hover:bg-white/5 transition-colors flex items-center justify-center group"
+      >
+        <div className="w-12 h-0.5 bg-white/20 group-hover:bg-white/40 transition-colors" />
       </div>
-    </BentoCard>
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-4 font-mono text-xs text-white/80 space-y-1">
+          {history.map((line, idx) => (
+            <div key={idx} className="whitespace-pre-wrap">{line}</div>
+          ))}
+          <div ref={historyEndRef} />
+        </div>
+        <form onSubmit={handleSubmit} className="border-t border-white/10 p-2 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="text-[rgb(220,50,50)]">></span>
+            <input
+              ref={inputRef}
+              type="text"
+              value={command}
+              onChange={(e) => setCommand(e.target.value)}
+              placeholder="type help for commands..."
+              className="flex-1 bg-transparent text-white/80 font-mono text-xs outline-none"
+              autoFocus
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+/* ===============================================================
+   DOCK (Taskbar)
+================================================================ */
+const Dock = ({ windows, toggleWindow }) => {
+  const domains = [
+    { id: "profile", icon: Terminal, label: "TTY", windowId: "profile" },
+    { id: "monitor", icon: FlaskConical, label: "The Lab", windowId: "monitor" },
+    { id: "services", icon: Code, label: "Engines", windowId: "services" },
+    { id: "packages", icon: Database, label: "Data Pantry", windowId: "packages" }
+  ];
+
+  return (
+    <div className="fixed left-0 top-12 w-16 bg-[#0f0f10] border-r border-white/10 z-40 flex flex-col items-center py-6 gap-4" style={{ bottom: '300px' }}>
+      {domains.map((domain) => {
+        const Icon = domain.icon;
+        const window = windows.find(w => w.id === domain.windowId);
+        const isVisible = window?.visible && !window?.isMinimized;
+        const isActive = isVisible;
+        
+        return (
+          <motion.button
+            key={domain.id}
+            onClick={() => toggleWindow(domain.windowId)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className={`p-3 rounded-lg transition-all relative ${
+              isActive
+                ? "bg-[rgb(220,50,50)]/20 border border-[rgb(220,50,50)]/50 text-[rgb(220,50,50)]"
+                : window?.visible
+                ? "text-white/40 hover:text-white/60 hover:bg-white/5"
+                : "text-white/20 hover:text-white/40 hover:bg-white/5"
+            }`}
+            title={domain.label}
+          >
+            <Icon size={20} />
+            {isActive && (
+              <motion.div
+                layoutId="activeIndicator"
+                className="absolute inset-0 rounded-lg bg-[rgb(220,50,50)]/20 border border-[rgb(220,50,50)]/50 -z-10"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+          </motion.button>
+        );
+      })}
+    </div>
   );
 };
 
@@ -451,79 +588,80 @@ const ContactSection = () => {
    MAIN APP COMPONENT
 ================================================================ */
 export default function App() {
-  const [activeSection, setActiveSection] = useState("profile");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [windows, setWindows] = useState([
+    { id: "profile", visible: true, isMinimized: false, title: "user_profile.txt", content: <UserProfileWindow /> },
+    { id: "monitor", visible: true, isMinimized: false, title: "system_monitor.log", content: <SystemMonitorWindow /> },
+    { id: "services", visible: true, isMinimized: false, title: "running_services.log", content: <RunningServicesWindow /> },
+    { id: "packages", visible: true, isMinimized: false, title: "installed_packages.txt", content: <InstalledPackagesWindow /> }
+  ]);
+
+  const toggleWindow = (windowId) => {
+    setWindows(prev => prev.map(w => 
+      w.id === windowId 
+        ? { ...w, visible: !w.visible, isMinimized: false }
+        : w
+    ));
+  };
+
+  const closeWindow = (windowId) => {
+    setWindows(prev => prev.map(w => 
+      w.id === windowId ? { ...w, visible: false } : w
+    ));
+  };
+
+  const minimizeWindow = (windowId) => {
+    setWindows(prev => prev.map(w => 
+      w.id === windowId ? { ...w, isMinimized: !w.isMinimized } : w
+    ));
+  };
+
+  const visibleWindows = windows.filter(w => w.visible);
 
   return (
-    <div className="min-h-screen bg-deep-space text-white font-sans antialiased overflow-x-hidden">
-      <MeshGradient />
-      <Sidebar 
-        activeSection={activeSection} 
-        setActiveSection={setActiveSection}
-        mobileMenuOpen={mobileMenuOpen}
-        setMobileMenuOpen={setMobileMenuOpen}
-      />
-      <TechDock />
+    <div className="min-h-screen bg-[#0f0f10] text-white font-mono overflow-hidden">
+      <SystemTray />
+      <Dock windows={windows} toggleWindow={toggleWindow} />
+      <Console />
       
-      <main className="md:ml-20 px-4 md:px-6 py-8 pb-24 md:pb-8">
+      <main className="ml-16 mt-12 p-6 overflow-y-auto" style={{ paddingBottom: 'calc(300px + 1rem)' }}>
         <div className="max-w-7xl mx-auto">
-          <AnimatePresence mode="wait">
-            {activeSection === "profile" && (
-              <motion.div
-                key="profile"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          <Reorder.Group
+            axis="y"
+            values={visibleWindows}
+            onReorder={(newOrder) => {
+              setWindows(prev => {
+                const orderMap = new Map(newOrder.map((w, i) => [w.id, i]));
+                return prev.map(w => {
+                  const order = orderMap.get(w.id);
+                  return order !== undefined ? { ...w, order } : w;
+                }).sort((a, b) => {
+                  const aOrder = a.order ?? Infinity;
+                  const bOrder = b.order ?? Infinity;
+                  return aOrder - bOrder;
+                });
+              });
+            }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            {visibleWindows.map((window) => (
+              <Reorder.Item
+                key={window.id}
+                value={window}
+                style={{ listStyle: 'none' }}
+                as="div"
               >
-                <ProfileWidget />
-                <BentoCard span="col-span-1" delay={0.2}>
-                  <div className="h-full flex flex-col justify-center">
-                    <div className="text-4xl font-bold mb-2 bg-gradient-electric bg-clip-text text-transparent">
-                      WPI
-                    </div>
-                    <div className="text-gray-400 text-sm">Math & CS</div>
-                    <div className="text-gray-500 text-xs mt-2">Double Major</div>
-                  </div>
-                </BentoCard>
-                <BentoCard span="col-span-1" delay={0.25}>
-                  <div className="h-full flex flex-col justify-center">
-                    <div className="text-4xl font-bold mb-2 bg-gradient-electric bg-clip-text text-transparent">
-                      Summer 2026
-                    </div>
-                    <div className="text-gray-400 text-sm">Seeking Internship</div>
-                    <div className="text-gray-500 text-xs mt-2">Engineering & Data</div>
-                  </div>
-                </BentoCard>
-              </motion.div>
-            )}
-
-            {activeSection === "projects" && (
-              <motion.div
-                key="projects"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ProjectsSection />
-              </motion.div>
-            )}
-
-            {activeSection === "contact" && (
-              <motion.div
-                key="contact"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6"
-              >
-                <ContactSection />
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <Window
+                  id={window.id}
+                  title={window.title}
+                  onClose={() => closeWindow(window.id)}
+                  onMinimize={() => minimizeWindow(window.id)}
+                  isMinimized={window.isMinimized}
+                >
+                  {window.content}
+                </Window>
+              </Reorder.Item>
+            ))}
+          </Reorder.Group>
         </div>
       </main>
     </div>
