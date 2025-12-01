@@ -15,7 +15,7 @@ Error generating stack: `+a.message+`
   clear - Clear console history
   neofetch - Display system information
   contact - Show contact information
-  secret-lab - [REDACTED]`;break;case"whoami":U="> I engineer solutions at the intersection of mathematics and computation.";break;case"stack":U="> Python | React | C++ | AWS | PostgreSQL | QuantConnect";break;case"horizon":U=`> Building: ${Pt.horizon.building}
+  secret-lab - [REDACTED]`;break;case"whoami":U="> I solve problems with code.";break;case"stack":U="> Python | | Java | SQL | C++ | AWS | PostgreSQL";break;case"horizon":U=`> Building: ${Pt.horizon.building}
 > Learning: ${Pt.horizon.learning}
 > Goal: ${Pt.horizon.goal}`;break;case"resume":case"cv":case"pdf":U=`> Initiating download sequence for resume.pdf...
 > Success.`,r(G=>[...G,`> ${_}`,U]),setTimeout(()=>{window.open("/resume.pdf","_blank")},300);return;case"clear":r([]);return;case"neofetch":U=`     ██████╗ ██████╗ ██╗ █████╗ ███╗   ██╗    ██╗    ██╗██████╗ ██╗
