@@ -8,21 +8,145 @@
   }
 
   html {
-    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
     scroll-behavior: smooth;
+    cursor: crosshair; /* Engineering/CAD precision cursor */
   }
   
   body {
-    @apply bg-[#0f0f10] text-white;
+    background-color: #0c0c0c;
+    color: #e5e5e5;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    position: relative;
+    cursor: crosshair;
   }
 
   #root {
     width: 100%;
     min-height: 100vh;
+    position: relative;
   }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.05em;
+    font-weight: 600;
+  }
+
+  /* Uppercase for labels */
+  .label, [class*="label"], 
+  .text-xs.font-mono,
+  button[class*="text-xs"] {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Noise Texture Overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 2px,
+      rgba(255, 255, 255, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 2px,
+      rgba(255, 255, 255, 0.03) 4px
+    );
+  background-size: 4px 4px;
+}
+
+/* Scanline Effect */
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0.02;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.1) 2px,
+    rgba(255, 255, 255, 0.1) 4px
+  );
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* Crosshair cursor styling - using native crosshair with custom styling */
+body * {
+  cursor: crosshair;
+}
+
+button, a, input, textarea, select {
+  cursor: crosshair;
+}
+
+/* Technical Borders */
+.technical-border {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.technical-border::before,
+.technical-border::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.technical-border::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.technical-border::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Grid Background Pattern */
+.grid-background {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 @layer utilities {
@@ -54,24 +178,20 @@
       transform: translate(1px, -1px);
     }
   }
-}
 
-@layer utilities {
-  /* Custom scrollbar */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  /* Brutalist Button */
+  .brutal-button {
+    border: 1px solid #ff3333;
+    background: transparent;
+    padding: 8px 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 11px;
+    transition: all 0.1s;
   }
 
-  .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-deep-space-light;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-white/20 rounded-full;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-white/30;
+  .brutal-button:hover {
+    background: #ff3333;
+    color: #0c0c0c;
   }
 }

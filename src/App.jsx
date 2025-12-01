@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Code,
   Database,
@@ -29,6 +29,19 @@ const SYSTEM_DATA = {
 };
 
 /* ===============================================================
+   TEXTURE OVERLAYS (Noise & Scanline)
+================================================================ */
+const TextureOverlays = () => {
+  return (
+    <>
+      <div className="noise-overlay" />
+      <div className="scanline" />
+    </>
+  );
+};
+
+
+/* ===============================================================
    TOP BAR (System Tray)
 ================================================================ */
 const SystemTray = () => {
@@ -47,19 +60,19 @@ const SystemTray = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-12 bg-[#0f0f10] border-b border-white/10 z-50 flex items-center justify-between px-6">
+    <div className="fixed top-0 left-0 right-0 h-12 bg-[#0c0c0c] border-b border-white/10 z-50 flex items-center justify-between px-6">
       <motion.div
         onHoverStart={() => setIsGlitching(true)}
         onHoverEnd={() => setIsGlitching(false)}
-        className="font-mono text-sm text-white cursor-pointer relative"
+        className="font-mono text-sm text-[#e5e5e5] relative"
       >
         <span className={isGlitching ? "glitch-text" : ""}>BrianOS v1.0</span>
       </motion.div>
-      <div className="flex items-center gap-6 text-xs font-mono text-white/80">
+      <div className="flex items-center gap-6 text-xs font-mono text-[#e5e5e5]/80 uppercase tracking-wider">
         <span>{formatTime(currentTime)} UTC</span>
         <span>{SYSTEM_DATA.location}</span>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <div className="w-2 h-2 bg-[#00ff00] animate-pulse" />
           <span>System Status: Online</span>
         </div>
       </div>
@@ -70,42 +83,61 @@ const SystemTray = () => {
 /* ===============================================================
    WINDOW COMPONENT WRAPPER (With Controls)
 ================================================================ */
-const Window = ({ id, title, children, onClose, onMinimize, isMinimized }) => {
+const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize, onMaximize }) => {
+  // Red Button: Close - Return null if closed
+  if (status === 'closed') {
+    return null;
+  }
+
+  // Yellow Button: Minimize - Hide window but keep active
+  if (status === 'minimized') {
+    return null;
+  }
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="bg-[#0f0f10] border border-white/10 rounded-lg flex flex-col min-h-[400px]"
+      className={`bg-[#0c0c0c] border border-white/10 rounded-sm flex flex-col grid-background ${
+        isMaximized 
+          ? "fixed inset-4 z-50 backdrop-blur-sm" 
+          : "min-h-[400px]"
+      }`}
+      style={isMaximized ? { 
+        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(12, 12, 12, 0.95)'
+      } : {}}
     >
-      {/* Title Bar - Drag Handle */}
-      <div className="flex items-center gap-2 p-3 border-b border-white/10 cursor-grab active:cursor-grabbing select-none">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
-          className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
-          title="Close"
-        />
-            <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onMinimize();
-          }}
-          className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors"
-          title="Minimize"
-        />
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-        <span className="ml-2 text-xs font-mono text-white/60 flex-1">{title}</span>
+      {/* Title Bar */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-[#0c0c0c]/50">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono text-[#e5e5e5]/60 uppercase tracking-wider">{title}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Window Controls: Red (Close), Yellow (Minimize), Green (Maximize) */}
+          <button
+            onClick={onClose}
+            className="w-3 h-3 bg-[#ff3333] rounded-sm hover:bg-[#ff5555] transition-colors"
+            aria-label="Close window"
+          />
+          <button
+            onClick={onMinimize}
+            className="w-3 h-3 bg-[#ffaa00] rounded-sm hover:bg-[#ffcc00] transition-colors"
+            aria-label="Minimize window"
+          />
+          <button
+            onClick={onMaximize}
+            className="w-3 h-3 bg-[#00ff00] rounded-sm hover:bg-[#33ff33] transition-colors"
+            aria-label="Maximize window"
+          />
+        </div>
       </div>
       {/* Window Content */}
-      {!isMinimized && (
-        <div className="flex-1 overflow-auto">
-          {children}
-        </div>
-      )}
+      <div className="flex-1 overflow-auto">
+        {children}
+      </div>
     </motion.div>
   );
 };
@@ -117,40 +149,50 @@ const UserProfileWindow = () => {
   return (
     <div className="p-6 space-y-4">
       <div>
-        <h2 className="text-2xl font-bold text-white mb-2">Brian Wang</h2>
-        <p className="text-white/80 text-sm leading-relaxed">
+        <h2 className="text-2xl font-bold text-[#e5e5e5] mb-2 tracking-tight">Brian Wang</h2>
+        <p className="text-[#e5e5e5]/80 text-sm leading-relaxed">
           Math/CS double major at WPI. Building high-performance systems and solving complex problems through the intersection of abstract theory and practical engineering.
         </p>
       </div>
       <div className="pt-4 border-t border-white/10">
-        <p className="text-xs font-mono text-white/60 mb-2">STATUS:</p>
+        <p className="text-xs font-mono text-[#e5e5e5]/60 mb-2 uppercase tracking-wider">STATUS:</p>
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded text-xs text-green-400 font-mono">
+          <div className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-sm text-xs text-green-400 font-mono uppercase tracking-wider">
             OPERATIONAL
           </div>
-          <span className="text-xs text-white/60">Uptime: {SYSTEM_DATA.uptime}</span>
+          <span className="text-xs text-[#e5e5e5]/60">Uptime: {SYSTEM_DATA.uptime}</span>
         </div>
       </div>
       <div className="pt-4 border-t border-white/10">
-        <p className="text-xs font-mono text-white/60 mb-2">CONNECTIONS:</p>
+        <p className="text-xs font-mono text-[#e5e5e5]/60 mb-2 uppercase tracking-wider">CONNECTIONS:</p>
         <div className="flex gap-3">
-          <a href="https://github.com/bwang257" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">
+          <a href="https://github.com/bwang257" target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#ff3333] transition-colors">
             <Github size={18} />
           </a>
-          <a href="https://linkedin.com/in/brian372" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">
+          <a href="https://linkedin.com/in/brian372" target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#ff3333] transition-colors">
             <Linkedin size={18} />
           </a>
-          <a href="mailto:brian.wang372@gmail.com" className="text-white/60 hover:text-white transition-colors">
+          <a href="mailto:brian.wang372@gmail.com" className="text-[#e5e5e5]/60 hover:text-[#ff3333] transition-colors">
             <Mail size={18} />
           </a>
         </div>
       </div>
       <div className="pt-4 border-t border-white/10">
-        <p className="text-xs font-mono text-white/60 mb-2">SIGNATURE:</p>
-        <div className="text-white/40 italic text-sm">— Brian Wang</div>
+        <p className="text-xs font-mono text-[#e5e5e5]/60 mb-2 uppercase tracking-wider">DIGITAL IDENTITY:</p>
+        <div className="space-y-1">
+          <div className="text-[10px] font-mono text-[#e5e5e5]/30 leading-relaxed">
+            PUBKEY: 4d 1a 92 3f 7c 8e 2b 9a 5d 4c 1f 6e 3a 8b 2c 7d
+          </div>
+          <div className="text-[10px] font-mono text-[#e5e5e5]/30 leading-relaxed">
+            FINGERPRINT: A1B2 C3D4 E5F6 7890 ABCD EF12 3456 7890 ABCD EF12
+          </div>
+          <div className="text-[10px] font-mono text-[#e5e5e5]/30 leading-relaxed">
+            ALGORITHM: RSA 4096 | EXPIRES: 2026-12-31
+          </div>
+        </div>
       </div>
     </div>
-  );
+);
 };
 
 /* ===============================================================
@@ -162,64 +204,64 @@ const SystemMonitorWindow = () => {
   return (
     <div className="p-6 space-y-6">
         <div>
-          <p className="text-xs font-mono text-white/60 mb-3">THE HORIZON:</p>
-          <ul className="space-y-2 text-sm text-white/80">
+          <p className="text-xs font-mono text-[#e5e5e5]/60 mb-3">THE HORIZON:</p>
+          <ul className="space-y-2 text-sm text-[#e5e5e5]/80">
             <li className="flex items-start gap-2">
-              <span className="text-[rgb(220,50,50)]">></span>
+              <span className="text-[#ff3333]">&gt;</span>
               <span>Building: {SYSTEM_DATA.horizon.building}</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-[rgb(220,50,50)]">></span>
+              <span className="text-[#ff3333]">&gt;</span>
               <span>Learning: {SYSTEM_DATA.horizon.learning}</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-[rgb(220,50,50)]">></span>
+              <span className="text-[#ff3333]">&gt;</span>
               <span>Goal: {SYSTEM_DATA.horizon.goal}</span>
             </li>
           </ul>
         </div>
         <div>
-          <p className="text-xs font-mono text-white/60 mb-3">RESOURCE USAGE:</p>
+          <p className="text-xs font-mono text-[#e5e5e5]/60 mb-3">RESOURCE USAGE:</p>
           <div className="space-y-3">
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-white/80">Coding</span>
-                <span className="text-white/60">{SYSTEM_DATA.timeDistribution.coding}%</span>
+                <span className="text-[#e5e5e5]/80">Coding</span>
+                <span className="text-[#e5e5e5]/60">{SYSTEM_DATA.timeDistribution.coding}%</span>
               </div>
-              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+              <div className="h-2 bg-white/5 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${SYSTEM_DATA.timeDistribution.coding}%` }}
                   transition={{ duration: 1, delay: 0.2 }}
-                  className="h-full bg-[rgb(220,50,50)]"
+                  className="h-full bg-[#ff3333]"
                 />
               </div>
-            </div>
+    </div>
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-white/80">Markets</span>
-                <span className="text-white/60">{SYSTEM_DATA.timeDistribution.markets}%</span>
-              </div>
-              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                <span className="text-[#e5e5e5]/80">Markets</span>
+                <span className="text-[#e5e5e5]/60">{SYSTEM_DATA.timeDistribution.markets}%</span>
+    </div>
+              <div className="h-2 bg-white/5 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${SYSTEM_DATA.timeDistribution.markets}%` }}
                   transition={{ duration: 1, delay: 0.4 }}
-                  className="h-full bg-[rgb(220,50,50)]"
+                  className="h-full bg-[#ff3333]"
                 />
-              </div>
-            </div>
+    </div>
+  </div>
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-white/80">Misc</span>
-                <span className="text-white/60">{SYSTEM_DATA.timeDistribution.misc}%</span>
+                <span className="text-[#e5e5e5]/80">Misc</span>
+                <span className="text-[#e5e5e5]/60">{SYSTEM_DATA.timeDistribution.misc}%</span>
               </div>
-              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+              <div className="h-2 bg-white/5 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${SYSTEM_DATA.timeDistribution.misc}%` }}
                   transition={{ duration: 1, delay: 0.6 }}
-                  className="h-full bg-[rgb(220,50,50)]"
+                  className="h-full bg-[#ff3333]"
                 />
               </div>
             </div>
@@ -229,7 +271,7 @@ const SystemMonitorWindow = () => {
           <motion.div
             onHoverStart={() => setHoveredStatus(true)}
             onHoverEnd={() => setHoveredStatus(false)}
-            className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded text-xs text-green-400 font-mono inline-block cursor-pointer"
+            className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-sm text-xs text-green-400 font-mono inline-block uppercase tracking-wider"
           >
             {hoveredStatus ? "Targeting: Quant & Swe Roles" : "Open to Work"}
           </motion.div>
@@ -275,34 +317,34 @@ const RunningServicesWindow = () => {
   return (
     <div className="p-6 space-y-4">
         {projects.map((project, idx) => (
-          <div key={idx} className="border-l-2 border-[rgb(220,50,50)] pl-4 py-2">
+          <div key={idx} className="border-l-2 border-[#ff3333] pl-4 py-2">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
                 <div>
-                  <span className="text-xs font-mono text-white/60">{project.pid}</span>
-                  <span className="text-sm font-mono text-white ml-2">{project.name}</span>
+                  <span className="text-xs font-mono text-[#e5e5e5]/60 uppercase tracking-wider">{project.pid}</span>
+                  <span className="text-sm font-mono text-[#e5e5e5] ml-2 tracking-tight">{project.name}</span>
                 </div>
                 {project.access === "private" && (
-                  <span className="text-xs font-mono text-white/40 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                  <span className="text-xs font-mono text-[#e5e5e5]/40 bg-white/5 px-2 py-0.5 rounded-sm border border-white/10 uppercase tracking-wider">
                     [CLASSIFIED / ACADEMIC]
                   </span>
                 )}
               </div>
               <div className="flex gap-2">
                 {project.link && (
-                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white">
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#e5e5e5]">
                     <ExternalLink size={14} />
                   </a>
                 )}
                 {project.github && project.access === "public" && (
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white">
+                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#e5e5e5]">
                     <Github size={14} />
                   </a>
                 )}
                 {project.access === "private" && (
                   <button
                     onClick={handlePrivateRepoClick}
-                    className="text-white/30 hover:text-[rgb(220,50,50)] transition-colors cursor-pointer"
+                    className="text-[#e5e5e5]/30 hover:text-[#ff3333] transition-colors"
                     title="Private Repository"
                   >
                     <Lock size={14} />
@@ -310,7 +352,7 @@ const RunningServicesWindow = () => {
                 )}
               </div>
             </div>
-            <p className="text-xs text-white/60 font-mono">
+            <p className="text-xs text-[#e5e5e5]/60 font-mono">
               &gt; Problem: {project.problem}
             </p>
           </div>
@@ -355,25 +397,25 @@ const InstalledPackagesWindow = () => {
       <div className="font-mono text-xs space-y-4">
         {Object.entries(skillCategories).map(([category, skills]) => (
           <div key={category}>
-            <div className="text-white/40 mb-2">{category}</div>
+            <div className="text-[#e5e5e5]/40 mb-2">{category}</div>
             <div className="space-y-1">
-              <div className="grid grid-cols-[1fr_80px_1fr] gap-4 text-white/60 mb-1">
+              <div className="grid grid-cols-[1fr_80px_1fr] gap-4 text-[#e5e5e5]/60 mb-1 uppercase tracking-wider">
                 <div>PKG</div>
                 <div>VER</div>
                 <div>DESC</div>
               </div>
               {skills.map((skill, idx) => (
-                <div key={idx} className="grid grid-cols-[1fr_80px_1fr] gap-4 hover:text-white transition-colors">
-                  <div className="text-white/80">{skill.name}</div>
-                  <div className="text-white/60">{skill.ver}</div>
-                  <div className="text-white/60">{skill.desc}</div>
+                <div key={idx} className="grid grid-cols-[1fr_80px_1fr] gap-4 hover:text-[#e5e5e5] transition-colors">
+                  <div className="text-[#e5e5e5]/80">{skill.name}</div>
+                  <div className="text-[#e5e5e5]/60">{skill.ver}</div>
+                  <div className="text-[#e5e5e5]/60">{skill.desc}</div>
                 </div>
               ))}
             </div>
-          </div>
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
   );
 };
 
@@ -495,7 +537,7 @@ const Console = () => {
   return (
     <div 
       ref={consoleRef}
-      className="fixed bottom-0 left-0 right-0 bg-[#0f0f10] border-t border-white/10 z-[60] flex flex-col"
+      className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c] border-t border-white/10 z-[60] flex flex-col"
       style={{ height: `${height}px` }}
     >
       {/* Resize Handle */}
@@ -510,73 +552,104 @@ const Console = () => {
       </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-4 font-mono text-xs text-white/80 space-y-1">
-          {history.map((line, idx) => (
-            <div key={idx} className="whitespace-pre-wrap">{line}</div>
-          ))}
+        <div className="flex-1 overflow-y-auto p-4 font-mono text-xs text-[#e5e5e5]/80 space-y-1">
+          {history.map((line, idx) => {
+            const isError = line.includes('Access Denied') || line.includes('Command not found');
+            return (
+              <div 
+                key={idx} 
+                className={`whitespace-pre-wrap ${isError ? 'text-[#ff3333]' : ''}`}
+              >
+                {line}
+              </div>
+            );
+          })}
           <div ref={historyEndRef} />
         </div>
         <form onSubmit={handleSubmit} className="border-t border-white/10 p-2 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-[rgb(220,50,50)]">></span>
+            <span className="text-[#ff3333]">&gt;</span>
             <input
               ref={inputRef}
               type="text"
               value={command}
               onChange={(e) => setCommand(e.target.value)}
               placeholder="type help for commands..."
-              className="flex-1 bg-transparent text-white/80 font-mono text-xs outline-none"
+              className="flex-1 bg-transparent text-[#e5e5e5]/80 font-mono text-xs outline-none"
               autoFocus
             />
           </div>
         </form>
       </div>
     </div>
-  );
+);
 };
 
 /* ===============================================================
-   DOCK (Taskbar)
+   DOCK (Text-Based Navigation / Taskbar)
 ================================================================ */
 const Dock = ({ windows, toggleWindow }) => {
   const domains = [
-    { id: "profile", icon: Terminal, label: "TTY", windowId: "profile" },
-    { id: "monitor", icon: FlaskConical, label: "The Lab", windowId: "monitor" },
-    { id: "services", icon: Code, label: "Engines", windowId: "services" },
-    { id: "packages", icon: Database, label: "Data Pantry", windowId: "packages" }
+    { id: "profile", path: "~/WHOAMI", windowId: "profile" },
+    { id: "services", path: "~/WORK", windowId: "services" },
+    { id: "monitor", path: "~/SYS", windowId: "monitor" },
+    { id: "packages", path: "~/LIB", windowId: "packages" }
   ];
 
+  const [hoveredPath, setHoveredPath] = useState(null);
+
   return (
-    <div className="fixed left-0 top-12 w-16 bg-[#0f0f10] border-r border-white/10 z-40 flex flex-col items-center py-6 gap-4" style={{ bottom: '300px' }}>
+    <div className="fixed left-0 top-12 w-32 bg-[#0c0c0c] border-r border-white/10 z-40 flex flex-col py-6 gap-2" style={{ bottom: '300px' }}>
       {domains.map((domain) => {
-        const Icon = domain.icon;
         const window = windows.find(w => w.id === domain.windowId);
-        const isVisible = window?.visible && !window?.isMinimized;
-        const isActive = isVisible;
+        const status = window?.status || 'closed';
+        const isHovered = hoveredPath === domain.path;
+        
+        // Determine styling based on status
+        let textColor = "text-[#e5e5e5]/30 line-through"; // Closed (default)
+        let prefix = null;
+        
+        if (status === 'open') {
+          textColor = "text-[#00ff00]";
+          prefix = (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="mr-2"
+            >
+              &gt;
+            </motion.span>
+          );
+        } else if (status === 'minimized') {
+          textColor = "text-[#e5e5e5]/50";
+          prefix = (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+              className="mr-2"
+            >
+              _
+            </motion.span>
+          );
+        }
+        
+        // Override with hover state
+        if (isHovered && status !== 'open') {
+          textColor = "text-[#e5e5e5]/70";
+        }
         
         return (
           <motion.button
             key={domain.id}
             onClick={() => toggleWindow(domain.windowId)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className={`p-3 rounded-lg transition-all relative ${
-              isActive
-                ? "bg-[rgb(220,50,50)]/20 border border-[rgb(220,50,50)]/50 text-[rgb(220,50,50)]"
-                : window?.visible
-                ? "text-white/40 hover:text-white/60 hover:bg-white/5"
-                : "text-white/20 hover:text-white/40 hover:bg-white/5"
-            }`}
-            title={domain.label}
+            onMouseEnter={() => setHoveredPath(domain.path)}
+            onMouseLeave={() => setHoveredPath(null)}
+            className={`text-left px-4 py-2 font-mono text-xs transition-all relative uppercase tracking-wider ${textColor}`}
           >
-            <Icon size={20} />
-            {isActive && (
-              <motion.div
-                layoutId="activeIndicator"
-                className="absolute inset-0 rounded-lg bg-[rgb(220,50,50)]/20 border border-[rgb(220,50,50)]/50 -z-10"
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-              />
-            )}
+            {prefix}
+            <span>{domain.path}</span>
           </motion.button>
         );
       })}
@@ -589,79 +662,101 @@ const Dock = ({ windows, toggleWindow }) => {
 ================================================================ */
 export default function App() {
   const [windows, setWindows] = useState([
-    { id: "profile", visible: true, isMinimized: false, title: "user_profile.txt", content: <UserProfileWindow /> },
-    { id: "monitor", visible: true, isMinimized: false, title: "system_monitor.log", content: <SystemMonitorWindow /> },
-    { id: "services", visible: true, isMinimized: false, title: "running_services.log", content: <RunningServicesWindow /> },
-    { id: "packages", visible: true, isMinimized: false, title: "installed_packages.txt", content: <InstalledPackagesWindow /> }
+    { id: "profile", status: "open", isMaximized: false, title: "user_profile.txt", content: <UserProfileWindow /> },
+    { id: "monitor", status: "open", isMaximized: false, title: "system_monitor.log", content: <SystemMonitorWindow /> },
+    { id: "services", status: "open", isMaximized: false, title: "running_services.log", content: <RunningServicesWindow /> },
+    { id: "packages", status: "open", isMaximized: false, title: "installed_packages.txt", content: <InstalledPackagesWindow /> }
   ]);
 
   const toggleWindow = (windowId) => {
-    setWindows(prev => prev.map(w => 
-      w.id === windowId 
-        ? { ...w, visible: !w.visible, isMinimized: false }
-        : w
-    ));
+    setWindows(prev => prev.map(w => {
+      if (w.id === windowId) {
+        // If closed, open it
+        if (w.status === 'closed') {
+          return { ...w, status: 'open', isMaximized: false };
+        }
+        // If minimized, restore it to open
+        if (w.status === 'minimized') {
+          return { ...w, status: 'open' };
+        }
+        // If open, minimize it
+        if (w.status === 'open') {
+          return { ...w, status: 'minimized', isMaximized: false };
+        }
+      }
+      return w;
+    }));
   };
 
   const closeWindow = (windowId) => {
     setWindows(prev => prev.map(w => 
-      w.id === windowId ? { ...w, visible: false } : w
+      w.id === windowId ? { ...w, status: 'closed', isMaximized: false } : w
     ));
   };
 
   const minimizeWindow = (windowId) => {
     setWindows(prev => prev.map(w => 
-      w.id === windowId ? { ...w, isMinimized: !w.isMinimized } : w
+      w.id === windowId ? { ...w, status: 'minimized', isMaximized: false } : w
     ));
   };
 
-  const visibleWindows = windows.filter(w => w.visible);
+  const maximizeWindow = (windowId) => {
+    setWindows(prev => prev.map(w => {
+      if (w.id === windowId) {
+        return { ...w, isMaximized: !w.isMaximized };
+      }
+      // If maximizing one window, unmaximize others
+      return { ...w, isMaximized: false };
+    }));
+  };
+
+  // Filter windows that are visible (open and not minimized)
+  const visibleWindows = windows.filter(w => w.status === 'open');
 
   return (
-    <div className="min-h-screen bg-[#0f0f10] text-white font-mono overflow-hidden">
+    <div className="min-h-screen bg-[#0c0c0c] text-[#e5e5e5] font-mono overflow-hidden">
+      <TextureOverlays />
       <SystemTray />
       <Dock windows={windows} toggleWindow={toggleWindow} />
       <Console />
       
-      <main className="ml-16 mt-12 p-6 overflow-y-auto" style={{ paddingBottom: 'calc(300px + 1rem)' }}>
+      <main className="ml-32 mt-12 p-6 overflow-y-auto" style={{ paddingBottom: 'calc(300px + 1rem)' }}>
         <div className="max-w-7xl mx-auto">
-          <Reorder.Group
-            axis="y"
-            values={visibleWindows}
-            onReorder={(newOrder) => {
-              setWindows(prev => {
-                const orderMap = new Map(newOrder.map((w, i) => [w.id, i]));
-                return prev.map(w => {
-                  const order = orderMap.get(w.id);
-                  return order !== undefined ? { ...w, order } : w;
-                }).sort((a, b) => {
-                  const aOrder = a.order ?? Infinity;
-                  const bOrder = b.order ?? Infinity;
-                  return aOrder - bOrder;
-                });
-              });
-            }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
-            {visibleWindows.map((window) => (
-              <Reorder.Item
-                key={window.id}
-                value={window}
-                style={{ listStyle: 'none' }}
-                as="div"
-              >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {visibleWindows
+              .filter(w => !w.isMaximized)
+              .map((window) => (
                 <Window
+                  key={window.id}
                   id={window.id}
                   title={window.title}
+                  status={window.status}
+                  isMaximized={window.isMaximized}
                   onClose={() => closeWindow(window.id)}
                   onMinimize={() => minimizeWindow(window.id)}
-                  isMinimized={window.isMinimized}
+                  onMaximize={() => maximizeWindow(window.id)}
                 >
                   {window.content}
                 </Window>
-              </Reorder.Item>
+              ))}
+          </div>
+          {/* Render maximized windows separately (outside grid) */}
+          {visibleWindows
+            .filter(w => w.isMaximized)
+            .map((window) => (
+              <Window
+                key={window.id}
+                id={window.id}
+                title={window.title}
+                status={window.status}
+                isMaximized={window.isMaximized}
+                onClose={() => closeWindow(window.id)}
+                onMinimize={() => minimizeWindow(window.id)}
+                onMaximize={() => maximizeWindow(window.id)}
+              >
+                {window.content}
+              </Window>
             ))}
-          </Reorder.Group>
         </div>
       </main>
     </div>

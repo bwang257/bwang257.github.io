@@ -7,11 +7,16 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        mono: ["JetBrains Mono", "Fira Code", "Courier New", "monospace"],
+        mono: ["IBM Plex Mono", "Courier New", "monospace"],
       },
       colors: {
-        'wpi-crimson': 'rgb(220, 50, 50)',
-        'charcoal': '#0f0f10',
+        'radar-black': '#0c0c0c',
+        'warning-red': '#ff3333',
+        'off-white': '#e5e5e5',
+        'terminal-green': '#00ff00',
+      },
+      letterSpacing: {
+        'tight': '-0.05em',
       },
     },
   },
