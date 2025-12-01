@@ -515,10 +515,10 @@ const Console = () => {
         output = `Available commands:\n  help - Show this help message\n  whoami - Display user philosophy\n  stack - List favorite tech stack\n  horizon - Show current goals\n  resume - Download resume (aliases: cv, pdf)\n  clear - Clear console history\n  neofetch - Display system information\n  contact - Show contact information\n  secret-lab - [REDACTED]`;
         break;
       case "whoami":
-        output = "> I engineer solutions at the intersection of mathematics and computation.";
+        output = "> I solve problems with code.";
         break;
       case "stack":
-        output = "> Python | React | C++ | AWS | PostgreSQL | QuantConnect";
+        output = "> Python | | Java | SQL | C++ | AWS | PostgreSQL";
         break;
       case "horizon":
         output = `> Building: ${SYSTEM_DATA.horizon.building}\n> Learning: ${SYSTEM_DATA.horizon.learning}\n> Goal: ${SYSTEM_DATA.horizon.goal}`;
