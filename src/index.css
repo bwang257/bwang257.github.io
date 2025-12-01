@@ -3,29 +3,55 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    @apply border-white/10;
+  }
+
   html {
     @apply font-sans;
     scroll-behavior: smooth;
-    scroll-padding-top: 6rem;
   }
   
   body {
-    @apply bg-slate-950 text-gray-100;
+    @apply bg-deep-space text-gray-100;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
   }
 
   #root {
     width: 100%;
     min-height: 100vh;
   }
+
+  /* Glassmorphism utility */
+  .backdrop-blur-glass {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-padding-top: 2rem;
+  }
 }
 
-@keyframes scroll-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
+@layer utilities {
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
 
-.animate-scroll-left {
-  animation: scroll-left 60s linear infinite;
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-deep-space-light;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-white/20 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/30;
+  }
 }

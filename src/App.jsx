@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
   Github,
@@ -15,579 +16,516 @@ import {
   BarChart3,
   Zap,
   FileCode,
+  ExternalLink,
+  Sparkles,
+  Layers,
+  Cpu as CpuIcon,
   Menu,
   X,
 } from "lucide-react";
 
 /* ===============================================================
-   1. GLOBAL STYLES
+   ANIMATED MESH GRADIENT BACKGROUND
 ================================================================ */
-const GlobalStyles = () => (
-  <style>{`
-    .fade-in-section {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .fade-in-section.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  `}</style>
-);
-
-/* ===============================================================
-   2. HOOKS
-================================================================ */
-
-const useScrollPosition = () => {
-  const [scrollY, setScrollY] = useState(0);
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-  return scrollY;
+const MeshGradient = () => {
+  return (
+    <div className="fixed inset-0 -z-10 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-mesh animate-mesh-gradient" />
+      <div className="absolute inset-0 bg-deep-space" style={{ mixBlendMode: 'multiply' }} />
+    </div>
+  );
 };
 
-const AnimatedSection = ({ children, className = "", id = "" }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => entry.isIntersecting && setIsVisible(true));
-      },
-      { threshold: 0.1 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
+/* ===============================================================
+   SIDEBAR NAVIGATION (Glassmorphism)
+================================================================ */
+const Sidebar = ({ activeSection, setActiveSection, mobileMenuOpen, setMobileMenuOpen }) => {
+  const navItems = [
+    { id: "profile", label: "Profile", icon: Sparkles },
+    { id: "projects", label: "Projects", icon: Layers },
+    { id: "contact", label: "Contact", icon: Mail },
+  ];
+
   return (
-    <section
-      id={id}
-      ref={ref}
-      className={`fade-in-section ${isVisible ? "is-visible" : ""} ${className}`}
+    <>
+      {/* Desktop Sidebar */}
+      <motion.aside
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="hidden md:flex fixed left-0 top-0 h-full w-20 z-40 flex-col items-center py-8"
+      >
+        <div className="backdrop-blur-glass bg-white/5 border-r border-white/10 h-full rounded-r-2xl flex flex-col items-center justify-between py-8">
+          <div className="flex flex-col gap-6">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <motion.button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`relative p-3 rounded-xl transition-all ${
+                    isActive
+                      ? "bg-gradient-electric text-white shadow-lg shadow-blue-500/50"
+                      : "text-gray-400 hover:text-white hover:bg-white/10"
+                  }`}
+                  title={item.label}
+                >
+                  <Icon size={20} />
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeIndicator"
+                      className="absolute inset-0 rounded-xl bg-gradient-electric -z-10"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+          <div className="text-xs text-gray-500 font-mono">BW</div>
+        </div>
+      </motion.aside>
+
+      {/* Mobile Menu Button */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="md:hidden fixed top-4 left-4 z-50 p-3 backdrop-blur-glass bg-white/5 border border-white/10 rounded-xl text-white"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+      >
+        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </motion.button>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ x: -300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -300, opacity: 0 }}
+            className="md:hidden fixed left-0 top-0 h-full w-64 z-40 backdrop-blur-glass bg-white/5 border-r border-white/10"
+          >
+            <div className="flex flex-col gap-4 p-6 pt-20">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeSection === item.id;
+                return (
+                  <motion.button
+                    key={item.id}
+                    onClick={() => {
+                      setActiveSection(item.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
+                      isActive
+                        ? "bg-gradient-electric text-white shadow-lg shadow-blue-500/50"
+                        : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <Icon size={20} />
+                    <span className="font-medium">{item.label}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+/* ===============================================================
+   TECH STACK DOCK (macOS-style)
+================================================================ */
+const TechDock = () => {
+  const techStack = [
+    { name: "Python", icon: Code, color: "text-yellow-400" },
+    { name: "React", icon: FileCode, color: "text-cyan-400" },
+    { name: "C++", icon: CpuIcon, color: "text-blue-400" },
+    { name: "AWS", icon: Cloud, color: "text-orange-400" },
+    { name: "PostgreSQL", icon: Database, color: "text-blue-300" },
+    { name: "Flask", icon: FlaskConical, color: "text-red-400" },
+    { name: "Git", icon: GitBranch, color: "text-orange-300" },
+    { name: "Linux", icon: Terminal, color: "text-green-400" },
+  ];
+
+  const [hoveredTech, setHoveredTech] = useState(null);
+
+  return (
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3, duration: 0.5 }}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden md:block"
+    >
+      <div className="backdrop-blur-glass bg-white/5 border border-white/10 rounded-2xl px-4 md:px-6 py-3 md:py-4 flex items-center gap-2 md:gap-4 shadow-2xl overflow-x-auto max-w-[90vw]">
+        {techStack.map((tech, idx) => {
+          const Icon = tech.icon;
+          return (
+            <motion.div
+              key={tech.name}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.4 + idx * 0.05, type: "spring" }}
+              onHoverStart={() => setHoveredTech(tech.name)}
+              onHoverEnd={() => setHoveredTech(null)}
+              className="relative flex-shrink-0"
+            >
+              <div className={`p-2 md:p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all cursor-default ${tech.color}`}>
+                <Icon size={18} className="md:w-5 md:h-5" />
+              </div>
+              <AnimatePresence>
+                {hoveredTech === tech.name && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute -top-12 left-1/2 -translate-x-1/2 bg-deep-space-light border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white whitespace-nowrap z-50"
+                  >
+                    {tech.name}
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white/20" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+};
+
+/* ===============================================================
+   BENTO GRID CARD COMPONENT
+================================================================ */
+const BentoCard = ({ children, className = "", span = "col-span-1", delay = 0 }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5 }}
+      className={`${span} backdrop-blur-glass bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all group ${className}`}
     >
       {children}
-    </section>
+    </motion.div>
   );
 };
 
 /* ===============================================================
-   3. PARTICLE NETWORK BACKGROUND
+   PROFILE WIDGET (Hero Card)
 ================================================================ */
-
-const ParticleNetwork = () => {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    let animationFrameId;
-    let particles = [];
-    const particleCount = 50;
-    const connectionDistance = 150;
-    const color = "rgba(34, 211, 238, 0.4)"; // cyan-400
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    const initParticles = () => {
-      particles = [];
-      for (let i = 0; i < particleCount; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          radius: Math.random() * 2 + 1,
-        });
-      }
-    };
-
-    const updateParticles = () => {
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-        p.x = Math.max(0, Math.min(canvas.width, p.x));
-        p.y = Math.max(0, Math.min(canvas.height, p.y));
-      });
-    };
-
-    const drawConnections = () => {
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < connectionDistance) {
-            const opacity = (1 - distance / connectionDistance) * 0.3;
-            ctx.strokeStyle = `rgba(34, 211, 238, ${opacity})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-    };
-
-    const drawParticles = () => {
-      particles.forEach((p) => {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      updateParticles();
-      drawConnections();
-      drawParticles();
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    resize();
-    initParticles();
-    animate();
-
-    window.addEventListener("resize", () => {
-      resize();
-      initParticles();
-    });
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
+const ProfileWidget = () => {
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 z-0 pointer-events-none"
-      style={{ background: "transparent" }}
-    />
-  );
-};
-
-/* ===============================================================
-   4. NAVIGATION
-================================================================ */
-
-const Navigation = ({ scrollY }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navItems = ["About", "Projects", "Skills", "Contact"];
-
-  const scrollToSection = (sectionId) => {
-    document.getElementById(sectionId.toLowerCase())?.scrollIntoView({
-      behavior: "smooth",
-    });
-    setMobileMenuOpen(false);
-  };
-
-  return (
-    <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrollY > 50
-          ? "bg-slate-950/95 backdrop-blur-md border-b border-cyan-500/20"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="font-mono text-xl font-bold text-cyan-400 hover:text-cyan-300 transition-colors"
-        >
-          {"<BW />"}
-        </button>
-        <div className="hidden md:flex gap-8 text-gray-300 font-medium">
-          {navItems.map((item) => (
-            <button
-              key={item}
-              onClick={() => scrollToSection(item)}
-              className="hover:text-cyan-400 transition-colors relative group"
-            >
-              {item}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 group-hover:w-full transition-all duration-300"></span>
-            </button>
-          ))}
-        </div>
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-cyan-400 hover:text-cyan-300 transition-colors"
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-950/95 backdrop-blur-md border-t border-cyan-500/20">
-          <div className="px-6 py-4 flex flex-col gap-4">
-            {navItems.map((item) => (
-              <button
-                key={item}
-                onClick={() => scrollToSection(item)}
-                className="text-left text-gray-300 hover:text-cyan-400 transition-colors font-medium"
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-};
-
-/* ===============================================================
-   5. HERO SECTION
-================================================================ */
-
-const HeroSection = () => {
-  const scrollToSection = (sectionId) => {
-    document.getElementById(sectionId)?.scrollIntoView({
-      behavior: "smooth",
-    });
-  };
-
-  return (
-    <section
-      id="hero"
-      className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20"
-    >
-      <ParticleNetwork />
-      <div className="relative z-10 text-center px-6 max-w-5xl">
-        <h1 className="text-7xl md:text-9xl font-mono font-bold mb-6 text-cyan-400 tracking-tight">
-          Brian Wang.
-        </h1>
-        <p className="text-xl md:text-2xl mb-12 text-gray-300 font-sans max-w-3xl mx-auto leading-relaxed">
-          Engineer & Mathematician. Building high-performance systems and analyzing complex data at WPI.
-        </p>
-        <div className="flex gap-4 justify-center flex-wrap">
-          <button
-            onClick={() => scrollToSection("projects")}
-            className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold rounded-lg transition-all hover:scale-105 shadow-lg shadow-cyan-500/50"
+    <BentoCard span="col-span-2 row-span-2" delay={0.1}>
+      <div className="h-full flex flex-col justify-between relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-electric opacity-10 blur-3xl" />
+        <div className="relative z-10">
+          <motion.h1
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-6xl md:text-7xl font-bold mb-4 bg-gradient-electric bg-clip-text text-transparent"
           >
-            View My Work
-          </button>
-          <button
-            onClick={() => scrollToSection("contact")}
-            className="px-8 py-3 border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 font-semibold rounded-lg transition-all hover:scale-105"
+            Brian Wang.
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-xl text-gray-300 font-light mb-8"
           >
-            Get in Touch
-          </button>
+            Full-Stack Engineering & Applied Mathematics
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-gray-400 leading-relaxed max-w-2xl"
+          >
+            Math/CS double major at WPI. Building high-performance systems and solving complex problems through the intersection of abstract theory and practical engineering.
+          </motion.p>
         </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="relative z-10 flex gap-4 mt-8"
+        >
+          <a
+            href="https://linkedin.com/in/brian372"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 bg-gradient-electric text-white rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/50 transition-all flex items-center gap-2"
+          >
+            <Linkedin size={18} />
+            LinkedIn
+          </a>
+          <a
+            href="https://github.com/bwang257"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-3 border border-white/20 text-gray-300 rounded-xl font-medium hover:bg-white/10 hover:border-white/40 transition-all flex items-center gap-2"
+          >
+            <Github size={18} />
+            GitHub
+          </a>
+        </motion.div>
       </div>
-    </section>
+    </BentoCard>
   );
 };
 
 /* ===============================================================
-   6. ABOUT SECTION
+   PROJECT CARD COMPONENT
 ================================================================ */
-
-const AboutSection = () => (
-  <AnimatedSection
-    id="about"
-    className="py-20 px-6 bg-slate-900/50 backdrop-blur-sm"
-  >
-    <div className="max-w-4xl mx-auto">
-      <h2 className="text-5xl md:text-6xl font-mono font-bold mb-8 text-cyan-400">
-        About
-      </h2>
-      <div className="bg-slate-800/50 rounded-xl p-8 border border-cyan-500/20">
-        <p className="text-lg leading-relaxed text-gray-300 font-sans">
-          I'm a Math/CS double major at WPI who bridges the gap between abstract theory and practical application. I don't just learn concepts; I engineer solutions—from building full-stack web apps to developing modular algorithmic trading strategies. I'm seeking a Summer 2026 internship where I can apply my skills in systems programming, data analysis, and software engineering to tackle real-world challenges.
-        </p>
-      </div>
-    </div>
-  </AnimatedSection>
-);
-
-/* ===============================================================
-   7. PROJECTS SECTION
-================================================================ */
-
 const ProjectCard = ({
   title,
   description,
-  tags,
+  techTags,
   primaryLink,
   primaryLabel,
   secondaryLink,
-  secondaryLabel,
   featured = false,
-}) => (
-  <div className="bg-slate-800/50 rounded-xl p-6 border border-cyan-500/20 hover:border-cyan-500/40 transition-all">
-    <div className="flex items-start justify-between mb-4">
-      <h3 className="text-2xl font-mono font-bold text-cyan-400">{title}</h3>
-      {primaryLink && (
-        <a
-          href={primaryLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-cyan-400 hover:text-cyan-300 transition-colors"
-          aria-label={primaryLabel}
-        >
-          <ArrowUpRight size={20} />
-        </a>
-      )}
-    </div>
-    <p className="text-gray-300 mb-4 leading-relaxed font-sans">{description}</p>
-    <div className="flex flex-wrap gap-2 mb-4">
-      {tags.map((tag) => (
-        <span
-          key={tag}
-          className="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm font-mono border border-cyan-500/30"
-        >
-          {tag}
-        </span>
-      ))}
-    </div>
-    <div className="flex gap-4 mt-4">
-      {primaryLink && (
-        <a
-          href={primaryLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold rounded-lg transition-all text-sm"
-        >
-          {primaryLabel}
-        </a>
-      )}
-      {primaryLabel && !primaryLink && (
-        <button
-          disabled
-          className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-gray-400 font-semibold rounded-lg text-sm cursor-not-allowed"
-        >
-          {primaryLabel}
-        </button>
-      )}
-      {secondaryLink && (
-        <a
-          href={secondaryLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 border border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 font-semibold rounded-lg transition-all text-sm"
-        >
-          <Github size={16} />
-          {secondaryLabel}
-        </a>
-      )}
-    </div>
-  </div>
-);
-
-const ProjectsSection = () => (
-  <AnimatedSection id="projects" className="py-20 px-6 bg-slate-950">
-    <div className="max-w-7xl mx-auto">
-      <h2 className="text-5xl md:text-6xl font-mono font-bold mb-12 text-cyan-400">
-        Projects
-      </h2>
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="md:col-span-2">
-          <ProjectCard
-            title="Interactive Portfolio Optimization Dashboard"
-            description="Developed a web-based financial modeling tool that constructs optimal investment portfolios using Modern Portfolio Theory (MPT). Engineered a reactive frontend to visualize the Efficient Frontier and calculate risk-adjusted returns (Sharpe Ratio) based on real-time market data. Implemented complex mathematical optimization algorithms directly in the application layer."
-            tags={["React", "Modern Portfolio Theory", "Financial Modeling", "Data Visualization"]}
-            primaryLink="https://portfolio-optimization-app.vercel.app/"
-            primaryLabel="Launch Live App"
-            secondaryLink="https://github.com/bwang257/portfolio-optimization-app"
-            secondaryLabel="View Source"
-            featured={true}
-          />
+  delay = 0,
+}) => {
+  return (
+    <BentoCard span={featured ? "col-span-2" : "col-span-1"} delay={delay}>
+      <div className="h-full flex flex-col">
+        <div className="flex items-start justify-between mb-4">
+          <h3 className="text-2xl font-bold text-white">{title}</h3>
+          {primaryLink && (
+            <motion.a
+              href={primaryLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <ExternalLink size={20} />
+            </motion.a>
+          )}
         </div>
-        <ProjectCard
-          title="Full-Stack Productivity Platform"
-          description="Architected a full-stack application to gamify the internship application process. Led a 4-person team using Agile/Scrum methodologies. Developed a responsive React frontend with a Flask backend, integrating a PostgreSQL database on AWS RDS for robust data management and implementing secure user authentication."
-          tags={["React", "Flask", "PostgreSQL", "AWS RDS", "Agile/Scrum"]}
-          primaryLink={null}
-          primaryLabel="View Case Study"
-        />
-        <ProjectCard
-          title="Modular Quant Trading Engine"
-          description="Engineered a modular trading system in Python on QuantConnect. Implemented and backtested multiple quantitative strategies, including statistical arbitrage and mean-reversion, against 5 years of historical tick data. Designed the system for extensibility to allow rapid testing of new alpha signals."
-          tags={["Python", "QuantConnect", "Statistical Arbitrage", "Backtesting"]}
-          secondaryLink="https://github.com/bwang257/IQP-2524-Stock-Market-Simulation"
-          secondaryLabel="View on GitHub"
-        />
+        <p className="text-gray-400 mb-6 leading-relaxed flex-grow">{description}</p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {techTags.map((tag) => (
+            <span
+              key={tag}
+              className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-gray-300 font-mono"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-3 mt-auto">
+          {primaryLink && (
+            <a
+              href={primaryLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-gradient-electric text-white rounded-lg font-medium hover:shadow-lg hover:shadow-blue-500/50 transition-all text-sm flex items-center gap-2"
+            >
+              {primaryLabel || "Launch"}
+              <ArrowUpRight size={14} />
+            </a>
+          )}
+          {secondaryLink && (
+            <a
+              href={secondaryLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 border border-white/20 text-gray-300 rounded-lg font-medium hover:bg-white/10 transition-all text-sm flex items-center gap-2"
+            >
+              <Github size={14} />
+              Code
+            </a>
+          )}
+        </div>
       </div>
-    </div>
-  </AnimatedSection>
-);
+    </BentoCard>
+  );
+};
 
 /* ===============================================================
-   8. SKILLS SECTION
+   PROJECTS SECTION
 ================================================================ */
-
-const SkillsMatrix = () => {
-  const skillCategories = [
+const ProjectsSection = () => {
+  const projects = [
     {
-      title: "Languages",
-      icon: <Code size={24} className="text-cyan-400" />,
-      skills: [
-        { name: "Python", icon: <Code size={20} /> },
-        { name: "C++", icon: <Cpu size={20} /> },
-        { name: "JavaScript", icon: <Code size={20} /> },
-        { name: "SQL", icon: <Database size={20} /> },
-      ],
+      title: "Portfolio Optimization Engine",
+      description: "Real-time mathematical modeling and data visualization. Constructs optimal investment portfolios using Modern Portfolio Theory with interactive Efficient Frontier visualization.",
+      techTags: ["React", "Math", "FinTech", "Data Viz"],
+      primaryLink: "https://portfolio-optimization-app.vercel.app/",
+      primaryLabel: "Launch App",
+      secondaryLink: "https://github.com/bwang257/portfolio-optimization-app",
+      featured: true,
     },
     {
-      title: "Frontend & Frameworks",
-      icon: <FileCode size={24} className="text-cyan-400" />,
-      skills: [
-        { name: "React", icon: <FileCode size={20} /> },
-        { name: "Tailwind CSS", icon: <Zap size={20} /> },
-        { name: "HTML/CSS", icon: <Code size={20} /> },
-      ],
+      title: "Gamified Productivity Platform",
+      description: "Full-stack Scrum/Agile workflow solution. Led 4-person team building a React frontend with Flask backend, PostgreSQL on AWS RDS.",
+      techTags: ["AWS", "PostgreSQL", "React", "Flask"],
+      featured: false,
     },
     {
-      title: "Backend & Cloud",
-      icon: <Cloud size={24} className="text-cyan-400" />,
-      skills: [
-        { name: "Flask", icon: <FlaskConical size={20} /> },
-        { name: "Node.js", icon: <Server size={20} /> },
-        { name: "AWS", icon: <Cloud size={20} /> },
-        { name: "PostgreSQL", icon: <Database size={20} /> },
-      ],
-    },
-    {
-      title: "Tools & Methods",
-      icon: <Terminal size={24} className="text-cyan-400" />,
-      skills: [
-        { name: "Git", icon: <GitBranch size={20} /> },
-        { name: "Scrum/Agile", icon: <BarChart3 size={20} /> },
-        { name: "Linux", icon: <Terminal size={20} /> },
-      ],
+      title: "Algorithmic Logic Core",
+      description: "Modular Python architecture for automated decision making. Backtested quantitative strategies including statistical arbitrage on 5 years of historical data.",
+      techTags: ["Python", "QuantConnect", "Backtesting"],
+      secondaryLink: "https://github.com/bwang257/IQP-2524-Stock-Market-Simulation",
+      featured: false,
     },
   ];
 
   return (
-    <AnimatedSection id="skills" className="py-20 px-6 bg-slate-900/50">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-5xl md:text-6xl font-mono font-bold mb-12 text-cyan-400">
-          Technical Skills
-        </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {skillCategories.map((category, idx) => (
-            <div
-              key={idx}
-              className="bg-slate-800/50 rounded-xl p-6 border border-cyan-500/20 hover:border-cyan-500/40 transition-all"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                {category.icon}
-                <h3 className="text-xl font-mono font-semibold text-cyan-400">
-                  {category.title}
-                </h3>
-              </div>
-              <ul className="space-y-3">
-                {category.skills.map((skill, skillIdx) => (
-                  <li
-                    key={skillIdx}
-                    className="flex items-center gap-3 text-gray-300 font-sans"
-                  >
-                    <span className="text-cyan-400">{skill.icon}</span>
-                    <span>{skill.name}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+    <div className="space-y-6">
+      <motion.h2
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-4xl font-bold text-white mb-8"
+      >
+        Deployed Modules
+      </motion.h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {projects.map((project, idx) => (
+          <ProjectCard key={idx} {...project} delay={0.2 + idx * 0.1} />
+        ))}
       </div>
-    </AnimatedSection>
+    </div>
   );
 };
 
 /* ===============================================================
-   9. CONTACT SECTION
+   CONTACT SECTION
 ================================================================ */
-
-const ContactSection = () => (
-  <AnimatedSection id="contact" className="py-20 px-6 bg-slate-950">
-    <div className="max-w-4xl mx-auto text-center">
-      <h2 className="text-5xl md:text-6xl font-mono font-bold mb-6 text-cyan-400">
-        Get in Touch
-      </h2>
-      <p className="text-lg text-gray-300 mb-8 font-sans max-w-2xl mx-auto">
-        I'm always open to discussing new opportunities, interesting projects, or just connecting with fellow engineers and mathematicians.
-      </p>
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-        <a
-          href="mailto:brian.wang372@gmail.com"
-          className="flex items-center gap-3 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold rounded-lg transition-all hover:scale-105"
-        >
-          <Mail size={20} />
-          <span>Email Me</span>
-        </a>
-        <a
-          href="https://linkedin.com/in/brian372"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 px-6 py-3 border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 font-semibold rounded-lg transition-all hover:scale-105"
-        >
-          <Linkedin size={20} />
-          <span>LinkedIn</span>
-        </a>
-        <a
-          href="https://github.com/bwang257"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 px-6 py-3 border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 font-semibold rounded-lg transition-all hover:scale-105"
-        >
-          <Github size={20} />
-          <span>GitHub</span>
-        </a>
+const ContactSection = () => {
+  return (
+    <BentoCard span="col-span-2" delay={0.4}>
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-white mb-4">Get in Touch</h2>
+        <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+          Always open to discussing new opportunities, interesting projects, or connecting with fellow engineers.
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <motion.a
+            href="mailto:brian.wang372@gmail.com"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-6 py-3 bg-gradient-electric text-white rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/50 transition-all flex items-center gap-2"
+          >
+            <Mail size={18} />
+            Email Me
+          </motion.a>
+          <motion.a
+            href="https://linkedin.com/in/brian372"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-6 py-3 border border-white/20 text-gray-300 rounded-xl font-medium hover:bg-white/10 transition-all flex items-center gap-2"
+          >
+            <Linkedin size={18} />
+            LinkedIn
+          </motion.a>
+          <motion.a
+            href="https://github.com/bwang257"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-6 py-3 border border-white/20 text-gray-300 rounded-xl font-medium hover:bg-white/10 transition-all flex items-center gap-2"
+          >
+            <Github size={18} />
+            GitHub
+          </motion.a>
+        </div>
       </div>
-    </div>
-  </AnimatedSection>
-);
+    </BentoCard>
+  );
+};
 
 /* ===============================================================
-   10. FOOTER
+   MAIN APP COMPONENT
 ================================================================ */
-
-const Footer = () => (
-  <footer className="py-8 text-center text-gray-500 border-t border-cyan-500/20 bg-slate-950">
-    <p className="font-mono text-sm">
-      Brian Wang {new Date().getFullYear()}. Built with React & Tailwind CSS.
-    </p>
-  </footer>
-);
-
-/* ===============================================================
-   11. MAIN APP
-================================================================ */
-
 export default function App() {
-  const scrollY = useScrollPosition();
+  const [activeSection, setActiveSection] = useState("profile");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 font-sans antialiased">
-      <GlobalStyles />
-      <Navigation scrollY={scrollY} />
-      <main>
-        <HeroSection />
-        <AboutSection />
-        <ProjectsSection />
-        <SkillsMatrix />
-        <ContactSection />
+    <div className="min-h-screen bg-deep-space text-white font-sans antialiased overflow-x-hidden">
+      <MeshGradient />
+      <Sidebar 
+        activeSection={activeSection} 
+        setActiveSection={setActiveSection}
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+      />
+      <TechDock />
+      
+      <main className="md:ml-20 px-4 md:px-6 py-8 pb-24 md:pb-8">
+        <div className="max-w-7xl mx-auto">
+          <AnimatePresence mode="wait">
+            {activeSection === "profile" && (
+              <motion.div
+                key="profile"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                <ProfileWidget />
+                <BentoCard span="col-span-1" delay={0.2}>
+                  <div className="h-full flex flex-col justify-center">
+                    <div className="text-4xl font-bold mb-2 bg-gradient-electric bg-clip-text text-transparent">
+                      WPI
+                    </div>
+                    <div className="text-gray-400 text-sm">Math & CS</div>
+                    <div className="text-gray-500 text-xs mt-2">Double Major</div>
+                  </div>
+                </BentoCard>
+                <BentoCard span="col-span-1" delay={0.25}>
+                  <div className="h-full flex flex-col justify-center">
+                    <div className="text-4xl font-bold mb-2 bg-gradient-electric bg-clip-text text-transparent">
+                      Summer 2026
+                    </div>
+                    <div className="text-gray-400 text-sm">Seeking Internship</div>
+                    <div className="text-gray-500 text-xs mt-2">Engineering & Data</div>
+                  </div>
+                </BentoCard>
+              </motion.div>
+            )}
+
+            {activeSection === "projects" && (
+              <motion.div
+                key="projects"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ProjectsSection />
+              </motion.div>
+            )}
+
+            {activeSection === "contact" && (
+              <motion.div
+                key="contact"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              >
+                <ContactSection />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </main>
-      <Footer />
     </div>
   );
 }
