@@ -148,6 +148,14 @@ const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize,
    WINDOW 1: USER PROFILE
 ================================================================ */
 const UserProfileWindow = () => {
+  const [hoveredPort, setHoveredPort] = useState(null);
+
+  const ports = [
+    { port: "22/TCP", service: "GITHUB", url: "https://github.com/bwang257", id: "github" },
+    { port: "443/TCP", service: "LINKEDIN", url: "https://linkedin.com/in/brian372", id: "linkedin" },
+    { port: "25/SMTP", service: "EMAIL", url: "mailto:brian.wang372@gmail.com", id: "email" },
+  ];
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -173,34 +181,40 @@ const UserProfileWindow = () => {
             <span className="text-[#e5e5e5]/50 font-bold"># STATUS</span>
             <p className="mt-1 text-[#e5e5e5] leading-relaxed">
               Currently running on Celsius and looking for a Summer 2026 internship.
-            </p>
-          </div>
-        </div>
+        </p>
+      </div>
+    </div>
       </div>
       
       <div className="pt-4 border-t border-white/10">
-        <p className="text-xs font-mono text-[#e5e5e5]/60 mb-2 uppercase tracking-wider">CONNECTIONS:</p>
-        <div className="flex gap-3 mb-3">
-          <a href="https://github.com/bwang257" target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#ff3333] transition-colors">
-            <Github size={18} />
-          </a>
-          <a href="https://linkedin.com/in/brian372" target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#ff3333] transition-colors">
-            <Linkedin size={18} />
-          </a>
-          <a href="mailto:brian.wang372@gmail.com" className="text-[#e5e5e5]/60 hover:text-[#ff3333] transition-colors">
-            <Mail size={18} />
-          </a>
-        </div>
-        <a 
+        <p className="text-xs font-mono text-[#e5e5e5]/60 mb-3 uppercase tracking-wider">OPEN PORTS:</p>
+        <div className="space-y-2 font-mono text-sm">
+          {ports.map((port) => (
+            <motion.a
+              key={port.id}
+              href={port.url}
+              target={port.id === "email" ? undefined : "_blank"}
+              rel={port.id === "email" ? undefined : "noopener noreferrer"}
+              className="block text-[#e5e5e5]/60 hover:text-[#00ff00] transition-colors"
+              onHoverStart={() => setHoveredPort(port.id)}
+              onHoverEnd={() => setHoveredPort(null)}
+              whileHover={{ x: 2 }}
+            >
+              {hoveredPort === port.id && <span className="text-[#00ff00]">_</span>}
+              {port.port} :: {port.service}
+            </motion.a>
+      ))}
+    </div>
+        <a
           href="/resume.pdf" 
-          target="_blank" 
+          target="_blank"
           rel="noopener noreferrer"
-          className="text-xs font-mono text-[#e5e5e5]/60 hover:text-[#00ff00] transition-colors inline-block"
+          className="text-xs font-mono text-[#e5e5e5]/60 hover:text-[#00ff00] transition-colors inline-block mt-4"
         >
           &gt; [DOWNLOAD_RESUME]
         </a>
-      </div>
     </div>
+  </div>
 );
 };
 
@@ -208,12 +222,25 @@ const UserProfileWindow = () => {
    WINDOW 2: SYSTEM MONITOR
 ================================================================ */
 const SystemMonitorWindow = () => {
-  const [hoveredStatus, setHoveredStatus] = useState(false);
+  const systemMetrics = {
+    engineeringActivity: "HIGH",
+    commits30d: "70+",
+    codingHours7d: "~30",
+    activeProjects: "Portfolio Engine • XPply",
+    primaryStack: "Python • C++"
+  };
+
+  const activeProcesses = [
+    { pid: 4312, name: "portfolio_engine_dev", status: "RUNNING" },
+    { pid: 2241, name: "xp-ply_frontend", status: "RUNNING" },
+    { pid: 5530, name: "os_course_practice", status: "SLEEPING" },
+    { pid: 8722, name: "quant_research", status: "IDLE" }
+  ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 flex flex-col h-full">
         <div>
-          <p className="text-xs font-mono text-[#e5e5e5]/60 mb-3">THE HORIZON:</p>
+          <p className="text-xs font-mono text-[#e5e5e5]/60 mb-3 uppercase tracking-wider">THE HORIZON:</p>
           <ul className="space-y-2 text-sm text-[#e5e5e5]/80">
             <li className="flex items-start gap-2">
               <span className="text-[#ff3333]">&gt;</span>
@@ -229,53 +256,63 @@ const SystemMonitorWindow = () => {
             </li>
           </ul>
         </div>
-        <div>
-          <p className="text-xs font-mono text-[#e5e5e5]/60 mb-3">RESOURCE USAGE:</p>
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-[#e5e5e5]/80">Coding</span>
-                <span className="text-[#e5e5e5]/60">{SYSTEM_DATA.timeDistribution.coding}%</span>
+        <div className="flex-1 flex flex-col min-h-0 space-y-6">
+          {/* SYSTEM METRICS */}
+          <div>
+            <div className="mb-2">
+              <p className="text-sm font-mono text-[#d19a66] uppercase tracking-wider">SYSTEM METRICS</p>
+              <div className="h-px bg-[#d19a66] mt-1" />
+            </div>
+            <div className="font-mono text-sm space-y-1 text-[#e5e5e5]">
+              <div>
+                <span className="text-[#e5e5e5]">Engineering Activity:</span>
+                {' '}
+                <span>{systemMetrics.engineeringActivity}</span>
               </div>
-              <div className="h-2 bg-white/5 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${SYSTEM_DATA.timeDistribution.coding}%` }}
-                  transition={{ duration: 1, delay: 0.2 }}
-                  className="h-full bg-[#ff3333]"
-                />
+              <div>
+                <span className="text-[#e5e5e5]">Commits (30d):</span>
+                {' '}
+                <span>{systemMetrics.commits30d}</span>
               </div>
-    </div>
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-[#e5e5e5]/80">Mathematics</span>
-                <span className="text-[#e5e5e5]/60">{SYSTEM_DATA.timeDistribution.mathematics}%</span>
-    </div>
-              <div className="h-2 bg-white/5 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${SYSTEM_DATA.timeDistribution.mathematics}%` }}
-                  transition={{ duration: 1, delay: 0.4 }}
-                  className="h-full bg-[#ff3333]"
-                />
-    </div>
-  </div>
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-[#e5e5e5]/80">Misc</span>
-                <span className="text-[#e5e5e5]/60">{SYSTEM_DATA.timeDistribution.misc}%</span>
+              <div>
+                <span className="text-[#e5e5e5]">Coding Hours (7d):</span>
+                {' '}
+                <span>{systemMetrics.codingHours7d}</span>
               </div>
-              <div className="h-2 bg-white/5 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${SYSTEM_DATA.timeDistribution.misc}%` }}
-                  transition={{ duration: 1, delay: 0.6 }}
-                  className="h-full bg-[#ff3333]"
-                />
+              <div>
+                <span className="text-[#e5e5e5]">Active Projects:</span>
+                {' '}
+                <span>{systemMetrics.activeProjects}</span>
+              </div>
+              <div>
+                <span className="text-[#e5e5e5]">Primary Stack:</span>
+                {' '}
+                <span>{systemMetrics.primaryStack}</span>
               </div>
             </div>
           </div>
-        </div>
+
+          {/* ACTIVE PROCESSES */}
+          <div>
+            <div className="mb-2">
+              <p className="text-sm font-mono text-[#d19a66] uppercase tracking-wider">ACTIVE PROCESSES</p>
+              <div className="h-px bg-[#d19a66] mt-1" />
+            </div>
+            <div className="font-mono text-sm space-y-1 text-[#e5e5e5]">
+              {activeProcesses.map((process) => (
+                <div key={process.pid}>
+                  <span>PID {process.pid}</span>
+                  {' '}
+                  <span>{process.name}</span>
+                  {' '}
+                  <span className={process.status === 'RUNNING' ? 'text-[#98c379]' : 'text-[#9099a1]'}>
+                    {process.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+      </div>
     </div>
 );
 };
