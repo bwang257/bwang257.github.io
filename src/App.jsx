@@ -417,7 +417,7 @@ const InstalledPackagesWindow = () => {
   
     "~/lib/frameworks/": [
       { name: "React", use: "DAILY", context: "PID-002 (BrianOS)" },
-      { name: "Flask", use: "DailyY", context: "Python REST APIs" },
+      { name: "Flask", use: "DAILY", context: "Python REST APIs" },
       { name: "Node.js", use: "WEEKLY", context: "Backend Runtime" },
     { name: "scikit-learn", use: "OCCASIONAL", context: "ML Projects" },
       { name: "PyTorch", use: "OCCASIONAL", context: "DL Projects" }
