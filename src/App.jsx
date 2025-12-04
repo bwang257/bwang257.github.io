@@ -405,37 +405,37 @@ const RunningServicesWindow = () => {
 const InstalledPackagesWindow = () => {
   const skillCategories = {
     "~/lib/languages/": [
-      { name: "Python", ver: "v3.5", desc: "ML, Data Analysis, Backend" },
-      { name: "Java", ver: "v2.0", desc: "Object-Oriented Development" },
-      { name: "C/C++", ver: "v2.0", desc: "Systems Programming" },
-      { name: "JavaScript", ver: "v2.5", desc: "Frontend Development" },
-      { name: "TypeScript", ver: "v1.5", desc: "Type-Safe Frontend" },
-      { name: "SQL", ver: "v2.5", desc: "Relational Databases" },
-      { name: "MATLAB", ver: "v1.0", desc: "Numerical Computing" },
-      { name: "R", ver: "v1.0", desc: "Statistical Analysis" }
+      { name: "Python", use: "DAILY", context: "PID-001 (Algo Engine)" },
+      { name: "Java", use: "WEEKLY", context: "Object-Oriented Development" },
+      { name: "C/C++", use: "WEEKLY", context: "Systems Coursework" },
+      { name: "JavaScript", use: "DAILY", context: "PID-002 (BrianOS)" },
+      { name: "TypeScript", use: "DAILY", context: "PID-002 (BrianOS)" },
+      { name: "SQL", use: "WEEKLY", context: "PostgreSQL DB" },
+      { name: "MATLAB", use: "OCCASIONAL", context: "Numerical Computing" },
+      { name: "R", use: "OCCASIONAL", context: "Statistical Analysis" }
     ],
   
     "~/lib/frameworks/": [
-      { name: "React", ver: "v2.5", desc: "UI Framework" },
-      { name: "Flask", ver: "v2.0", desc: "Python REST APIs" },
-      { name: "Node.js", ver: "v2.0", desc: "Backend Runtime" },
-      { name: "scikit-learn", ver: "v2.0", desc: "Machine Learning" },
-      { name: "PyTorch", ver: "v1.5", desc: "Deep Learning" }
+      { name: "React", use: "DAILY", context: "PID-002 (BrianOS)" },
+      { name: "Flask", use: "DailyY", context: "Python REST APIs" },
+      { name: "Node.js", use: "WEEKLY", context: "Backend Runtime" },
+    { name: "scikit-learn", use: "OCCASIONAL", context: "ML Projects" },
+      { name: "PyTorch", use: "OCCASIONAL", context: "DL Projects" }
     ],
   
     "~/lib/tools/": [
-      { name: "AWS", ver: "v1.5", desc: "Cloud Deployment" },
-      { name: "Docker", ver: "v2.0", desc: "Containerization" },
-      { name: "Git", ver: "v3.0", desc: "Version Control" },
-      { name: "GitHub / GitLab", ver: "v2.5", desc: "DevOps & Collaboration" },
-      { name: "PostgreSQL", ver: "v2.0", desc: "Relational DB" },
-      { name: "MySQL", ver: "v1.5", desc: "Relational DB" },
-      { name: "Jupyter", ver: "v2.0", desc: "Data Science Environment" },
-      { name: "Figma", ver: "v1.0", desc: "UI/UX Design" },
-      { name: "NumPy", ver: "v2.0", desc: "Numerical Computing" },
-      { name: "Pandas", ver: "v2.0", desc: "Data Manipulation" },
-      { name: "Matplotlib", ver: "v1.5", desc: "Data Visualization" },
-      { name: "Power BI", ver: "v1.0", desc: "Data Analytics" }
+      { name: "AWS", use: "OCCASIONAL", context: "Cloud Deployment" },
+      { name: "Docker", use: "OCCASIONAL", context: "Containerization" },
+      { name: "Git", use: "DAILY", context: "Version Control" },
+      { name: "GitHub / GitLab", use: "DAILY", context: "DevOps & Collaboration" },
+      { name: "PostgreSQL", use: "WEEKLY", context: "PostgreSQL DB" },
+      { name: "MySQL", use: "OCCASIONAL", context: "Relational DB" },
+      { name: "Jupyter", use: "WEEKLY", context: "Data Science Environment" },
+      { name: "Figma", use: "OCCASIONAL", context: "UI/UX Design" },
+      { name: "NumPy", use: "OCCASIONAL", context: "Data Analysis" },
+      { name: "Pandas", use: "OCCASIONAL", context: "Data Manipulation" },
+      { name: "Matplotlib", use: "WEEKLY", context: "Data Visualization" },
+      { name: "Power BI", use: "OCCASIONAL", context: "Data Analytics" }
     ]
   };  
 
@@ -446,18 +446,25 @@ const InstalledPackagesWindow = () => {
           <div key={category}>
             <div className="text-[#e5e5e5]/40 mb-2">{category}</div>
             <div className="space-y-1">
-              <div className="grid grid-cols-[1fr_80px_1fr] gap-4 text-[#e5e5e5]/60 mb-1 uppercase tracking-wider">
+              <div className="grid grid-cols-[1fr_100px_1fr] gap-4 text-[#e5e5e5]/60 mb-1 uppercase tracking-wider">
                 <div>PKG</div>
-                <div>VER</div>
-                <div>DESC</div>
+                <div>USE</div>
+                <div>CONTEXT</div>
               </div>
-              {skills.map((skill, idx) => (
-                <div key={idx} className="grid grid-cols-[1fr_80px_1fr] gap-4 hover:text-[#e5e5e5] transition-colors">
-                  <div className="text-[#e5e5e5]/80">{skill.name}</div>
-                  <div className="text-[#e5e5e5]/60">{skill.ver}</div>
-                  <div className="text-[#e5e5e5]/60">{skill.desc}</div>
-                </div>
-              ))}
+              {skills.map((skill, idx) => {
+                const useColorClass = 
+                  skill.use === "DAILY" ? "text-green-400" :
+                  skill.use === "WEEKLY" ? "text-yellow-400" :
+                  "text-gray-500";
+                
+                return (
+                  <div key={idx} className="grid grid-cols-[1fr_100px_1fr] gap-4 hover:text-[#e5e5e5] transition-colors">
+                    <div className="text-[#e5e5e5]/80">{skill.name}</div>
+                    <div className={`${useColorClass} font-semibold`}>{skill.use}</div>
+                    <div className="text-[#e5e5e5]/60">{skill.context}</div>
+                  </div>
+                );
+              })}
             </div>
             </div>
           ))}
