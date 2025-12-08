@@ -145,6 +145,61 @@ const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize,
 };
 
 /* ===============================================================
+   RETRO PIXELATED PROFILE IMAGE
+================================================================ */
+const RetroProfileImage = () => {
+  const [imageSrc, setImageSrc] = useState(null);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    // Try to load the profile image - supports multiple formats
+    // Place your profile picture in the /public folder as profile.jpg, profile.png, or profile.jpeg
+    const imageSources = ["/profile.jpg", "/profile.png", "/profile.jpeg", "/profile.JPG", "/profile.PNG"];
+    let currentIndex = 0;
+    
+    const tryNextImage = () => {
+      if (currentIndex >= imageSources.length) {
+        setIsChecking(false);
+        return; // No image found, component won't render
+      }
+      
+      const img = new Image();
+      img.src = imageSources[currentIndex];
+      
+      img.onload = () => {
+        setImageSrc(imageSources[currentIndex]);
+        setIsChecking(false);
+      };
+      
+      img.onerror = () => {
+        currentIndex++;
+        tryNextImage();
+      };
+    };
+    
+    tryNextImage();
+  }, []);
+
+  // Don't render anything if no image is found or still checking
+  if (!imageSrc || isChecking) {
+    return null;
+  }
+
+  return (
+    <div className="mb-2 relative group inline-block">
+      <img 
+        src={imageSrc}
+        alt="Brian Wang"
+        className="w-32 h-32 object-cover grayscale contrast-125 border-2 border-green-900" 
+        style={{ imageRendering: 'pixelated' }}
+      />
+      {/* Green overlay that vanishes on hover */}
+      <div className="absolute inset-0 bg-green-900/30 mix-blend-overlay group-hover:bg-transparent transition-all duration-300"></div>
+    </div>
+  );
+};
+
+/* ===============================================================
    WINDOW 1: USER PROFILE
 ================================================================ */
 const UserProfileWindow = () => {
@@ -159,6 +214,7 @@ const UserProfileWindow = () => {
   return (
     <div className="p-6 space-y-6">
       <div>
+        <RetroProfileImage />
         <h2 className="text-2xl font-bold text-[#e5e5e5] mb-4 tracking-tight">Brian Wang</h2>
         
         {/* README-style Bio Sections */}
@@ -222,94 +278,77 @@ const UserProfileWindow = () => {
    WINDOW 2: SYSTEM MONITOR
 ================================================================ */
 const SystemMonitorWindow = () => {
-  const systemMetrics = {
-    engineeringActivity: "HIGH",
-    commits30d: "70+",
-    codingHours7d: "~30",
-    activeProjects: "Portfolio Engine • XPply",
-    primaryStack: "Python • C++"
-  };
-
   const activeProcesses = [
-    { pid: 4312, name: "portfolio_engine_dev", status: "RUNNING" },
-    { pid: 2241, name: "xp-ply_frontend", status: "RUNNING" },
-    { pid: 5530, name: "os_course_practice", status: "SLEEPING" },
-    { pid: 8722, name: "quant_research", status: "IDLE" }
+    { pid: 4312, name: "portfolio_optimization_app_dev", status: "RUNNING" },
+    { pid: 2241, name: "systems_programming_study", status: "RUNNING" },
+    { pid: 5530, name: "os_coursework", status: "RUNNING" }
   ];
 
   return (
     <div className="p-6 space-y-6 flex flex-col h-full">
-        <div>
-          <p className="text-xs font-mono text-[#e5e5e5]/60 mb-3 uppercase tracking-wider">THE HORIZON:</p>
-          <ul className="space-y-2 text-sm text-[#e5e5e5]/80">
-            <li className="flex items-start gap-2">
-              <span className="text-[#ff3333]">&gt;</span>
-              <span>Building: {SYSTEM_DATA.horizon.building}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#ff3333]">&gt;</span>
-              <span>Learning: {SYSTEM_DATA.horizon.learning}</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[#ff3333]">&gt;</span>
-              <span>Goal: {SYSTEM_DATA.horizon.goal}</span>
-            </li>
-          </ul>
-        </div>
         <div className="flex-1 flex flex-col min-h-0 space-y-6">
-          {/* SYSTEM METRICS */}
-          <div>
-            <div className="mb-2">
-              <p className="text-sm font-mono text-[#d19a66] uppercase tracking-wider">SYSTEM METRICS</p>
-              <div className="h-px bg-[#d19a66] mt-1" />
-            </div>
-            <div className="font-mono text-sm space-y-1 text-[#e5e5e5]">
-              <div>
-                <span className="text-[#e5e5e5]">Engineering Activity:</span>
-                {' '}
-                <span>{systemMetrics.engineeringActivity}</span>
-              </div>
-              <div>
-                <span className="text-[#e5e5e5]">Commits (30d):</span>
-                {' '}
-                <span>{systemMetrics.commits30d}</span>
-              </div>
-              <div>
-                <span className="text-[#e5e5e5]">Coding Hours (7d):</span>
-                {' '}
-                <span>{systemMetrics.codingHours7d}</span>
-              </div>
-              <div>
-                <span className="text-[#e5e5e5]">Active Projects:</span>
-                {' '}
-                <span>{systemMetrics.activeProjects}</span>
-              </div>
-              <div>
-                <span className="text-[#e5e5e5]">Primary Stack:</span>
-                {' '}
-                <span>{systemMetrics.primaryStack}</span>
-              </div>
-            </div>
-          </div>
-
           {/* ACTIVE PROCESSES */}
           <div>
-            <div className="mb-2">
+            <div className="mb-3">
               <p className="text-sm font-mono text-[#d19a66] uppercase tracking-wider">ACTIVE PROCESSES</p>
               <div className="h-px bg-[#d19a66] mt-1" />
             </div>
-            <div className="font-mono text-sm space-y-1 text-[#e5e5e5]">
+            <div className="font-mono text-sm space-y-2 text-[#e5e5e5]">
               {activeProcesses.map((process) => (
                 <div key={process.pid}>
-                  <span>PID {process.pid}</span>
+                  <span className="text-[#e5e5e5]/60">PID {process.pid}</span>
                   {' '}
-                  <span>{process.name}</span>
+                  <span className="text-[#e5e5e5]/80">{process.name}</span>
                   {' '}
                   <span className={process.status === 'RUNNING' ? 'text-[#98c379]' : 'text-[#9099a1]'}>
                     {process.status}
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+          
+          {/* CAREER GOALS */}
+          <div>
+            <div className="mb-3">
+              <p className="text-sm font-mono text-[#d19a66] uppercase tracking-wider">CAREER GOALS</p>
+              <div className="h-px bg-[#d19a66] mt-1" />
+            </div>
+            <div className="font-mono text-sm space-y-4 text-[#e5e5e5]">
+              <div>
+                <p className="text-[#e5e5e5]/50 mb-2 uppercase tracking-wider text-xs">Short Term (2025-2026):</p>
+                <ul className="space-y-2 text-[#e5e5e5]/80 pl-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ff3333]">&gt;</span>
+                    <span>Deepen expertise in systems programming—C/C++, memory allocators, concurrency, profiling, and hardware-aware optimization.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ff3333]">&gt;</span>
+                    <span>Explore and apply quantitative finance through portfolio optimization engines and algorithmic trading systems.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ff3333]">&gt;</span>
+                    <span>Build a performance-driven engineering mindset by pursuing ambitious passion projects.</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-[#e5e5e5]/50 mb-2 uppercase tracking-wider text-xs">Long Term (2027+):</p>
+                <ul className="space-y-2 text-[#e5e5e5]/80 pl-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ff3333]">&gt;</span>
+                    <span>Contribute to high-performance trading systems that handle real-time market data at scale</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ff3333]">&gt;</span>
+                    <span>Bridge the gap between theoretical finance (stochastic calculus, optimization) and practical implementation</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ff3333]">&gt;</span>
+                    <span>Lead development of systems that process millions of transactions with sub-millisecond precision</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
       </div>
@@ -446,21 +485,14 @@ const InstalledPackagesWindow = () => {
           <div key={category}>
             <div className="text-[#e5e5e5]/40 mb-2">{category}</div>
             <div className="space-y-1">
-              <div className="grid grid-cols-[1fr_100px_1fr] gap-4 text-[#e5e5e5]/60 mb-1 uppercase tracking-wider">
+              <div className="grid grid-cols-[1fr_1fr] gap-4 text-[#e5e5e5]/60 mb-1 uppercase tracking-wider">
                 <div>PKG</div>
-                <div>USE</div>
                 <div>CONTEXT</div>
               </div>
               {skills.map((skill, idx) => {
-                const useColorClass = 
-                  skill.use === "DAILY" ? "text-green-400" :
-                  skill.use === "WEEKLY" ? "text-yellow-400" :
-                  "text-gray-500";
-                
                 return (
-                  <div key={idx} className="grid grid-cols-[1fr_100px_1fr] gap-4 hover:text-[#e5e5e5] transition-colors">
+                  <div key={idx} className="grid grid-cols-[1fr_1fr] gap-4 hover:text-[#e5e5e5] transition-colors">
                     <div className="text-[#e5e5e5]/80">{skill.name}</div>
-                    <div className={`${useColorClass} font-semibold`}>{skill.use}</div>
                     <div className="text-[#e5e5e5]/60">{skill.context}</div>
                   </div>
                 );
@@ -548,16 +580,18 @@ const Console = () => {
 
     switch (trimmedCmd) {
       case "help":
-        output = `Available commands:\n  help - Show this help message\n  whoami - Display user philosophy\n  stack - List favorite tech stack\n  horizon - Show current goals\n  resume - Download resume (aliases: cv, pdf)\n  clear - Clear console history\n  neofetch - Display system information\n  contact - Show contact information\n  secret-lab - [REDACTED]`;
+        output = `Available commands:\n  help - Show this help message\n  whoami - Display user philosophy\n  stack - List favorite tech stack\n  horizon - Show active processes (aliases: ps, processes)\n  resume - Download resume (aliases: cv, pdf)\n  clear - Clear console history\n  neofetch - Display system information\n  contact - Show contact information\n  secret-lab - [REDACTED]`;
         break;
       case "whoami":
         output = "> I solve problems with code.";
         break;
       case "stack":
-        output = "> Python | | Java | SQL | C++ | AWS | PostgreSQL";
+        output = "> Python | Java | SQL | C++ | AWS | PostgreSQL";
         break;
       case "horizon":
-        output = `> Building: ${SYSTEM_DATA.horizon.building}\n> Learning: ${SYSTEM_DATA.horizon.learning}\n> Goal: ${SYSTEM_DATA.horizon.goal}`;
+      case "ps":
+      case "processes":
+        output = `> Active Processes:\n> PID 4312  portfolio_optimization_engine  RUNNING\n> PID 2241  systems_programming_study      RUNNING\n> PID 5530  os_coursework                  RUNNING\n> PID 8722  quant_finance_research         RUNNING`;
         break;
       case "resume":
       case "cv":
@@ -579,7 +613,7 @@ const Console = () => {
         output = `> Email: brian.wang372@gmail.com\n> LinkedIn: https://linkedin.com/in/brian372\n> GitHub: https://github.com/bwang257`;
         break;
       case "secret-lab":
-        output = "> [ACCESS GRANTED]\n> Under Construction: Quantum Portfolio Optimization\n> Estimated Completion: Q2 2026";
+        output = "> [ACCESS GRANTED]\n> Under Construction: Revised Low-latency Algorithmic Trading System\n> Estimated Completion: Q1 2026";
         break;
       case "":
         return;
