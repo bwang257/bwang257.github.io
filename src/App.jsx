@@ -444,38 +444,38 @@ const RunningServicesWindow = () => {
 const InstalledPackagesWindow = () => {
   const skillCategories = {
     "~/lib/languages/": [
-      { name: "Python", use: "DAILY", context: "PID-001 (Algo Engine)" },
-      { name: "Java", use: "WEEKLY", context: "Object-Oriented Development" },
-      { name: "C/C++", use: "WEEKLY", context: "Systems Coursework" },
-      { name: "JavaScript", use: "DAILY", context: "PID-002 (BrianOS)" },
-      { name: "TypeScript", use: "DAILY", context: "PID-002 (BrianOS)" },
-      { name: "SQL", use: "WEEKLY", context: "PostgreSQL DB" },
-      { name: "MATLAB", use: "OCCASIONAL", context: "Numerical Computing" },
-      { name: "R", use: "OCCASIONAL", context: "Statistical Analysis" }
-    ],
+      { name: "Python", context: "Data analysis and backend work" },
+      { name: "Java", context: "OOP and algorithms" },
+      { name: "C/C++", context: "Systems programming" },
+      { name: "JavaScript", context: "Interactive web features" },
+      { name: "TypeScript", context: "Scalable frontends" },
+      { name: "SQL", context: "Relational databases" },
+      { name: "MATLAB", context: "Numerical computing and modeling" },
+      { name: "R", context: "Statistics and data analysis" }
+    ]
+    ,
   
     "~/lib/frameworks/": [
-      { name: "React", use: "DAILY", context: "PID-002 (BrianOS)" },
-      { name: "Flask", use: "DAILY", context: "Python REST APIs" },
-      { name: "Node.js", use: "WEEKLY", context: "Backend Runtime" },
-    { name: "scikit-learn", use: "OCCASIONAL", context: "ML Projects" },
-      { name: "PyTorch", use: "OCCASIONAL", context: "DL Projects" }
+      { name: "React", context: "Responsive, component-based UIs" },
+      { name: "Flask", context: "Backend APIs and microservices" },
+      { name: "scikit-learn", context: "Machine learning and data modeling" },
+      { name: "PyTorch", context: "Deep learning and neural networks" }
     ],
   
     "~/lib/tools/": [
-      { name: "AWS", use: "OCCASIONAL", context: "Cloud Deployment" },
-      { name: "Docker", use: "OCCASIONAL", context: "Containerization" },
-      { name: "Git", use: "DAILY", context: "Version Control" },
-      { name: "GitHub / GitLab", use: "DAILY", context: "DevOps & Collaboration" },
-      { name: "PostgreSQL", use: "WEEKLY", context: "PostgreSQL DB" },
-      { name: "MySQL", use: "OCCASIONAL", context: "Relational DB" },
-      { name: "Jupyter", use: "WEEKLY", context: "Data Science Environment" },
-      { name: "Figma", use: "OCCASIONAL", context: "UI/UX Design" },
-      { name: "NumPy", use: "OCCASIONAL", context: "Data Analysis" },
-      { name: "Pandas", use: "OCCASIONAL", context: "Data Manipulation" },
-      { name: "Matplotlib", use: "WEEKLY", context: "Data Visualization" },
-      { name: "Power BI", use: "OCCASIONAL", context: "Data Analytics" }
-    ]
+      { name: "AWS", context: "Cloud hosting" },
+      { name: "Docker", context: "Containerizing applications" },
+      { name: "Git", context: "Version control and collaboration" },
+      { name: "GitHub / GitLab", context: "Code hosting and DevOps workflows" },
+      { name: "PostgreSQL", context: "Relational database management" },
+      { name: "MySQL", context: "Relational database systems" },
+      { name: "Jupyter", context: "Interactive notebooks for data work" },
+      { name: "Figma", context: "Interface prototyping" },
+      { name: "NumPy", context: "Fast numerical computing" },
+      { name: "Pandas", context: "Data cleaning and analysis" },
+      { name: "Matplotlib", context: "Charts and visualizations" },
+      { name: "Power BI", context: "Business analytics and dashboards" }
+    ]    
   };  
 
   return (

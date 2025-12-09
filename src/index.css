@@ -150,32 +150,62 @@ button, a, input, textarea, select {
 }
 
 @layer utilities {
-  /* Glitch Effect */
+  /* Glitch Effect - Clean RGB Channel Split */
   .glitch-text {
     position: relative;
-    animation: glitch 0.3s infinite;
+    color: #e5e5e5;
+    animation: glitch-main 2.5s ease-in-out infinite;
   }
 
-  @keyframes glitch {
+  @keyframes glitch-main {
     0%, 100% {
-      clip-path: inset(0 0 0 0);
+      text-shadow: 
+        0.05em 0 0 #00ff00,
+        -0.05em -0.025em 0 #ff00ff,
+        0.025em 0.05em 0 #00ffff;
       transform: translate(0);
     }
-    20% {
-      clip-path: inset(20% 0 60% 0);
-      transform: translate(-2px, 2px);
+    15% {
+      text-shadow: 
+        0.05em 0 0 #00ff00,
+        -0.05em -0.025em 0 #ff00ff,
+        0.025em 0.05em 0 #00ffff;
+      transform: translate(0);
     }
-    40% {
-      clip-path: inset(40% 0 20% 0);
-      transform: translate(2px, -2px);
+    16% {
+      text-shadow: 
+        -0.05em -0.025em 0 #00ff00,
+        0.025em 0.025em 0 #ff00ff,
+        -0.05em -0.05em 0 #00ffff;
+      transform: translate(0.025em, -0.025em);
     }
-    60% {
-      clip-path: inset(60% 0 5% 0);
-      transform: translate(-1px, 1px);
+    17% {
+      text-shadow: 
+        0.025em 0.05em 0 #00ff00,
+        0.05em 0 0 #ff00ff,
+        0 -0.05em 0 #00ffff;
+      transform: translate(-0.025em, 0.025em);
     }
-    80% {
-      clip-path: inset(5% 0 40% 0);
-      transform: translate(1px, -1px);
+    18% {
+      text-shadow: 
+        -0.025em 0 0 #00ff00,
+        -0.025em -0.025em 0 #ff00ff,
+        -0.025em -0.05em 0 #00ffff;
+      transform: translate(0, -0.025em);
+    }
+    19% {
+      text-shadow: 
+        0.05em 0 0 #00ff00,
+        -0.05em -0.025em 0 #ff00ff,
+        0.025em 0.05em 0 #00ffff;
+      transform: translate(0);
+    }
+    20%, 100% {
+      text-shadow: 
+        0.05em 0 0 #00ff00,
+        -0.05em -0.025em 0 #ff00ff,
+        0.025em 0.05em 0 #00ffff;
+      transform: translate(0);
     }
   }
 
