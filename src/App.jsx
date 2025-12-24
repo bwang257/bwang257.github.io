@@ -279,9 +279,9 @@ const UserProfileWindow = () => {
 ================================================================ */
 const SystemMonitorWindow = () => {
   const activeProcesses = [
-    { pid: 4312, name: "portfolio_optimization_app_dev", status: "RUNNING" },
-    { pid: 2241, name: "systems_programming_study", status: "RUNNING" },
-    { pid: 5530, name: "os_coursework", status: "RUNNING" }
+    { pid: 4312, name: "aws_technical_essentials_course", status: "RUNNING" },
+    { pid: 2241, name: "systems_personal_project", status: "RUNNING" },
+    { pid: 5530, name: "wpi_coursework", status: "ON_BREAK" }
   ];
 
   return (
@@ -444,7 +444,7 @@ const RunningServicesWindow = () => {
 const InstalledPackagesWindow = () => {
   const skillCategories = {
     "~/lib/languages/": [
-      { name: "Python", context: "Data analysis and backend work" },
+      { name: "Python", context: "Data analysis + Backend work" },
       { name: "Java", context: "OOP and algorithms" },
       { name: "C/C++", context: "Systems programming" },
       { name: "JavaScript", context: "Interactive web features" },
@@ -486,8 +486,6 @@ const InstalledPackagesWindow = () => {
             <div className="text-[#e5e5e5]/40 mb-2">{category}</div>
             <div className="space-y-1">
               <div className="grid grid-cols-[1fr_1fr] gap-4 text-[#e5e5e5]/60 mb-1 uppercase tracking-wider">
-                <div>PKG</div>
-                <div>CONTEXT</div>
               </div>
               {skills.map((skill, idx) => {
                 return (
