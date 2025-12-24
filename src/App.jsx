@@ -444,37 +444,33 @@ const RunningServicesWindow = () => {
 const InstalledPackagesWindow = () => {
   const skillCategories = {
     "~/lib/languages/": [
-      { name: "Python", context: "Data analysis + Backend work" },
-      { name: "Java", context: "OOP and algorithms" },
+      { name: "Python", context: "Backend & data" },
+      { name: "Java", context: "OOP & algorithms" },
       { name: "C/C++", context: "Systems programming" },
-      { name: "JavaScript", context: "Interactive web features" },
-      { name: "TypeScript", context: "Scalable frontends" },
-      { name: "SQL", context: "Relational databases" },
-      { name: "MATLAB", context: "Numerical computing and modeling" },
-      { name: "R", context: "Statistics and data analysis" }
-    ]
-    ,
+      { name: "JavaScript/TypeScript", context: "Frontend" },
+      { name: "SQL", context: "Databases" },
+      { name: "MATLAB", context: "Numerical computing" },
+      { name: "R", context: "Statistics" }
+    ],
   
     "~/lib/frameworks/": [
-      { name: "React", context: "Responsive, component-based UIs" },
-      { name: "Flask", context: "Backend APIs and microservices" },
-      { name: "scikit-learn", context: "Machine learning and data modeling" },
-      { name: "PyTorch", context: "Deep learning and neural networks" }
+      { name: "React", context: "UI framework" },
+      { name: "Flask", context: "Python APIs" },
+      { name: "scikit-learn", context: "ML library" },
+      { name: "PyTorch", context: "Deep learning" }
     ],
   
     "~/lib/tools/": [
-      { name: "AWS", context: "Cloud hosting" },
-      { name: "Docker", context: "Containerizing applications" },
-      { name: "Git", context: "Version control and collaboration" },
-      { name: "GitHub / GitLab", context: "Code hosting and DevOps workflows" },
-      { name: "PostgreSQL", context: "Relational database management" },
-      { name: "MySQL", context: "Relational database systems" },
-      { name: "Jupyter", context: "Interactive notebooks for data work" },
-      { name: "Figma", context: "Interface prototyping" },
-      { name: "NumPy", context: "Fast numerical computing" },
-      { name: "Pandas", context: "Data cleaning and analysis" },
-      { name: "Matplotlib", context: "Charts and visualizations" },
-      { name: "Power BI", context: "Business analytics and dashboards" }
+      { name: "AWS", context: "Cloud" },
+      { name: "Docker", context: "Containers" },
+      { name: "Git", context: "Version control" },
+      { name: "GitHub / GitLab", context: "DevOps" },
+      { name: "Jupyter", context: "Interactive data work" },
+      { name: "Figma", context: "Interface design" },
+      { name: "NumPy", context: "Numerical computing" },
+      { name: "Pandas", context: "Data cleaning & analysis" },
+      { name: "Matplotlib", context: "Visualization" },
+      { name: "Power BI", context: "Analytics" }
     ]    
   };  
 
@@ -589,7 +585,15 @@ const Console = () => {
       case "horizon":
       case "ps":
       case "processes":
-        output = `> Active Processes:\n> PID 4312  portfolio_optimization_engine  RUNNING\n> PID 2241  systems_programming_study      RUNNING\n> PID 5530  os_coursework                  RUNNING\n> PID 8722  quant_finance_research         RUNNING`;
+        const padLength = 37;
+        const processes = [
+          { pid: 4312, name: "aws_technical_essentials_course", status: "RUNNING" },
+          { pid: 2241, name: "systems_personal_project", status: "RUNNING" },
+          { pid: 5530, name: "wpi_coursework", status: "ON_BREAK" }
+        ];
+        output = "> Active Processes:\n" + processes.map(p => 
+          `> PID ${p.pid}  ${p.name.padEnd(padLength)}${p.status}`
+        ).join("\n");
         break;
       case "resume":
       case "cv":
