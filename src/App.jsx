@@ -222,7 +222,7 @@ const UserProfileWindow = () => {
           <div>
             <span className="text-[#e5e5e5]/50 font-bold"># BIO</span>
             <p className="mt-1 text-[#e5e5e5] leading-relaxed">
-              CS/Math sophomore exploring pure math and messy code.
+              CS + Math sophomore focused on low-level systems, performance, and correctness.
             </p>
           </div>
           
@@ -320,11 +320,11 @@ const SystemMonitorWindow = () => {
                 <ul className="space-y-2 text-[#e5e5e5]/80 pl-2">
                   <li className="flex items-start gap-2">
                     <span className="text-[#ff3333]">&gt;</span>
-                    <span>Deepen expertise in systems programming—C/C++, memory allocators, concurrency, profiling, and hardware-aware optimization.</span>
+                    <span>Deepen expertise in systems programming—C/C++, concurrency, and performance optimization.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[#ff3333]">&gt;</span>
-                    <span>Explore and apply quantitative finance through portfolio optimization engines and algorithmic trading systems.</span>
+                    <span>Explore and apply quantitative finance through statistical modeling and algorithmic trading systems.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[#ff3333]">&gt;</span>
@@ -337,15 +337,15 @@ const SystemMonitorWindow = () => {
                 <ul className="space-y-2 text-[#e5e5e5]/80 pl-2">
                   <li className="flex items-start gap-2">
                     <span className="text-[#ff3333]">&gt;</span>
-                    <span>Contribute to high-performance trading systems that handle real-time market data at scale</span>
+                    <span>Design and build performance-critical systems where latency, correctness, and reliability are key.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[#ff3333]">&gt;</span>
-                    <span>Bridge the gap between theoretical finance (stochastic calculus, optimization) and practical implementation</span>
+                    <span>Apply strong mathematical and statistical reasoning withinreal-world software systems</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[#ff3333]">&gt;</span>
-                    <span>Lead development of systems that process millions of transactions with sub-millisecond precision</span>
+                    <span>Grow into an engineer capable of owning complex infrastructure in performance-sensitive domains, including quantitative finance.</span>
                   </li>
                 </ul>
               </div>
