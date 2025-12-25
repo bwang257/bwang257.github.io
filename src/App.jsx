@@ -46,9 +46,10 @@ const TextureOverlays = () => {
 /* ===============================================================
    TOP BAR (System Tray)
 ================================================================ */
-const SystemTray = () => {
+const SystemTray = ({ onCommandPaletteOpen }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isGlitching, setIsGlitching] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -57,19 +58,48 @@ const SystemTray = () => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    // Show hint after 3 seconds, hide after 10 seconds
+    const showTimer = setTimeout(() => setShowHint(true), 3000);
+    const hideTimer = setTimeout(() => setShowHint(false), 10000);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
+
   const formatTime = (date) => {
     return date.toUTCString().split(' ')[4];
   };
 
+  // Detect OS for appropriate key hint
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const keyHint = isMac ? '⌘K' : 'Ctrl+K';
+
   return (
     <div className="fixed top-0 left-0 right-0 h-12 bg-[#0c0c0c] border-b border-white/10 z-50 flex items-center justify-between px-6">
-      <motion.div
-        onHoverStart={() => setIsGlitching(true)}
-        onHoverEnd={() => setIsGlitching(false)}
-        className="font-mono text-sm text-[#e5e5e5] relative"
-      >
-        <span className={isGlitching ? "glitch-text" : ""}>BrianOS v1.0</span>
-      </motion.div>
+      <div className="flex items-center gap-4">
+        <motion.div
+          onHoverStart={() => setIsGlitching(true)}
+          onHoverEnd={() => setIsGlitching(false)}
+          className="font-mono text-sm text-[#e5e5e5] relative"
+        >
+          <span className={isGlitching ? "glitch-text" : ""}>BrianOS v1.0</span>
+        </motion.div>
+        <AnimatePresence>
+          {showHint && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.2 }}
+              className="text-xs text-[#e5e5e5]/40 font-mono whitespace-nowrap pointer-events-none"
+            >
+              Press <kbd className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-[#00ff00]/60">{keyHint}</kbd> for commands
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
       <div className="flex items-center gap-6 text-xs font-mono text-[#e5e5e5]/80 uppercase tracking-wider">
         <span>{formatTime(currentTime)} UTC</span>
         <span>{SYSTEM_DATA.location}</span>
@@ -534,6 +564,16 @@ const Console = () => {
   }, [history]);
 
   useEffect(() => {
+    // Listen for console clear events from command palette
+    const handleConsoleClear = () => {
+      setHistory([]);
+    };
+
+    window.addEventListener('consoleClear', handleConsoleClear);
+    return () => window.removeEventListener('consoleClear', handleConsoleClear);
+  }, []);
+
+  useEffect(() => {
     // Listen for console error events from private repo clicks
     const handleConsoleError = (e) => {
       setHistory(prev => [...prev, e.detail]);
@@ -782,6 +822,237 @@ const Dock = ({ windows, toggleWindow }) => {
 };
 
 /* ===============================================================
+   COMMAND PALETTE
+================================================================ */
+const CommandPalette = ({ isOpen, onClose, windows, toggleWindow, onResumeClick }) => {
+  const [search, setSearch] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const inputRef = useRef(null);
+
+  // Helper to check if a window is open
+  const isWindowOpen = (windowId) => {
+    const window = windows.find(w => w.id === windowId);
+    return window?.status === 'open';
+  };
+
+  const commands = [
+    {
+      id: "profile",
+      label: "Open Profile",
+      description: "View user profile and contact info",
+      windowId: "profile",
+      action: () => {
+        toggleWindow("profile");
+        onClose();
+      },
+      keywords: ["profile", "whoami", "about", "contact"]
+    },
+    {
+      id: "services",
+      label: "Open Projects",
+      description: "View running services and projects",
+      windowId: "services",
+      action: () => {
+        toggleWindow("services");
+        onClose();
+      },
+      keywords: ["projects", "services", "work", "portfolio"]
+    },
+    {
+      id: "monitor",
+      label: "Open System Monitor",
+      description: "View active processes and career goals",
+      windowId: "monitor",
+      action: () => {
+        toggleWindow("monitor");
+        onClose();
+      },
+      keywords: ["monitor", "sys", "system", "processes", "goals"]
+    },
+    {
+      id: "packages",
+      label: "Open Skills",
+      description: "View installed packages and skills",
+      windowId: "packages",
+      action: () => {
+        toggleWindow("packages");
+        onClose();
+      },
+      keywords: ["skills", "packages", "lib", "tools", "tech"]
+    },
+    {
+      id: "resume",
+      label: "Download Resume",
+      description: "Open resume.pdf in new tab",
+      action: () => {
+        onResumeClick();
+        onClose();
+      },
+      keywords: ["resume", "cv", "pdf", "download"]
+    },
+    {
+      id: "clear",
+      label: "Clear Console",
+      description: "Clear the console history",
+      action: () => {
+        window.dispatchEvent(new CustomEvent('consoleClear'));
+        onClose();
+      },
+      keywords: ["clear", "console"]
+    }
+  ];
+
+  const filteredCommands = commands.filter(cmd =>
+    cmd.keywords.some(keyword => 
+      keyword.toLowerCase().includes(search.toLowerCase())
+    ) ||
+    cmd.label.toLowerCase().includes(search.toLowerCase()) ||
+    cmd.description.toLowerCase().includes(search.toLowerCase())
+  );
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+      setSelectedIndex(0);
+      setSearch("");
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [search]);
+
+  const handleKeyDown = (e) => {
+    if (!isOpen) return;
+
+    if (e.key === "Escape") {
+      onClose();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex(prev => 
+        prev < filteredCommands.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex(prev => 
+        prev > 0 ? prev - 1 : filteredCommands.length - 1
+      );
+    } else if (e.key === "Enter" && filteredCommands[selectedIndex]) {
+      e.preventDefault();
+      filteredCommands[selectedIndex].action();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, filteredCommands, selectedIndex]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-start justify-center pt-32"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+        className="w-full max-w-2xl mx-4 bg-[#0c0c0c] border border-[#00ff00]/30 rounded-sm shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="px-4 py-3 border-b border-[#00ff00]/20 flex items-center gap-3">
+          <span className="text-[#00ff00] font-mono text-sm">&gt;</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Type to search commands..."
+            className="flex-1 bg-transparent text-[#e5e5e5] font-mono text-sm outline-none placeholder:text-[#e5e5e5]/40"
+            autoFocus
+          />
+          <kbd className="px-2 py-1 text-xs font-mono bg-white/5 border border-white/10 rounded text-[#e5e5e5]/60">
+            ESC
+          </kbd>
+        </div>
+
+        {/* Command List */}
+        <div className="max-h-96 overflow-y-auto">
+          {filteredCommands.length === 0 ? (
+            <div className="px-4 py-8 text-center text-[#e5e5e5]/40 font-mono text-sm">
+              No commands found
+            </div>
+          ) : (
+            <div className="py-2">
+              {filteredCommands.map((cmd, index) => {
+                const isOpen = cmd.windowId && isWindowOpen(cmd.windowId);
+                return (
+                  <motion.button
+                    key={cmd.id}
+                    onClick={cmd.action}
+                    onMouseEnter={() => setSelectedIndex(index)}
+                    className={`w-full px-4 py-3 text-left flex items-start gap-3 font-mono text-sm transition-colors ${
+                      index === selectedIndex
+                        ? "bg-[#00ff00]/10 text-[#00ff00]"
+                        : isOpen
+                        ? "text-[#e5e5e5]/30 hover:bg-white/5"
+                        : "text-[#e5e5e5] hover:bg-white/5"
+                    }`}
+                  >
+                    <span className={`mt-0.5 ${isOpen && index !== selectedIndex ? "text-[#00ff00]/20" : "text-[#00ff00]/60"}`}>&gt;</span>
+                    <div className="flex-1">
+                      <div className="font-semibold">{cmd.label}</div>
+                      <div className={`text-xs mt-0.5 ${isOpen && index !== selectedIndex ? "text-[#e5e5e5]/20" : "text-[#e5e5e5]/50"}`}>
+                        {cmd.description}
+                      </div>
+                    </div>
+                    {index === selectedIndex && (
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-[#00ff00] text-xs"
+                      >
+                        ENTER
+                      </motion.span>
+                    )}
+                    {isOpen && index !== selectedIndex && (
+                      <span className="text-[#e5e5e5]/20 text-xs">OPEN</span>
+                    )}
+                  </motion.button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-4 py-2 border-t border-[#00ff00]/20 flex items-center justify-between text-xs font-mono text-[#e5e5e5]/40">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded">↑↓</kbd>
+              <span>Navigate</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded">↵</kbd>
+              <span>Select</span>
+            </span>
+          </div>
+          <span>{filteredCommands.length} command{filteredCommands.length !== 1 ? 's' : ''}</span>
+        </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+/* ===============================================================
    MAIN APP COMPONENT
 ================================================================ */
 export default function App() {
@@ -837,12 +1108,39 @@ export default function App() {
   // Filter windows that are visible (open and not minimized)
   const visibleWindows = windows.filter(w => w.status === 'open');
 
+  // Command Palette State
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  // Handle Command Palette keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleResumeClick = () => {
+    window.open('/resume.pdf', '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-[#0c0c0c] text-[#e5e5e5] font-mono overflow-hidden">
       <TextureOverlays />
-      <SystemTray />
+      <SystemTray onCommandPaletteOpen={() => setIsCommandPaletteOpen(true)} />
       <Dock windows={windows} toggleWindow={toggleWindow} />
       <Console />
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        windows={windows}
+        toggleWindow={toggleWindow}
+        onResumeClick={handleResumeClick}
+      />
       
       <main className="ml-32 mt-12 p-6 overflow-y-auto" style={{ paddingBottom: 'calc(300px + 1rem)' }}>
         <div className="max-w-7xl mx-auto">
