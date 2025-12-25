@@ -13,6 +13,7 @@ import {
   Lock,
   FileText,
 } from "lucide-react";
+import { useTheme } from "./contexts/ThemeContext.jsx";
 
 /* ===============================================================
    SYSTEM DATA (The "Memory")
@@ -50,6 +51,7 @@ const SystemTray = ({ onCommandPaletteOpen }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isGlitching, setIsGlitching] = useState(false);
   const [showHint, setShowHint] = useState(false);
+  const { theme, colors } = useTheme();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -77,12 +79,21 @@ const SystemTray = ({ onCommandPaletteOpen }) => {
   const keyHint = isMac ? '⌘K' : 'Ctrl+K';
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-12 bg-[#0c0c0c] border-b border-white/10 z-50 flex items-center justify-between px-6">
+    <div 
+      className="fixed top-0 left-0 right-0 h-12 z-50 flex items-center justify-between px-6"
+      style={{
+        backgroundColor: colors.bg,
+        borderBottomColor: colors.border,
+        borderBottomWidth: '1px',
+        borderBottomStyle: 'solid'
+      }}
+    >
       <div className="flex items-center gap-4">
       <motion.div
         onHoverStart={() => setIsGlitching(true)}
         onHoverEnd={() => setIsGlitching(false)}
-        className="font-mono text-sm text-[#e5e5e5] relative"
+        className="font-mono text-sm relative"
+        style={{ color: colors.text }}
       >
         <span className={isGlitching ? "glitch-text" : ""}>BrianOS v1.0</span>
       </motion.div>
@@ -93,18 +104,34 @@ const SystemTray = ({ onCommandPaletteOpen }) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2 }}
-              className="text-xs text-[#e5e5e5]/40 font-mono whitespace-nowrap pointer-events-none"
+              className="text-xs font-mono whitespace-nowrap pointer-events-none"
+              style={{ color: colors.textMutedLight }}
             >
-              Press <kbd className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-[#00ff00]/60">{keyHint}</kbd> for commands
+              Press <kbd 
+                className="px-1.5 py-0.5 rounded"
+                style={{
+                  backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                  borderColor: colors.border,
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                  color: `${colors.accent}99`
+                }}
+              >{keyHint}</kbd> for commands
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-      <div className="flex items-center gap-6 text-xs font-mono text-[#e5e5e5]/80 uppercase tracking-wider">
+      <div 
+        className="flex items-center gap-6 text-xs font-mono uppercase tracking-wider"
+        style={{ color: colors.textMuted }}
+      >
         <span>{formatTime(currentTime)} UTC</span>
         <span>{SYSTEM_DATA.location}</span>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-[#00ff00] animate-pulse" />
+          <div 
+            className="w-2 h-2 animate-pulse rounded-full" 
+            style={{ backgroundColor: colors.accent }}
+          />
           <span>System Status: Online</span>
         </div>
       </div>
@@ -120,6 +147,7 @@ const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize,
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, left: 0, top: 0 });
   const [resizeDirection, setResizeDirection] = useState('');
   const windowRef = useRef(null);
+  const { theme, colors } = useTheme();
 
   const MIN_WIDTH = 300;
   const MIN_HEIGHT = 200;
@@ -278,8 +306,14 @@ const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize,
   const renderResizeHandle = (direction, className, cursor) => {
     return (
       <div
-        className={`${className} hover:bg-[#00ff00]/20 transition-colors select-none`}
+        className={`${className} transition-colors select-none`}
         style={{ cursor }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = `${colors.accent}33`;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }}
         onMouseDown={(e) => handleResizeMouseDown(direction, e)}
       />
     );
@@ -304,15 +338,18 @@ const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize,
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={isResizing ? { duration: 0 } : undefined}
-      className={`bg-[#0c0c0c] border border-white/10 rounded-sm flex flex-col grid-background ${
+      className={`border rounded-sm flex flex-col grid-background ${
         isMaximized 
           ? "fixed inset-4 z-50 backdrop-blur-sm" 
           : currentX !== null && currentY !== null ? "absolute" : "relative"
       }`}
       style={isMaximized ? { 
         backdropFilter: 'blur(8px)',
-        backgroundColor: 'rgba(12, 12, 12, 0.95)'
+        backgroundColor: colors.bgSecondary,
+        borderColor: colors.border
       } : {
+        backgroundColor: colors.bg,
+        borderColor: colors.border,
         width: typeof currentWidth === 'number' ? `${currentWidth}px` : currentWidth,
         maxWidth: currentX !== null && currentY !== null ? 'none' : '100%',
         height: `${currentHeight}px`,
@@ -338,25 +375,47 @@ const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize,
         </>
       )}
       {/* Title Bar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-[#0c0c0c]/50">
+      <div 
+        className="flex items-center justify-between px-4 py-2"
+        style={{
+          borderBottomColor: colors.border,
+          borderBottomWidth: '1px',
+          borderBottomStyle: 'solid',
+          backgroundColor: colors.bgTertiary
+        }}
+      >
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-[#e5e5e5]/60 uppercase tracking-wider">{title}</span>
+          <span 
+            className="text-xs font-mono uppercase tracking-wider"
+            style={{ color: colors.textMuted }}
+          >
+            {title}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           {/* Window Controls: Red (Close), Yellow (Minimize), Green (Maximize) */}
           <button
             onClick={onClose}
-            className="w-3 h-3 bg-[#ff3333] rounded-sm hover:bg-[#ff5555] transition-colors"
+            className="w-3 h-3 rounded-sm transition-colors"
+            style={{ backgroundColor: colors.warning }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.warningHover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.warning}
             aria-label="Close window"
           />
           <button
             onClick={onMinimize}
-            className="w-3 h-3 bg-[#ffaa00] rounded-sm hover:bg-[#ffcc00] transition-colors"
+            className="w-3 h-3 rounded-sm transition-colors"
+            style={{ backgroundColor: colors.info }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.infoHover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.info}
             aria-label="Minimize window"
           />
           <button
             onClick={onMaximize}
-            className="w-3 h-3 bg-[#00ff00] rounded-sm hover:bg-[#33ff33] transition-colors"
+            className="w-3 h-3 rounded-sm transition-colors"
+            style={{ backgroundColor: colors.accent }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.accentHover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.accent}
             aria-label="Maximize window"
           />
         </div>
@@ -1023,6 +1082,7 @@ const CommandPalette = ({ isOpen, onClose, windows, toggleWindow, onResumeClick 
   const [search, setSearch] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
+  const { theme, toggleTheme, setTheme, colors } = useTheme();
 
   // Helper to check if a window is open
   const isWindowOpen = (windowId) => {
@@ -1094,6 +1154,36 @@ const CommandPalette = ({ isOpen, onClose, windows, toggleWindow, onResumeClick 
         onClose();
       },
       keywords: ["clear", "console"]
+    },
+    {
+      id: "theme-dark",
+      label: "Switch to Dark Theme",
+      description: "Enable dark theme",
+      action: () => {
+        setTheme('dark');
+        onClose();
+      },
+      keywords: ["theme", "dark", "mode", "switch"]
+    },
+    {
+      id: "theme-light",
+      label: "Switch to Light Theme",
+      description: "Enable light theme",
+      action: () => {
+        setTheme('light');
+        onClose();
+      },
+      keywords: ["theme", "light", "mode", "switch"]
+    },
+    {
+      id: "theme-toggle",
+      label: `Toggle Theme (Currently: ${theme === 'dark' ? 'Dark' : 'Light'})`,
+      description: "Switch between dark and light themes",
+      action: () => {
+        toggleTheme();
+        onClose();
+      },
+      keywords: ["theme", "toggle", "switch", "mode"]
     }
   ];
 
@@ -1341,8 +1431,16 @@ export default function App() {
     window.open('/resume.pdf', '_blank');
   };
 
+  const { colors } = useTheme();
+
   return (
-    <div className="min-h-screen bg-[#0c0c0c] text-[#e5e5e5] font-mono overflow-hidden">
+    <div 
+      className="min-h-screen font-mono overflow-hidden"
+      style={{
+        backgroundColor: colors.bg,
+        color: colors.text
+      }}
+    >
       <TextureOverlays />
       <SystemTray onCommandPaletteOpen={() => setIsCommandPaletteOpen(true)} />
       <Dock windows={windows} toggleWindow={toggleWindow} />
