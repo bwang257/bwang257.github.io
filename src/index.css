@@ -10,7 +10,7 @@
   html {
     font-family: 'IBM Plex Mono', 'Courier New', monospace;
     scroll-behavior: smooth;
-    cursor: crosshair; /* Engineering/CAD precision cursor */
+    cursor: pointer; /* Engineering/CAD precision cursor */
   }
   
   body {
@@ -20,7 +20,7 @@
     padding: 0;
     overflow-x: hidden;
     position: relative;
-    cursor: crosshair;
+    cursor: default;
   }
 
   #root {
@@ -103,11 +103,11 @@
 
 /* Crosshair cursor styling - using native crosshair with custom styling */
 body * {
-  cursor: crosshair;
+  cursor: default;
 }
 
 button, a, input, textarea, select {
-  cursor: crosshair;
+  cursor: default;
 }
 
 /* Technical Borders */

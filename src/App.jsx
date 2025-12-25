@@ -79,13 +79,13 @@ const SystemTray = ({ onCommandPaletteOpen }) => {
   return (
     <div className="fixed top-0 left-0 right-0 h-12 bg-[#0c0c0c] border-b border-white/10 z-50 flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
-        <motion.div
-          onHoverStart={() => setIsGlitching(true)}
-          onHoverEnd={() => setIsGlitching(false)}
-          className="font-mono text-sm text-[#e5e5e5] relative"
-        >
-          <span className={isGlitching ? "glitch-text" : ""}>BrianOS v1.0</span>
-        </motion.div>
+      <motion.div
+        onHoverStart={() => setIsGlitching(true)}
+        onHoverEnd={() => setIsGlitching(false)}
+        className="font-mono text-sm text-[#e5e5e5] relative"
+      >
+        <span className={isGlitching ? "glitch-text" : ""}>BrianOS v1.0</span>
+      </motion.div>
         <AnimatePresence>
           {showHint && (
             <motion.div
@@ -115,7 +115,176 @@ const SystemTray = ({ onCommandPaletteOpen }) => {
 /* ===============================================================
    WINDOW COMPONENT WRAPPER (With Controls)
 ================================================================ */
-const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize, onMaximize }) => {
+const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize, onMaximize, width, height, x, y, onSizeChange, onPositionChange }) => {
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0, left: 0, top: 0 });
+  const [resizeDirection, setResizeDirection] = useState('');
+  const windowRef = useRef(null);
+
+  const MIN_WIDTH = 300;
+  const MIN_HEIGHT = 200;
+  // Use responsive width if not explicitly set, or if width is provided use it (for resized windows)
+  const currentWidth = width || '100%';
+  const currentHeight = height || 400;
+  const currentX = x ?? null;
+  const currentY = y ?? null;
+
+  // Handle resizing
+  useEffect(() => {
+    if (!isResizing || isMaximized) return;
+
+    let rafId = null;
+
+    const handleMouseMove = (e) => {
+      e.preventDefault();
+      
+      if (rafId) return;
+      
+      rafId = requestAnimationFrame(() => {
+        const deltaX = e.clientX - resizeStart.x;
+        const deltaY = e.clientY - resizeStart.y;
+        let newWidth = resizeStart.width;
+        let newHeight = resizeStart.height;
+        let newX = resizeStart.left;
+        let newY = resizeStart.top;
+
+        // Get container boundaries
+        const container = windowRef.current?.offsetParent;
+        const containerRect = container ? container.getBoundingClientRect() : null;
+        // For grid-based windows, use viewport constraints; for absolutely positioned, use container
+        const isAbsolutelyPositioned = currentX !== null && currentX !== undefined;
+        const maxWidth = isAbsolutelyPositioned && containerRect ? containerRect.width : Infinity;
+        const maxHeight = isAbsolutelyPositioned && containerRect ? containerRect.height : window.innerHeight * 0.9;
+
+        // Calculate new size and position based on direction
+        if (resizeDirection.includes('e')) {
+          // Resize from east - only width changes, position stays same
+          if (isAbsolutelyPositioned && containerRect) {
+            newWidth = Math.max(MIN_WIDTH, Math.min(resizeStart.width + deltaX, maxWidth - resizeStart.left));
+          } else {
+            // Grid-based window - allow free resizing, but constrain to reasonable max
+            newWidth = Math.max(MIN_WIDTH, Math.min(resizeStart.width + deltaX, window.innerWidth * 0.9));
+          }
+        }
+        if (resizeDirection.includes('w')) {
+          // Resize from west - width changes and position moves left
+          // Can only resize if window has absolute positioning (x is set)
+          if (isAbsolutelyPositioned) {
+            const requestedWidth = resizeStart.width - deltaX;
+            newWidth = Math.max(MIN_WIDTH, Math.min(requestedWidth, resizeStart.left + resizeStart.width));
+            // Only move position if we're actually changing the width (not constrained)
+            const actualDeltaX = requestedWidth >= MIN_WIDTH && newX >= 0 ? deltaX : Math.min(0, -resizeStart.left);
+            newX = Math.max(0, resizeStart.left + actualDeltaX);
+            // Adjust width if position hit boundary
+            if (newX === 0 && resizeStart.left > 0) {
+              newWidth = resizeStart.width + resizeStart.left;
+            }
+          }
+        }
+        if (resizeDirection.includes('s')) {
+          // Resize from south - only height changes, position stays same
+          if (isAbsolutelyPositioned && containerRect) {
+            // Absolutely positioned - constrain to container
+            newHeight = Math.max(MIN_HEIGHT, Math.min(resizeStart.height + deltaY, maxHeight - resizeStart.top));
+          } else {
+            // Grid-based window - allow free resizing, constrain to viewport
+            newHeight = Math.max(MIN_HEIGHT, Math.min(resizeStart.height + deltaY, maxHeight));
+          }
+        }
+        if (resizeDirection.includes('n')) {
+          // Resize from north - height changes and position moves up
+          // Can only resize if window has absolute positioning (y is set)
+          if (currentY !== null && currentY !== undefined) {
+            const requestedHeight = resizeStart.height - deltaY;
+            newHeight = Math.max(MIN_HEIGHT, Math.min(requestedHeight, resizeStart.top + resizeStart.height));
+            // Only move position if we're actually changing the height (not constrained)
+            const actualDeltaY = requestedHeight >= MIN_HEIGHT && newY >= 0 ? deltaY : Math.min(0, -resizeStart.top);
+            newY = Math.max(0, resizeStart.top + actualDeltaY);
+            // Adjust height if position hit boundary
+            if (newY === 0 && resizeStart.top > 0) {
+              newHeight = resizeStart.height + resizeStart.top;
+            }
+          }
+        }
+
+        onSizeChange(newWidth, newHeight);
+        // Only update position if resizing from left/top edges and window is absolutely positioned
+        if (onPositionChange && (resizeDirection.includes('w') || resizeDirection.includes('n'))) {
+          if ((resizeDirection.includes('w') && currentX !== null && currentX !== undefined) ||
+              (resizeDirection.includes('n') && currentY !== null && currentY !== undefined)) {
+            onPositionChange(newX, newY);
+          }
+        }
+        rafId = null;
+      });
+    };
+
+    const handleMouseUp = () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: false });
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, resizeStart, resizeDirection, isMaximized, onSizeChange, onPositionChange]);
+
+  const handleResizeMouseDown = (direction, e) => {
+    if (isMaximized) return;
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Don't allow resizing from left/top if window is still in grid (prevents layout shifts)
+    // Only allow resizing from right/bottom edges for grid-based windows
+    if (direction.includes('w') && (currentX === null || currentX === undefined)) {
+      // Prevent resize from left for grid-based windows
+      return;
+    }
+    if (direction.includes('n') && (currentY === null || currentY === undefined)) {
+      // Prevent resize from top for grid-based windows
+      return;
+    }
+    
+    setIsResizing(true);
+    setResizeDirection(direction);
+    // Get actual computed width and position if using responsive width
+    const actualWidth = windowRef.current ? windowRef.current.offsetWidth : (typeof currentWidth === 'number' ? currentWidth : 600);
+    const actualHeight = currentHeight;
+    const rect = windowRef.current ? windowRef.current.getBoundingClientRect() : null;
+    const container = windowRef.current?.offsetParent;
+    const containerRect = container ? container.getBoundingClientRect() : null;
+    const actualLeft = rect && containerRect ? rect.left - containerRect.left : (currentX ?? 0);
+    const actualTop = rect && containerRect ? rect.top - containerRect.top : (currentY ?? 0);
+    setResizeStart({
+      x: e.clientX,
+      y: e.clientY,
+      width: actualWidth,
+      height: actualHeight,
+      left: actualLeft,
+      top: actualTop
+    });
+  };
+
+  const renderResizeHandle = (direction, className, cursor) => {
+    return (
+      <div
+        className={`${className} hover:bg-[#00ff00]/20 transition-colors select-none`}
+        style={{ cursor }}
+        onMouseDown={(e) => handleResizeMouseDown(direction, e)}
+      />
+    );
+  };
+
   // Red Button: Close - Return null if closed
   if (status === 'closed') {
     return null;
@@ -128,20 +297,46 @@ const Window = ({ id, title, children, status, isMaximized, onClose, onMinimize,
 
   return (
     <motion.div
-      layout
+      ref={windowRef}
+      id={`window-${id}`}
+      layout={!isResizing}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
+      transition={isResizing ? { duration: 0 } : undefined}
       className={`bg-[#0c0c0c] border border-white/10 rounded-sm flex flex-col grid-background ${
         isMaximized 
           ? "fixed inset-4 z-50 backdrop-blur-sm" 
-          : "min-h-[400px]"
+          : currentX !== null && currentY !== null ? "absolute" : "relative"
       }`}
       style={isMaximized ? { 
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(12, 12, 12, 0.95)'
-      } : {}}
+      } : {
+        width: typeof currentWidth === 'number' ? `${currentWidth}px` : currentWidth,
+        maxWidth: currentX !== null && currentY !== null ? 'none' : '100%',
+        height: `${currentHeight}px`,
+        minHeight: `${MIN_HEIGHT}px`,
+        minWidth: `${MIN_WIDTH}px`,
+        ...(currentX !== null && currentY !== null ? { left: `${currentX}px`, top: `${currentY}px` } : {})
+      }}
     >
+      {/* Resize Handles - Corners */}
+      {!isMaximized && (
+        <>
+          {/* Always show right/bottom handles */}
+          {renderResizeHandle('se', 'absolute bottom-0 right-0 w-3 h-3 z-20', 'se-resize')}
+          {renderResizeHandle('s', 'absolute bottom-0 left-3 right-3 h-2 z-20', 's-resize')}
+          {renderResizeHandle('e', 'absolute right-0 top-3 bottom-3 w-2 z-20', 'e-resize')}
+          
+          {/* Only show left/top handles if window is absolutely positioned */}
+          {(currentX !== null && currentX !== undefined) && renderResizeHandle('sw', 'absolute bottom-0 left-0 w-3 h-3 z-20', 'sw-resize')}
+          {(currentX !== null && currentX !== undefined) && renderResizeHandle('w', 'absolute left-0 top-3 bottom-3 w-2 z-20', 'w-resize')}
+          {(currentY !== null && currentY !== undefined) && renderResizeHandle('ne', 'absolute top-0 right-0 w-3 h-3 z-20', 'ne-resize')}
+          {(currentY !== null && currentY !== undefined) && renderResizeHandle('n', 'absolute top-0 left-3 right-3 h-2 z-20', 'n-resize')}
+          {(currentX !== null && currentX !== undefined && currentY !== null && currentY !== undefined) && renderResizeHandle('nw', 'absolute top-0 left-0 w-3 h-3 z-20', 'nw-resize')}
+        </>
+      )}
       {/* Title Bar */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-[#0c0c0c]/50">
         <div className="flex items-center gap-2">
@@ -501,7 +696,7 @@ const InstalledPackagesWindow = () => {
       { name: "Pandas", context: "Data cleaning & analysis" },
       { name: "Matplotlib", context: "Visualization" },
       { name: "Power BI", context: "Analytics" }
-    ]    
+    ]
   };  
 
   return (
@@ -1057,11 +1252,29 @@ const CommandPalette = ({ isOpen, onClose, windows, toggleWindow, onResumeClick 
 ================================================================ */
 export default function App() {
   const [windows, setWindows] = useState([
-    { id: "profile", status: "open", isMaximized: false, title: "user_profile.txt", content: <UserProfileWindow /> },
-    { id: "monitor", status: "open", isMaximized: false, title: "system_monitor.log", content: <SystemMonitorWindow /> },
-    { id: "services", status: "open", isMaximized: false, title: "running_services.log", content: <RunningServicesWindow /> },
-    { id: "packages", status: "open", isMaximized: false, title: "installed_packages.txt", content: <InstalledPackagesWindow /> }
+    { id: "profile", status: "open", isMaximized: false, title: "user_profile.txt", content: <UserProfileWindow />, width: null, height: 700 },
+    { id: "monitor", status: "open", isMaximized: false, title: "system_monitor.log", content: <SystemMonitorWindow />, width: null, height: 620 },
+    { id: "services", status: "open", isMaximized: false, title: "running_services.log", content: <RunningServicesWindow />, width: null, height: 460 },
+    { id: "packages", status: "open", isMaximized: false, title: "installed_packages.txt", content: <InstalledPackagesWindow />, width: null, height: 670 }
   ]);
+
+  const updateWindowSize = (windowId, width, height) => {
+    setWindows(prev => prev.map(w => {
+      if (w.id === windowId) {
+        return { ...w, width, height };
+      }
+      return w;
+    }));
+  };
+
+  const updateWindowPosition = (windowId, x, y) => {
+    setWindows(prev => prev.map(w => {
+      if (w.id === windowId) {
+        return { ...w, x, y };
+      }
+      return w;
+    }));
+  };
 
   const toggleWindow = (windowId) => {
     setWindows(prev => prev.map(w => {
@@ -1142,11 +1355,11 @@ export default function App() {
         onResumeClick={handleResumeClick}
       />
       
-      <main className="ml-32 mt-12 p-6 overflow-y-auto" style={{ paddingBottom: 'calc(300px + 1rem)' }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <main className="ml-32 mt-12 p-4 overflow-y-auto relative" style={{ paddingBottom: 'calc(300px + 1rem)' }}>
+        <div className="max-w-[95%] mx-auto relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 auto-rows-max">
             {visibleWindows
-              .filter(w => !w.isMaximized)
+              .filter(w => !w.isMaximized && (w.x === null || w.x === undefined))
               .map((window) => (
                 <Window
                   key={window.id}
@@ -1154,14 +1367,43 @@ export default function App() {
                   title={window.title}
                   status={window.status}
                   isMaximized={window.isMaximized}
+                  width={window.width}
+                  height={window.height}
+                  x={window.x}
+                  y={window.y}
                   onClose={() => closeWindow(window.id)}
                   onMinimize={() => minimizeWindow(window.id)}
                   onMaximize={() => maximizeWindow(window.id)}
+                  onSizeChange={(width, height) => updateWindowSize(window.id, width, height)}
+                  onPositionChange={(x, y) => updateWindowPosition(window.id, x, y)}
                 >
                   {window.content}
                 </Window>
               ))}
           </div>
+          {/* Absolutely positioned windows (resized from left/top) */}
+          {visibleWindows
+            .filter(w => !w.isMaximized && w.x !== null && w.x !== undefined)
+            .map((window) => (
+              <Window
+                key={window.id}
+                id={window.id}
+                title={window.title}
+                status={window.status}
+                isMaximized={window.isMaximized}
+                width={window.width}
+                height={window.height}
+                x={window.x}
+                y={window.y}
+                onClose={() => closeWindow(window.id)}
+                onMinimize={() => minimizeWindow(window.id)}
+                onMaximize={() => maximizeWindow(window.id)}
+                onSizeChange={(width, height) => updateWindowSize(window.id, width, height)}
+                onPositionChange={(x, y) => updateWindowPosition(window.id, x, y)}
+              >
+                {window.content}
+              </Window>
+            ))}
           {/* Render maximized windows separately (outside grid) */}
           {visibleWindows
             .filter(w => w.isMaximized)
@@ -1172,9 +1414,12 @@ export default function App() {
                 title={window.title}
                 status={window.status}
                 isMaximized={window.isMaximized}
+                width={window.width}
+                height={window.height}
                 onClose={() => closeWindow(window.id)}
                 onMinimize={() => minimizeWindow(window.id)}
                 onMaximize={() => maximizeWindow(window.id)}
+                onSizeChange={(width, height) => updateWindowSize(window.id, width, height)}
               >
                 {window.content}
               </Window>
