@@ -495,39 +495,25 @@ const UserProfileWindow = () => {
     { port: "25/SMTP", service: "EMAIL", url: "mailto:brian.wang372@gmail.com", id: "email" },
   ];
 
+  const { colors } = useTheme();
+
   return (
     <div className="p-6 space-y-6">
       <div>
         <RetroProfileImage />
-        <h2 className="text-2xl font-bold text-[#e5e5e5] mb-4 tracking-tight">Brian Wang</h2>
+        <h2 className="text-2xl font-bold mb-4 tracking-tight" style={{ color: colors.text }}>Brian Wang</h2>
         
-        {/* README-style Bio Sections */}
-        <div className="font-mono text-sm space-y-4">
-          <div>
-            <span className="text-[#e5e5e5]/50 font-bold"># BIO</span>
-            <p className="mt-1 text-[#e5e5e5] leading-relaxed">
-              CS + Math sophomore focused on low-level systems, performance, and correctness.
+        {/* Concise Bio */}
+        <div className="font-mono text-sm space-y-3">
+          <p className="leading-relaxed" style={{ color: colors.text }}>
+            CS + Math sophomore. Building systems for performance and correctness. 
+            Currently seeking Summer 2026 internships in SWE/systems/quant-dev.
             </p>
           </div>
-          
-          <div>
-            <span className="text-[#e5e5e5]/50 font-bold"># MISSION</span>
-            <p className="mt-1 text-[#e5e5e5] leading-relaxed">
-              I like building things to understand how they work, from low-level systems to quantitative trading strategies.
-            </p>
           </div>
 
-          <div>
-            <span className="text-[#e5e5e5]/50 font-bold"># STATUS</span>
-            <p className="mt-1 text-[#e5e5e5] leading-relaxed">
-              Currently running on Celsius and looking for a Summer 2026 internship.
-        </p>
-      </div>
-    </div>
-      </div>
-      
-      <div className="pt-4 border-t border-white/10">
-        <p className="text-xs font-mono text-[#e5e5e5]/60 mb-3 uppercase tracking-wider">OPEN PORTS:</p>
+      <div className="pt-4" style={{ borderTopColor: colors.border, borderTopWidth: '1px', borderTopStyle: 'solid' }}>
+        <p className="text-xs font-mono mb-3 uppercase tracking-wider" style={{ color: colors.neutral }}>OPEN PORTS:</p>
         <div className="space-y-2 font-mono text-sm">
           {ports.map((port) => (
             <motion.a
@@ -535,12 +521,15 @@ const UserProfileWindow = () => {
               href={port.url}
               target={port.id === "email" ? undefined : "_blank"}
               rel={port.id === "email" ? undefined : "noopener noreferrer"}
-              className="block text-[#e5e5e5]/60 hover:text-[#00ff00] transition-colors"
+              className="block transition-colors"
+              style={{ color: colors.textMuted }}
               onHoverStart={() => setHoveredPort(port.id)}
               onHoverEnd={() => setHoveredPort(null)}
+              onMouseEnter={(e) => e.currentTarget.style.color = colors.accent}
+              onMouseLeave={(e) => e.currentTarget.style.color = colors.textMuted}
               whileHover={{ x: 2 }}
             >
-              {hoveredPort === port.id && <span className="text-[#00ff00]">_</span>}
+              {hoveredPort === port.id && <span style={{ color: colors.accent }}>_</span>}
               {port.port} :: {port.service}
             </motion.a>
       ))}
@@ -549,7 +538,10 @@ const UserProfileWindow = () => {
           href="/resume.pdf" 
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs font-mono text-[#e5e5e5]/60 hover:text-[#00ff00] transition-colors inline-block mt-4"
+          className="text-xs font-mono transition-colors inline-block mt-4"
+          style={{ color: colors.textMuted }}
+          onMouseEnter={(e) => e.currentTarget.style.color = colors.accent}
+          onMouseLeave={(e) => e.currentTarget.style.color = colors.textMuted}
         >
           &gt; [DOWNLOAD_RESUME]
         </a>
@@ -559,9 +551,10 @@ const UserProfileWindow = () => {
 };
 
 /* ===============================================================
-   WINDOW 2: SYSTEM MONITOR
+   WINDOW 2: SYSTEM MONITOR (Current Focus)
 ================================================================ */
 const SystemMonitorWindow = () => {
+  const { colors } = useTheme();
   const activeProcesses = [
     { pid: 4312, name: "aws_technical_essentials_course", status: "RUNNING" },
     { pid: 2241, name: "systems_personal_project", status: "RUNNING" },
@@ -574,17 +567,17 @@ const SystemMonitorWindow = () => {
           {/* ACTIVE PROCESSES */}
           <div>
             <div className="mb-3">
-              <p className="text-sm font-mono text-[#d19a66] uppercase tracking-wider">ACTIVE PROCESSES</p>
-              <div className="h-px bg-[#d19a66] mt-1" />
+              <p className="text-sm font-mono uppercase tracking-wider" style={{ color: colors.neutral }}>ACTIVE PROCESSES</p>
+              <div className="h-px mt-1" style={{ backgroundColor: colors.neutral }} />
             </div>
-            <div className="font-mono text-sm space-y-2 text-[#e5e5e5]">
+            <div className="font-mono text-sm space-y-2">
               {activeProcesses.map((process) => (
-                <div key={process.pid}>
-                  <span className="text-[#e5e5e5]/60">PID {process.pid}</span>
+                <div key={process.pid} style={{ color: colors.text }}>
+                  <span style={{ color: colors.textMuted }}>PID {process.pid}</span>
                   {' '}
-                  <span className="text-[#e5e5e5]/80">{process.name}</span>
+                  <span style={{ color: colors.text }}>{process.name}</span>
                   {' '}
-                  <span className={process.status === 'RUNNING' ? 'text-[#98c379]' : 'text-[#9099a1]'}>
+                  <span style={{ color: process.status === 'RUNNING' ? colors.accent : colors.neutral }}>
                     {process.status}
                   </span>
                 </div>
@@ -592,48 +585,26 @@ const SystemMonitorWindow = () => {
             </div>
           </div>
           
-          {/* CAREER GOALS */}
+          {/* CURRENT FOCUS */}
           <div>
             <div className="mb-3">
-              <p className="text-sm font-mono text-[#d19a66] uppercase tracking-wider">CAREER GOALS</p>
-              <div className="h-px bg-[#d19a66] mt-1" />
+              <p className="text-sm font-mono uppercase tracking-wider" style={{ color: colors.neutral }}>CURRENT FOCUS</p>
+              <div className="h-px mt-1" style={{ backgroundColor: colors.neutral }} />
             </div>
-            <div className="font-mono text-sm space-y-4 text-[#e5e5e5]">
-              <div>
-                <p className="text-[#e5e5e5]/50 mb-2 uppercase tracking-wider text-xs">Short Term (2025-2026):</p>
-                <ul className="space-y-2 text-[#e5e5e5]/80 pl-2">
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#ff3333]">&gt;</span>
-                    <span>Deepen expertise in systems programming—C/C++, concurrency, and performance optimization.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#ff3333]">&gt;</span>
-                    <span>Explore and apply quantitative finance through statistical modeling and algorithmic trading systems.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#ff3333]">&gt;</span>
-                    <span>Build a performance-driven engineering mindset by pursuing ambitious passion projects.</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <p className="text-[#e5e5e5]/50 mb-2 uppercase tracking-wider text-xs">Long Term (2027+):</p>
-                <ul className="space-y-2 text-[#e5e5e5]/80 pl-2">
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#ff3333]">&gt;</span>
-                    <span>Design and build performance-critical systems where latency, correctness, and reliability are key.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#ff3333]">&gt;</span>
-                    <span>Apply strong mathematical and statistical reasoning withinreal-world software systems</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#ff3333]">&gt;</span>
-                    <span>Grow into an engineer capable of owning complex infrastructure in performance-sensitive domains, including quantitative finance.</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <ul className="font-mono text-sm space-y-2" style={{ color: colors.text }}>
+              <li className="flex items-start gap-2">
+                <span style={{ color: colors.warning }}>&gt;</span>
+                <span>Systems programming: C/C++, concurrency, performance optimization.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span style={{ color: colors.warning }}>&gt;</span>
+                <span>Quantitative finance: statistical modeling and algorithmic trading systems.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span style={{ color: colors.warning }}>&gt;</span>
+                <span>Performance-driven engineering through ambitious projects.</span>
+              </li>
+            </ul>
           </div>
       </div>
     </div>
@@ -644,11 +615,13 @@ const SystemMonitorWindow = () => {
    WINDOW 3: RUNNING SERVICES (Projects)
 ================================================================ */
 const RunningServicesWindow = () => {
+  const { theme, colors } = useTheme();
+  
   const projects = [
     {
       pid: "PID-001",
       name: "Portfolio Optimization Engine",
-      problem: "People shouldn’t need a quant degree to optimize their portfolios.",
+      problem: "People shouldn't need a quant degree to optimize their portfolios.",
       link: "https://portfolio-optimization-app.vercel.app/",
       github: "https://github.com/bwang257/PortfolioOptimizationApp",
       access: "public"
@@ -678,34 +651,58 @@ const RunningServicesWindow = () => {
   return (
     <div className="p-6 space-y-4">
         {projects.map((project, idx) => (
-          <div key={idx} className="border-l-2 border-[#ff3333] pl-4 py-2">
+          <div key={idx} className="border-l-2 pl-4 py-2" style={{ borderLeftColor: colors.warning }}>
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center gap-2">
                 <div>
-                  <span className="text-xs font-mono text-[#e5e5e5]/60 uppercase tracking-wider">{project.pid}</span>
-                  <span className="text-sm font-mono text-[#e5e5e5] ml-2 tracking-tight">{project.name}</span>
+                  <span className="text-xs font-mono uppercase tracking-wider" style={{ color: colors.textMuted }}>{project.pid}</span>
+                  <span className="text-sm font-mono ml-2 tracking-tight" style={{ color: colors.text }}>{project.name}</span>
                 </div>
                 {project.access === "private" && (
-                  <span className="text-xs font-mono text-[#e5e5e5]/40 bg-white/5 px-2 py-0.5 rounded-sm border border-white/10 uppercase tracking-wider">
+                  <span 
+                    className="text-xs font-mono px-2 py-0.5 rounded-sm border uppercase tracking-wider"
+                    style={{ 
+                      color: colors.textMutedLight,
+                      backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                      borderColor: colors.border
+                    }}
+                  >
                     [CLASSIFIED / ACADEMIC]
                   </span>
                 )}
               </div>
               <div className="flex gap-2">
                 {project.link && (
-                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#e5e5e5]">
+                  <a 
+                    href={project.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ color: colors.textMuted }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = colors.text}
+                    onMouseLeave={(e) => e.currentTarget.style.color = colors.textMuted}
+                  >
                     <ExternalLink size={14} />
                   </a>
                 )}
                 {project.github && project.access === "public" && (
-                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-[#e5e5e5]/60 hover:text-[#e5e5e5]">
+                  <a 
+                    href={project.github} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    style={{ color: colors.textMuted }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = colors.text}
+                    onMouseLeave={(e) => e.currentTarget.style.color = colors.textMuted}
+                  >
                     <Github size={14} />
                   </a>
                 )}
                 {project.access === "private" && (
                   <button
                     onClick={handlePrivateRepoClick}
-                    className="text-[#e5e5e5]/30 hover:text-[#ff3333] transition-colors"
+                    style={{ color: colors.textMutedLight }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = colors.warning}
+                    onMouseLeave={(e) => e.currentTarget.style.color = colors.textMutedLight}
+                    className="transition-colors"
                     title="Private Repository"
                   >
                     <Lock size={14} />
@@ -713,7 +710,7 @@ const RunningServicesWindow = () => {
                 )}
               </div>
             </div>
-            <p className="text-xs text-[#e5e5e5]/60 font-mono">
+            <p className="text-xs font-mono" style={{ color: colors.textMuted }}>
               &gt; Problem: {project.problem}
             </p>
           </div>
@@ -723,63 +720,234 @@ const RunningServicesWindow = () => {
 };
 
 /* ===============================================================
-   WINDOW 4: INSTALLED PACKAGES (Skills - Pip List Style)
+   WINDOW 4: INSTALLED PACKAGES (Skills - Two Tier)
 ================================================================ */
 const InstalledPackagesWindow = () => {
-  const skillCategories = {
-    "~/lib/languages/": [
-      { name: "Python", context: "Backend & data" },
-      { name: "Java", context: "OOP & algorithms" },
-      { name: "C/C++", context: "Systems programming" },
-      { name: "JavaScript/TypeScript", context: "Frontend" },
-      { name: "SQL", context: "Databases" },
-      { name: "MATLAB", context: "Numerical computing" },
-      { name: "R", context: "Statistics" }
-    ],
+  const { colors } = useTheme();
   
-    "~/lib/frameworks/": [
+  const primarySkills = {
+    "~/lib/primary/": [
+      { name: "Python", context: "Backend & data pipelines" },
+      { name: "C/C++", context: "Systems programming" },
+      { name: "Java", context: "OOP & algorithms" },
+      { name: "SQL", context: "Database design & optimization" }
+    ]
+  };
+
+  const secondarySkills = {
+    "~/lib/secondary/": [
+      { name: "JavaScript/TypeScript", context: "Frontend" },
       { name: "React", context: "UI framework" },
       { name: "Flask", context: "Python APIs" },
-      { name: "scikit-learn", context: "ML library" },
-      { name: "PyTorch", context: "Deep learning" }
-    ],
-  
-    "~/lib/tools/": [
-      { name: "AWS", context: "Cloud" },
-      { name: "Docker", context: "Containers" },
+      { name: "AWS", context: "Cloud infrastructure" },
+      { name: "Docker", context: "Containerization" },
       { name: "Git", context: "Version control" },
-      { name: "GitHub / GitLab", context: "DevOps" },
-      { name: "Jupyter", context: "Interactive data work" },
-      { name: "Figma", context: "Interface design" },
-      { name: "NumPy", context: "Numerical computing" },
-      { name: "Pandas", context: "Data cleaning & analysis" },
-      { name: "Matplotlib", context: "Visualization" },
-      { name: "Power BI", context: "Analytics" }
+      { name: "NumPy/Pandas", context: "Data analysis" },
+      { name: "MATLAB", context: "Numerical computing" },
+      { name: "PyTorch", context: "Deep learning" },
+      { name: "R", context: "Statistical analysis" }
     ]
   };  
 
   return (
     <div className="p-6">
-      <div className="font-mono text-xs space-y-4">
-        {Object.entries(skillCategories).map(([category, skills]) => (
-          <div key={category}>
-            <div className="text-[#e5e5e5]/40 mb-2">{category}</div>
-            <div className="space-y-1">
-              <div className="grid grid-cols-[1fr_1fr] gap-4 text-[#e5e5e5]/60 mb-1 uppercase tracking-wider">
-              </div>
-              {skills.map((skill, idx) => {
-                return (
-                  <div key={idx} className="grid grid-cols-[1fr_1fr] gap-4 hover:text-[#e5e5e5] transition-colors">
-                    <div className="text-[#e5e5e5]/80">{skill.name}</div>
-                    <div className="text-[#e5e5e5]/60">{skill.context}</div>
-                  </div>
-                );
-              })}
+      <div className="font-mono text-xs space-y-6">
+        {/* Primary Skills */}
+        <div>
+          <div className="mb-3">
+            <div className="text-xs mb-1 uppercase tracking-wider" style={{ color: colors.neutral }}>PRIMARY: I can reason deeply here</div>
+            <div className="h-px" style={{ backgroundColor: colors.neutral }} />
+          </div>
+          {Object.entries(primarySkills).map(([category, skills]) => (
+            <div key={category} className="space-y-1">
+              {skills.map((skill, idx) => (
+                <div key={idx} className="grid grid-cols-[1fr_1fr] gap-4" style={{ color: colors.text }}>
+                  <div style={{ color: colors.text }}>{skill.name}</div>
+                  <div style={{ color: colors.textMuted }}>{skill.context}</div>
+                </div>
+              ))}
             </div>
+          ))}
+        </div>
+
+        {/* Secondary Skills */}
+        <div>
+          <div className="mb-3">
+            <div className="text-xs mb-1 uppercase tracking-wider" style={{ color: colors.neutral }}>SECONDARY: Used when needed</div>
+            <div className="h-px" style={{ backgroundColor: colors.neutral }} />
+          </div>
+          {Object.entries(secondarySkills).map(([category, skills]) => (
+            <div key={category} className="space-y-1">
+              {skills.map((skill, idx) => (
+                <div key={idx} className="grid grid-cols-[1fr_1fr] gap-4" style={{ color: colors.textMuted }}>
+                  <div>{skill.name}</div>
+                  <div style={{ color: colors.textMutedLight }}>{skill.context}</div>
+                </div>
+              ))}
             </div>
           ))}
         </div>
       </div>
+    </div>
+  );
+};
+
+/* ===============================================================
+   WINDOW 5: NOTES (Kernel Log)
+================================================================ */
+const NotesWindow = ({ onOpenNote }) => {
+  const { theme, colors } = useTheme();
+  
+  const notes = [
+    {
+      id: "note-001",
+      title: "Memory Alignment Bug in C Struct",
+      date: "2024-12-15",
+      problem: "Portfolio optimizer crashed with SIGSEGV when processing large datasets.",
+      expected: "Struct members should align on 8-byte boundaries for optimal cache performance.",
+      actual: "Compiler padded struct to 16 bytes but code assumed 12-byte layout.",
+      whyItBroke: "Mixed 32/64-bit assumptions; didn't account for platform-specific padding rules.",
+      takeaway: "Always use sizeof() and offsetof() for layout verification. Prefer compiler directives or standard alignment attributes."
+    },
+    {
+      id: "note-002",
+      title: "Race Condition in Async Portfolio Calculation",
+      date: "2024-11-28",
+      problem: "Optimizer returned different results on consecutive runs with same input.",
+      expected: "Deterministic output given identical seed and inputs.",
+      actual: "Shared state accessed without synchronization; threads overwrote intermediate results.",
+      whyItBroke: "Assumed thread-local variables were isolated; missed shared cache invalidation path.",
+      takeaway: "Use atomic operations or locks for shared mutable state. Consider immutable data structures for parallel algorithms."
+    },
+    {
+      id: "note-003",
+      title: "SQL Query Performance Degradation",
+      date: "2024-10-10",
+      problem: "Dashboard load time increased from 200ms to 8s after adding user filtering.",
+      expected: "Indexed queries should scale sub-linearly with dataset size.",
+      actual: "Query planner chose table scan over index due to incorrect statistics.",
+      whyItBroke: "ANALYZE hadn't run after bulk import; planner used stale cardinality estimates.",
+      takeaway: "Monitor query plans with EXPLAIN ANALYZE. Keep statistics updated, especially after large data changes."
+    }
+  ];
+
+  return (
+    <div className="p-6">
+      <div className="space-y-3">
+        {notes.map((note) => (
+          <button
+            key={note.id}
+            onClick={() => onOpenNote(note)}
+            className="w-full text-left p-3 transition-colors"
+            style={{
+              borderLeftColor: colors.warning,
+              borderLeftWidth: '2px',
+              borderLeftStyle: 'solid',
+              paddingLeft: '1rem'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.02)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            <div className="flex items-start justify-between mb-1">
+              <div className="font-mono text-sm" style={{ color: colors.text }}>
+                {note.title}
+              </div>
+              <div className="font-mono text-xs" style={{ color: colors.neutral }}>
+                {note.date}
+              </div>
+            </div>
+            <div className="font-mono text-xs mt-1" style={{ color: colors.textMuted }}>
+              {note.problem.substring(0, 80)}...
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ===============================================================
+   NOTE MODAL
+================================================================ */
+const NoteModal = ({ note, isOpen, onClose }) => {
+  const { colors, theme } = useTheme();
+  
+  if (!isOpen || !note) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="w-full max-w-2xl rounded-sm shadow-2xl"
+          style={{
+            backgroundColor: colors.bg,
+            borderColor: colors.border,
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            maxHeight: '90vh'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div 
+            className="px-6 py-4 flex items-center justify-between"
+            style={{ borderBottomColor: colors.border, borderBottomWidth: '1px', borderBottomStyle: 'solid' }}
+          >
+            <div>
+              <h3 className="font-mono text-lg font-semibold" style={{ color: colors.text }}>{note.title}</h3>
+              <p className="font-mono text-xs mt-1" style={{ color: colors.neutral }}>{note.date}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-6 h-6 rounded-sm flex items-center justify-center transition-colors"
+              style={{ backgroundColor: colors.warning }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.warningHover}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.warning}
+              aria-label="Close"
+            >
+              <span className="text-white text-xs">×</span>
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 overflow-y-auto font-mono text-sm space-y-6" style={{ maxHeight: 'calc(90vh - 100px)' }}>
+            <div>
+              <h4 className="uppercase tracking-wider mb-2" style={{ color: colors.neutral }}>PROBLEM</h4>
+              <p style={{ color: colors.text }}>{note.problem}</p>
+            </div>
+            <div>
+              <h4 className="uppercase tracking-wider mb-2" style={{ color: colors.neutral }}>EXPECTED</h4>
+              <p style={{ color: colors.text }}>{note.expected}</p>
+            </div>
+            <div>
+              <h4 className="uppercase tracking-wider mb-2" style={{ color: colors.neutral }}>ACTUAL</h4>
+              <p style={{ color: colors.text }}>{note.actual}</p>
+            </div>
+            <div>
+              <h4 className="uppercase tracking-wider mb-2" style={{ color: colors.neutral }}>WHY IT BROKE</h4>
+              <p style={{ color: colors.text }}>{note.whyItBroke}</p>
+            </div>
+            <div>
+              <h4 className="uppercase tracking-wider mb-2" style={{ color: colors.neutral }}>TAKEAWAY</h4>
+              <p style={{ color: colors.text }}>{note.takeaway}</p>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
@@ -983,11 +1151,14 @@ const Console = () => {
    DOCK (Text-Based Navigation / Taskbar)
 ================================================================ */
 const Dock = ({ windows, toggleWindow }) => {
+  const { colors, theme } = useTheme();
+  
   const domains = [
-    { id: "profile", path: "~/WHOAMI", windowId: "profile" },
     { id: "services", path: "~/WORK", windowId: "services" },
+    { id: "notes", path: "~/NOTES", windowId: "notes" },
     { id: "monitor", path: "~/SYS", windowId: "monitor" },
-    { id: "packages", path: "~/LIB", windowId: "packages" }
+    { id: "packages", path: "~/LIB", windowId: "packages" },
+    { id: "profile", path: "~/WHOAMI", windowId: "profile" }
   ];
 
   const [hoveredPath, setHoveredPath] = useState(null);
@@ -998,7 +1169,16 @@ const Dock = ({ windows, toggleWindow }) => {
   };
 
   return (
-    <div className="fixed left-0 top-12 w-32 bg-[#0c0c0c] border-r border-white/10 z-40 flex flex-col py-6 gap-2" style={{ bottom: '300px' }}>
+    <div 
+      className="fixed left-0 top-12 w-32 z-40 flex flex-col py-6 gap-2" 
+      style={{ 
+        bottom: '300px',
+        backgroundColor: colors.bg,
+        borderRightColor: colors.border,
+        borderRightWidth: '1px',
+        borderRightStyle: 'solid'
+      }}
+    >
       {/* Directories Section */}
       <div className="flex-1">
         {domains.map((domain) => {
@@ -1007,29 +1187,32 @@ const Dock = ({ windows, toggleWindow }) => {
           const isHovered = hoveredPath === domain.path;
           
           // Determine styling based on status
-          let textColor = "text-[#e5e5e5]/30 line-through"; // Closed (default)
+          let textColor = colors.textMutedLight;
+          let textStyle = { color: colors.textMutedLight, textDecoration: 'line-through' };
           let prefix = null;
           
           if (status === 'open') {
-            textColor = "text-[#00ff00]";
+            textStyle = { color: colors.accent };
             prefix = (
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
                 className="mr-2"
+                style={{ color: colors.accent }}
               >
                 &gt;
               </motion.span>
             );
           } else if (status === 'minimized') {
-            textColor = "text-[#e5e5e5]/50";
+            textStyle = { color: colors.textMuted };
             prefix = (
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 0.8, repeat: Infinity }}
                 className="mr-2"
+                style={{ color: colors.textMuted }}
               >
                 _
               </motion.span>
@@ -1038,7 +1221,7 @@ const Dock = ({ windows, toggleWindow }) => {
           
           // Override with hover state
           if (isHovered && status !== 'open') {
-            textColor = "text-[#e5e5e5]/70";
+            textStyle = { color: colors.text };
           }
           
           return (
@@ -1047,7 +1230,8 @@ const Dock = ({ windows, toggleWindow }) => {
               onClick={() => toggleWindow(domain.windowId)}
               onMouseEnter={() => setHoveredPath(domain.path)}
               onMouseLeave={() => setHoveredPath(null)}
-              className={`text-left px-4 py-2 font-mono text-xs transition-all relative uppercase tracking-wider ${textColor}`}
+              className="text-left px-4 py-2 font-mono text-xs transition-all relative uppercase tracking-wider"
+              style={textStyle}
             >
               {prefix}
               <span>{domain.path}</span>
@@ -1057,15 +1241,17 @@ const Dock = ({ windows, toggleWindow }) => {
       </div>
 
       {/* Files Section */}
-      <div className="pt-4 border-t border-white/10 mt-auto">
-        <p className="text-[10px] font-mono text-[#e5e5e5]/30 mb-2 px-4 uppercase tracking-wider">FILES</p>
+      <div 
+        className="pt-4 mt-auto"
+        style={{ borderTopColor: colors.border, borderTopWidth: '1px', borderTopStyle: 'solid' }}
+      >
+        <p className="text-[10px] font-mono mb-2 px-4 uppercase tracking-wider" style={{ color: colors.neutral }}>FILES</p>
         <motion.button
           onClick={handleResumeClick}
           onMouseEnter={() => setHoveredFile('resume')}
           onMouseLeave={() => setHoveredFile(null)}
-          className={`text-left px-4 py-2 font-mono text-xs transition-all relative flex items-center gap-2 ${
-            hoveredFile === 'resume' ? 'text-yellow-500' : 'text-yellow-500/60'
-          }`}
+          className="text-left px-4 py-2 font-mono text-xs transition-all relative flex items-center gap-2"
+          style={{ color: hoveredFile === 'resume' ? colors.info : `${colors.info}99` }}
         >
           <FileText size={12} />
           <span className="uppercase tracking-wider">resume.pdf</span>
@@ -1092,17 +1278,6 @@ const CommandPalette = ({ isOpen, onClose, windows, toggleWindow, onResumeClick 
 
   const commands = [
     {
-      id: "profile",
-      label: "Open Profile",
-      description: "View user profile and contact info",
-      windowId: "profile",
-      action: () => {
-        toggleWindow("profile");
-        onClose();
-      },
-      keywords: ["profile", "whoami", "about", "contact"]
-    },
-    {
       id: "services",
       label: "Open Projects",
       description: "View running services and projects",
@@ -1114,15 +1289,26 @@ const CommandPalette = ({ isOpen, onClose, windows, toggleWindow, onResumeClick 
       keywords: ["projects", "services", "work", "portfolio"]
     },
     {
+      id: "notes",
+      label: "Open Notes",
+      description: "View technical notes and debugging logs",
+      windowId: "notes",
+      action: () => {
+        toggleWindow("notes");
+        onClose();
+      },
+      keywords: ["notes", "kernel", "log", "debug", "technical"]
+    },
+    {
       id: "monitor",
       label: "Open System Monitor",
-      description: "View active processes and career goals",
+      description: "View active processes and current focus",
       windowId: "monitor",
       action: () => {
         toggleWindow("monitor");
         onClose();
       },
-      keywords: ["monitor", "sys", "system", "processes", "goals"]
+      keywords: ["monitor", "sys", "system", "processes", "focus"]
     },
     {
       id: "packages",
@@ -1134,6 +1320,17 @@ const CommandPalette = ({ isOpen, onClose, windows, toggleWindow, onResumeClick 
         onClose();
       },
       keywords: ["skills", "packages", "lib", "tools", "tech"]
+    },
+    {
+      id: "profile",
+      label: "Open Profile",
+      description: "View user profile and contact info",
+      windowId: "profile",
+      action: () => {
+        toggleWindow("profile");
+        onClose();
+      },
+      keywords: ["profile", "whoami", "about", "contact"]
     },
     {
       id: "resume",
@@ -1341,11 +1538,42 @@ const CommandPalette = ({ isOpen, onClose, windows, toggleWindow, onResumeClick 
    MAIN APP COMPONENT
 ================================================================ */
 export default function App() {
+  const [selectedNote, setSelectedNote] = useState(null);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+
+  const handleOpenNote = (note) => {
+    setSelectedNote(note);
+    setIsNoteModalOpen(true);
+  };
+
+  const handleCloseNote = () => {
+    setIsNoteModalOpen(false);
+    setSelectedNote(null);
+  };
+
+  const getWindowContent = (windowId) => {
+    switch (windowId) {
+      case "services":
+        return <RunningServicesWindow />;
+      case "notes":
+        return <NotesWindow onOpenNote={handleOpenNote} />;
+      case "monitor":
+        return <SystemMonitorWindow />;
+      case "packages":
+        return <InstalledPackagesWindow />;
+      case "profile":
+        return <UserProfileWindow />;
+      default:
+        return null;
+    }
+  };
+
   const [windows, setWindows] = useState([
-    { id: "profile", status: "open", isMaximized: false, title: "user_profile.txt", content: <UserProfileWindow />, width: null, height: 700 },
-    { id: "monitor", status: "open", isMaximized: false, title: "system_monitor.log", content: <SystemMonitorWindow />, width: null, height: 620 },
-    { id: "services", status: "open", isMaximized: false, title: "running_services.log", content: <RunningServicesWindow />, width: null, height: 460 },
-    { id: "packages", status: "open", isMaximized: false, title: "installed_packages.txt", content: <InstalledPackagesWindow />, width: null, height: 670 }
+    { id: "services", status: "open", isMaximized: false, title: "running_services.log", width: null, height: 460 },
+    { id: "notes", status: "open", isMaximized: false, title: "kernel_log.txt", width: null, height: 420 },
+    { id: "monitor", status: "open", isMaximized: false, title: "system_monitor.log", width: null, height: 380 },
+    { id: "packages", status: "open", isMaximized: false, title: "installed_packages.txt", width: null, height: 600 },
+    { id: "profile", status: "open", isMaximized: false, title: "user_profile.txt", width: null, height: 520 }
   ]);
 
   const updateWindowSize = (windowId, width, height) => {
@@ -1433,6 +1661,15 @@ export default function App() {
 
   const { colors } = useTheme();
 
+  // Safety check - if colors is not defined, use fallback
+  if (!colors || !colors.bg) {
+    return (
+      <div className="min-h-screen font-mono p-4" style={{ backgroundColor: '#0c0c0c', color: '#e5e5e5' }}>
+        <p>Loading theme...</p>
+      </div>
+    );
+  }
+
   return (
     <div 
       className="min-h-screen font-mono overflow-hidden"
@@ -1451,6 +1688,11 @@ export default function App() {
         windows={windows}
         toggleWindow={toggleWindow}
         onResumeClick={handleResumeClick}
+      />
+      <NoteModal
+        note={selectedNote}
+        isOpen={isNoteModalOpen}
+        onClose={handleCloseNote}
       />
       
       <main className="ml-32 mt-12 p-4 overflow-y-auto relative" style={{ paddingBottom: 'calc(300px + 1rem)' }}>
@@ -1475,7 +1717,7 @@ export default function App() {
                   onSizeChange={(width, height) => updateWindowSize(window.id, width, height)}
                   onPositionChange={(x, y) => updateWindowPosition(window.id, x, y)}
                 >
-                  {window.content}
+                  {getWindowContent(window.id)}
                 </Window>
               ))}
           </div>
@@ -1499,7 +1741,7 @@ export default function App() {
                 onSizeChange={(width, height) => updateWindowSize(window.id, width, height)}
                 onPositionChange={(x, y) => updateWindowPosition(window.id, x, y)}
               >
-                {window.content}
+                {getWindowContent(window.id)}
               </Window>
             ))}
           {/* Render maximized windows separately (outside grid) */}
@@ -1519,7 +1761,7 @@ export default function App() {
                 onMaximize={() => maximizeWindow(window.id)}
                 onSizeChange={(width, height) => updateWindowSize(window.id, width, height)}
               >
-                {window.content}
+                {getWindowContent(window.id)}
               </Window>
             ))}
         </div>

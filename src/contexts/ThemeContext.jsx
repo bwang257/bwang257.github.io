@@ -24,10 +24,11 @@ export const themes = {
       border: 'rgba(255, 255, 255, 0.1)',
       accent: '#00ff00',
       accentHover: '#33ff33',
-      warning: '#ff3333',
-      warningHover: '#ff5555',
+      warning: '#cc4444',
+      warningHover: '#dd5555',
       info: '#ffaa00',
       infoHover: '#ffcc00',
+      neutral: '#888888',
     }
   },
   light: {
@@ -43,10 +44,11 @@ export const themes = {
       border: 'rgba(0, 0, 0, 0.1)',
       accent: '#00aa00',
       accentHover: '#00cc00',
-      warning: '#cc0000',
-      warningHover: '#ee0000',
+      warning: '#aa3333',
+      warningHover: '#bb4444',
       info: '#cc8800',
       infoHover: '#eeaa00',
+      neutral: '#666666',
     }
   }
 };
