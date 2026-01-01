@@ -11,44 +11,56 @@ export const useTheme = () => {
 };
 
 export const themes = {
-  dark: {
-    name: 'Dark',
-    colors: {
-      bg: '#0c0c0c',
-      bgSecondary: 'rgba(12, 12, 12, 0.95)',
-      bgTertiary: 'rgba(12, 12, 12, 0.5)',
-      text: '#e5e5e5',
-      textSecondary: '#e5e5e5',
-      textMuted: 'rgba(229, 229, 229, 0.6)',
-      textMutedLight: 'rgba(229, 229, 229, 0.4)',
-      border: 'rgba(255, 255, 255, 0.1)',
-      accent: '#00ff00',
-      accentHover: '#33ff33',
-      warning: '#cc4444',
-      warningHover: '#dd5555',
-      info: '#ffaa00',
-      infoHover: '#ffcc00',
-      neutral: '#888888',
-    }
-  },
   light: {
     name: 'Light',
     colors: {
-      bg: '#f5f5f5',
-      bgSecondary: 'rgba(245, 245, 245, 0.95)',
-      bgTertiary: 'rgba(245, 245, 245, 0.5)',
-      text: '#1a1a1a',
-      textSecondary: '#2a2a2a',
-      textMuted: 'rgba(26, 26, 26, 0.6)',
-      textMutedLight: 'rgba(26, 26, 26, 0.4)',
-      border: 'rgba(0, 0, 0, 0.1)',
-      accent: '#00aa00',
-      accentHover: '#00cc00',
-      warning: '#aa3333',
-      warningHover: '#bb4444',
-      info: '#cc8800',
-      infoHover: '#eeaa00',
-      neutral: '#666666',
+      // Canvas + Surfaces
+      bg: '#f3f4f6', // neutral gray canvas
+      bgSecondary: '#ffffff', // white cards
+      bgTertiary: '#fafafa', // optional secondary surface
+      // Typography
+      text: '#374151', // body text
+      textSecondary: '#111827', // headings
+      textMuted: '#6b7280', // secondary/meta text
+      textMutedLight: '#9ca3af', // tertiary text
+      // Borders
+      border: '#e5e7eb', // borders
+      divider: '#e5e7eb', // dividers
+      // Accent
+      accent: '#15803d', // professional green
+      accentHover: '#166534', // darker green for hover
+      // Shadows (for CSS use)
+      shadowCard: '0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)',
+      shadowCardHover: '0 2px 6px rgba(0,0,0,0.06), 0 12px 30px rgba(0,0,0,0.10)',
+      // Legacy support
+      warning: '#15803d',
+      warningHover: '#166534',
+      info: '#15803d',
+      infoHover: '#166534',
+      neutral: '#6b7280',
+    }
+  },
+  dark: {
+    name: 'Dark',
+    colors: {
+      bg: '#0f1115',
+      bgSecondary: '#111827',
+      bgTertiary: 'rgba(255, 255, 255, 0.02)',
+      text: '#e5e7eb',
+      textSecondary: '#e5e7eb',
+      textMuted: '#9ca3af',
+      textMutedLight: '#6b7280',
+      border: 'rgba(255, 255, 255, 0.08)',
+      divider: 'rgba(255, 255, 255, 0.06)',
+      accent: '#22c55e',
+      accentHover: '#16a34a',
+      shadowCard: '0 1px 2px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.3)',
+      shadowCardHover: '0 2px 6px rgba(0,0,0,0.3), 0 12px 30px rgba(0,0,0,0.4)',
+      warning: '#22c55e',
+      warningHover: '#16a34a',
+      info: '#22c55e',
+      infoHover: '#16a34a',
+      neutral: '#6b7280',
     }
   }
 };
@@ -56,7 +68,7 @@ export const themes = {
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('theme');
-    return saved === 'light' ? 'light' : 'dark';
+    return saved === 'dark' ? 'dark' : 'light'; // Default to light theme
   });
 
   useEffect(() => {
