@@ -30,7 +30,7 @@ auto match(Order& bid, Order& ask) -> Trade {
               Brian Wang
             </h1>
           </div>
-          <p className="text-lg text-slate-300 leading-relaxed">
+          <p className="text-lg text-slate-300 leading-relaxed break-words">
             I'm a sophomore at Worcester Polytechnic Institute (WPI) studying CS and Mathematics with an interest in performance, correctness, and applied data problems. 
             <br />
             <br />
@@ -50,7 +50,7 @@ auto match(Order& bid, Order& ask) -> Trade {
         <div className="mt-8 pt-8 border-t border-white/10">
           <div className="space-y-3">
             {/* LinkedIn / GitHub / Email Row */}
-            <div className="flex items-center gap-4 text-sm">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm">
               <a
                 href="https://www.linkedin.com/in/brian-wang-372"
                 target="_blank"
@@ -77,7 +77,7 @@ auto match(Order& bid, Order& ask) -> Trade {
               <span className="text-slate-600">/</span>
               <a
                 href="mailto:brian.wang372@gmail.com"
-                className="text-slate-400 hover:text-blue-400 transition-colors"
+                className="text-slate-400 hover:text-blue-400 transition-colors break-all"
               >
                 brian.wang372@gmail.com
               </a>
@@ -129,7 +129,7 @@ auto match(Order& bid, Order& ask) -> Trade {
                   <div className="flex items-center justify-between gap-4 mb-3">
                     <Link
                       href={`/projects/${project.slug}`}
-                      className="text-2xl font-medium text-white group-hover:text-blue-100 transition-colors hover:underline"
+                      className="text-2xl font-medium text-white group-hover:text-blue-100 transition-colors hover:underline break-words"
                     >
                       {project.title}
                     </Link>
@@ -156,7 +156,7 @@ auto match(Order& bid, Order& ask) -> Trade {
                   {/* Description - Markdown */}
                   <Link
                     href={`/projects/${project.slug}`}
-                    className="block text-base text-slate-300 leading-relaxed mb-4 group-hover:text-slate-200 transition-colors"
+                    className="block text-base text-slate-300 leading-relaxed mb-4 group-hover:text-slate-200 transition-colors break-words"
                   >
                     <ReactMarkdown
                       components={{
