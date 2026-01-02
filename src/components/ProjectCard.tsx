@@ -48,12 +48,12 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Right Column: Metadata */}
         <div className="flex flex-col">
-          {project.constraints && project.constraints.length > 0 && (
+          {project.tools && project.tools.length > 0 && (
             <div>
               <div className="text-xs text-slate-500 mb-2 font-mono uppercase tracking-wide">
-                Constraints
+                Tools
               </div>
-              <ConstraintTags constraints={project.constraints} />
+              <ConstraintTags constraints={project.tools} />
             </div>
           )}
         </div>

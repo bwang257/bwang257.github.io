@@ -7,14 +7,14 @@ interface ProjectRowProps {
 }
 
 export default function ProjectRow({ project }: ProjectRowProps) {
-  // Merge constraints into description - take first 2 key constraints
-  const keyConstraints = project.constraints?.slice(0, 2) || [];
-  const constraintsText = keyConstraints.length > 0 
-    ? keyConstraints.join(' and ').toLowerCase()
+  // Merge tools into description - take first 2 key tools
+  const keyTools = project.tools?.slice(0, 2) || [];
+  const toolsText = keyTools.length > 0 
+    ? keyTools.join(' and ').toLowerCase()
     : '';
   
-  const description = constraintsText 
-    ? `${project.summary.replace(/\.$/, '')} featuring **${constraintsText}**.`
+  const description = toolsText 
+    ? `${project.summary.replace(/\.$/, '')} built with **${toolsText}**.`
     : project.summary;
 
   // Get tech stack from common patterns or use placeholder

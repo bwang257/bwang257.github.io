@@ -1,31 +1,66 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { projects } from '@/lib/projects';
+import ReactMarkdown from 'react-markdown';
 
 export default function HomePage() {
-  // Get tech stack for each project
-  const getTechStack = (project: typeof projects[0]) => {
-    if (project.slug.includes('exchange')) {
-      return 'C++';
-    } else if (project.slug.includes('portfolio')) {
-      return 'Python';
-    } else if (project.slug.includes('trading')) {
-      return 'Python';
-    } else if (project.slug.includes('internship')) {
-      return 'TypeScript / Postgres';
-    }
-    return '';
-  };
-
-
-  const exchangeSimulatorCode = `// Deterministic Matching
+  // Technical visual anchors - code snippets for each project
+  const projectCodeSnippets: Record<string, { code: string; color: string }> = {
+    'exchange-simulator': {
+      code: `// Deterministic Matching
 auto match(Order& bid, Order& ask) -> Trade {
   if (bid.price >= ask.price) {
     auto quantity = std::min(bid.quantity, ask.quantity);
     return Trade{bid.price, quantity};
   }
   return Trade{};
-}`;
+}`,
+      color: 'text-green-400'
+    },
+    'portfolio-optimization-engine': {
+      code: `# Markowitz Optimization
+def optimize_portfolio(returns, target_return):
+    cov = np.cov(returns.T)
+    n = len(returns.columns)
+    
+    # Minimize: w^T Σ w
+    # Subject to: w^T μ = target_return
+    #              Σw = 1, w >= 0
+    
+    result = minimize(
+        portfolio_variance, x0, 
+        method='SLSQP',
+        constraints=constraints
+    )
+    return result.x`,
+      color: 'text-yellow-400'
+    },
+    'algorithmic-trading-system': {
+      code: `# Event-Driven Strategy
+class MeanReversionStrategy(Strategy):
+    def on_tick(self, price_data):
+        sma = price_data.close.rolling(20).mean()
+        
+        if price_data.close[-1] < sma[-1] * 0.95:
+            self.buy(quantity=100)
+        elif price_data.close[-1] > sma[-1] * 1.05:
+            self.sell(quantity=100)`,
+      color: 'text-blue-400'
+    },
+    'internship-tracker': {
+      code: `// Optimized Query with Indexes
+async function getUserApplications(userId: string) {
+  return await db.query(
+    \`SELECT * FROM applications 
+     WHERE user_id = $1 
+     AND status != 'archived'
+     ORDER BY created_at DESC\`,
+    [userId]
+  );
+}`,
+      color: 'text-purple-400'
+    }
+  };
 
   return (
     <div className="grid md:grid-cols-12 gap-8 md:gap-12">
@@ -33,34 +68,15 @@ auto match(Order& bid, Order& ask) -> Trade {
       <aside className="md:col-span-5 md:sticky md:top-24 md:h-fit">
         <header className="mb-10">
           <div className="mb-4">
-            {/* <Image
-              src="/profile.png"
-              alt="Brian Wang"
-              width={100}
-              height={100}
-              className="rounded-full mb-6 object-cover"
-              priority
-            /> */}
             <h1 className="text-5xl font-serif font-bold text-white leading-tight mb-2">
               Brian Wang
             </h1>
-            <div className="flex items-center gap-2 mt-3">
-              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
-                Systems Engineer
-              </span>
-              <span className="text-slate-600">·</span>
-              <span className="text-xs font-mono text-slate-500 uppercase tracking-wider">
-                Quant Developer
-              </span>
-            </div>
           </div>
-          <p className="text-base font-mono text-slate-400 mb-6 leading-relaxed">
-            @ WPI · Building systems where correctness meets performance
-          </p>
           <p className="text-lg text-slate-300 leading-relaxed">
-            I architect deterministic, low-latency systems. Currently focused on matching engines, 
-            optimization algorithms, and production-grade data pipelines using <strong className="text-white font-semibold">C++</strong>, <strong className="text-white font-semibold">Rust</strong>, and <strong className="text-white font-semibold">Python</strong>. 
-            <span className="text-slate-500"> Every system I build prioritizes correctness, then speed.</span>
+            I'm an early-career systems developer focused on deterministic, correctness-first design.
+            <br />
+            <br />
+            I'm narrowing my work around systems where correctness and predictable behavior are specified before performance tuning, as reflected in my exchange simulator and supporting infrastructure.
           </p>
         </header>
 
@@ -85,18 +101,35 @@ auto match(Order& bid, Order& ask) -> Trade {
               GitHub
             </a>
             <span>/</span>
-            <span>brian.wang372@gmail.com</span>
+            <a
+              href="mailto:brian.wang372@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors"
+            >
+              brian.wang372@gmail.com
+            </a>
           </div>
         </div>
       </aside>
 
       {/* Right Column (Col-Span-7, ~60%): Projects */}
       <main className="md:col-span-7">
-        <h2 className="text-3xl font-serif font-bold text-white mb-8">Projects</h2>
+        <h2 className="text-4xl font-serif font-bold text-white mb-4">Projects</h2>
         <section className="space-y-0">
           {projects.map((project, idx) => {
-            const techStack = getTechStack(project);
-            const isExchangeSimulator = project.slug.includes('exchange');
+            const codeSnippet = projectCodeSnippets[project.slug];
+            const projectColor = codeSnippet?.color || 'text-green-400';
+            
+            // Generate a subtle gradient border color based on project
+            const borderColors: Record<string, string> = {
+              'exchange-simulator': 'hover:border-l-green-500/50',
+              'portfolio-optimization-engine': 'hover:border-l-yellow-500/50',
+              'algorithmic-trading-system': 'hover:border-l-blue-500/50',
+              'internship-tracker': 'hover:border-l-purple-500/50'
+            };
+            
+            const borderColor = borderColors[project.slug] || 'hover:border-l-blue-400/50';
 
             return (
               <Link
@@ -105,47 +138,91 @@ auto match(Order& bid, Order& ask) -> Trade {
                 className="block group"
               >
                 <article
-                  className={`relative py-8 px-6 -mx-6 border-b border-white/5 transition-all duration-300 hover:bg-white/[0.03] hover:border-l-2 hover:border-l-blue-400/50 ${idx === projects.length - 1 ? 'border-b-0' : ''}`}
+                  className={`relative py-8 px-6 -mx-6 border-b border-white/5 transition-all duration-300 hover:bg-gradient-to-r hover:from-white/[0.02] hover:to-transparent hover:border-l-2 ${borderColor} ${idx === projects.length - 1 ? 'border-b-0' : ''}`}
                 >
                   {/* Title */}
                   <div className="mb-4">
                     <h2 className="text-2xl font-medium text-white group-hover:text-blue-100 transition-colors mb-3">
                       {project.title}
                     </h2>
+                    
+                    {/* Tools Section */}
+                    {project.tools && project.tools.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {project.tools.map((tool, toolIdx) => (
+                          <span
+                            key={toolIdx}
+                            className="text-xs font-mono px-2 py-1 bg-white/5 border border-white/10 rounded text-slate-400 group-hover:text-slate-300 group-hover:border-white/20 transition-all duration-200"
+                          >
+                            {tool}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Description */}
-                  <p className="text-base text-slate-300 leading-relaxed mb-4 group-hover:text-slate-200 transition-colors">
-                    {project.summary}
-                  </p>
+                  {/* Description - Markdown */}
+                  <div className="text-base text-slate-300 leading-relaxed mb-4 group-hover:text-slate-200 transition-colors">
+                    <ReactMarkdown
+                      components={{
+                        p({ children }) {
+                          return <p className="mb-0">{children}</p>;
+                        },
+                        strong({ children }) {
+                          return <strong className="font-semibold text-white">{children}</strong>;
+                        },
+                        em({ children }) {
+                          return <em className="italic">{children}</em>;
+                        },
+                        code({ inline, children, ...props }: any) {
+                          return inline ? (
+                            <code className="bg-white/10 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                              {children}
+                            </code>
+                          ) : (
+                            <code {...props}>{children}</code>
+                          );
+                        },
+                        ul({ children }) {
+                          return <ul className="list-disc list-inside my-2 space-y-1">{children}</ul>;
+                        },
+                        ol({ children }) {
+                          return <ol className="list-decimal list-inside my-2 space-y-1">{children}</ol>;
+                        },
+                        li({ children }) {
+                          return <li className="ml-2">{children}</li>;
+                        },
+                        a({ href, children, ...props }: any) {
+                          return (
+                            <a
+                              href={href}
+                              className="text-blue-400 hover:text-blue-300 underline"
+                              {...props}
+                            >
+                              {children}
+                            </a>
+                          );
+                        },
+                      }}
+                    >
+                      {project.summary}
+                    </ReactMarkdown>
+                  </div>
 
-                  {/* Code Snippet (Exchange Simulator only) */}
-                  {isExchangeSimulator && (
-                    <div className="mb-6">
-                      <pre className="bg-black/60 border border-white/10 rounded-lg p-5 overflow-x-auto group-hover:border-white/20 transition-colors">
-                        <code className="text-sm font-mono text-green-400 leading-relaxed">
-                          {exchangeSimulatorCode}
+                  {/* Code Snippet - All Projects Now Have Visual Anchors */}
+                  {codeSnippet && (
+                    <div className="mb-6 relative">
+                      <div className="absolute -left-2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <pre className="bg-gradient-to-br from-black/70 via-black/60 to-black/70 border border-white/10 rounded-lg p-5 overflow-x-auto group-hover:border-white/20 group-hover:shadow-lg group-hover:shadow-white/5 transition-all duration-300 relative">
+                        <div className="absolute top-2 right-3 flex gap-1.5 opacity-40 group-hover:opacity-60 transition-opacity">
+                          <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
+                          <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
+                          <div className="w-2 h-2 rounded-full bg-green-500/50"></div>
+                        </div>
+                        <code className={`text-sm font-mono ${projectColor} leading-relaxed block`}>
+                          {codeSnippet.code}
                         </code>
                       </pre>
-                    </div>
-                  )}
-
-                  {/* Constraints/Highlights - Clean tags below description */}
-                  {project.constraints && project.constraints.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.constraints.slice(0, 3).map((constraint) => (
-                        <span
-                          key={constraint}
-                          className="text-xs font-mono text-slate-400 group-hover:text-slate-300 transition-colors"
-                        >
-                          {constraint}
-                        </span>
-                      ))}
-                      {project.constraints.length > 3 && (
-                        <span className="text-xs font-mono text-slate-500">
-                          +{project.constraints.length - 3}
-                        </span>
-                      )}
                     </div>
                   )}
 

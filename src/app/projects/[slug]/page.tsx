@@ -52,12 +52,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <h1 className="text-4xl section-header font-semibold mb-4 text-white">{project.title}</h1>
         <p className="text-lg text-slate-300 mb-6 font-mono">{project.summary}</p>
 
-        {project.constraints && project.constraints.length > 0 && (
+        {project.tools && project.tools.length > 0 && (
           <div className="mb-6">
             <div className="text-xs text-slate-500 mb-2 font-mono uppercase tracking-wide">
-              Constraints
+              Tools
             </div>
-            <ConstraintTags constraints={project.constraints} />
+            <ConstraintTags constraints={project.tools} />
           </div>
         )}
 
