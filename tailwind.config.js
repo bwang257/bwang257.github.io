@@ -1,24 +1,52 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       fontFamily: {
-        mono: ["IBM Plex Mono", "Courier New", "monospace"],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Courier New', 'monospace'],
       },
       colors: {
-        'radar-black': '#0c0c0c',
-        'warning-red': '#ff3333',
-        'off-white': '#e5e5e5',
-        'terminal-green': '#00ff00',
+        accent: {
+          DEFAULT: '#3b82f6', // Electric Blue
+          hover: '#2563eb',
+        },
       },
-      letterSpacing: {
-        'tight': '-0.05em',
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: '65ch',
+            color: '#000000',
+            '[class~="lead"]': {
+              color: '#000000',
+            },
+            a: {
+              color: '#3b82f6',
+              textDecoration: 'underline',
+              '&:hover': {
+                color: '#2563eb',
+              },
+            },
+            code: {
+              color: '#000000',
+              backgroundColor: '#f5f5f5',
+              padding: '0.125rem 0.25rem',
+              borderRadius: '0.25rem',
+              fontFamily: 'JetBrains Mono',
+            },
+            pre: {
+              backgroundColor: '#000000',
+              color: '#ffffff',
+              fontFamily: 'JetBrains Mono',
+            },
+          },
+        },
       },
     },
   },
   plugins: [],
+  darkMode: 'class',
 };

@@ -1,126 +1,63 @@
-import { Link } from 'react-router-dom';
-import { Github, ExternalLink } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
-import { Project } from '../lib/projects';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { Project } from '@/lib/projects';
+import ConstraintTags from './ConstraintTags';
+import EvidenceLinks from './EvidenceLinks';
 
 interface ProjectCardProps {
   project: Project;
-  featured?: boolean;
 }
 
-export function ProjectCard({ project, featured = false }: ProjectCardProps) {
-  const { colors } = useTheme();
-
+export default function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Link
-      to={`/projects/${project.slug}`}
-      className="block group cursor-pointer"
-    >
-      <article
-        className={`p-6 md:p-8 rounded-lg border transition-all duration-150 ${
-          featured ? 'md:p-10' : ''
-        }`}
-        style={{
-          backgroundColor: colors.bgSecondary,
-          borderColor: colors.border,
-          boxShadow: colors.shadowCard
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = colors.accent;
-          e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = colors.shadowCardHover;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = colors.border;
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = colors.shadowCard;
-        }}
-      >
-        <div className="mb-4">
-          <h3
-            className={`font-bold mb-2 tracking-tight ${
-              featured ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'
-            }`}
-            style={{ color: colors.textSecondary }}
-          >
+    <div className="data-card">
+      <div className="grid grid-cols-[70%_30%] gap-6">
+        {/* Left Column: Title, Description, Links */}
+        <div className="flex flex-col">
+          <h3 className="text-lg font-sans font-bold mb-2 text-white">
             {project.title}
           </h3>
-          <p
-            className="text-base md:text-lg mb-4"
-            style={{ color: colors.textMuted }}
-          >
-            {project.subtitle}
+          <p className="text-sm text-slate-300 mb-4 font-mono">
+            {project.summary}
           </p>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-3 mb-4">
-          {project.stack.slice(0, 5).map((tech, idx) => (
-            <span
-              key={idx}
-              className="text-xs px-3 py-1.5 border rounded-md"
-              style={{
-                borderColor: colors.border,
-                color: colors.textMuted,
-                backgroundColor: colors.bgTertiary
-              }}
-            >
-              {tech}
-            </span>
-          ))}
-        </div>
+          {project.facts && project.facts.length > 0 && (
+            <ul className="space-y-1 mb-4 text-xs text-slate-400">
+              {project.facts.map((fact, idx) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <span className="text-slate-600 mt-0.5">•</span>
+                  <span>{fact}</span>
+                </li>
+              ))}
+            </ul>
+          )}
 
-        <div className="flex items-center justify-between pt-4 border-t" style={{ borderTopColor: colors.divider }}>
-          <span
-            className="text-sm flex items-center gap-2 transition-all duration-150 font-medium"
-            style={{ color: colors.accent }}
-          >
-            Read case study
-            <span className="group-hover:translate-x-1 inline-block transition-transform duration-150">
-              →
-            </span>
-          </span>
-          <div className="flex items-center gap-3">
-            {project.links.github && (
-              <a
-                href={project.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="transition-colors duration-150"
-                style={{ color: colors.textMuted }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.accent;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.textMuted;
-                }}
-                aria-label={`View ${project.title} on GitHub`}
+          <div className="mt-auto pt-4 border-t border-slate-800">
+            <div className="flex items-center justify-between">
+              <EvidenceLinks links={project.evidenceLinks} projectSlug={project.slug} />
+              <Link
+                href={`/projects/${project.slug}`}
+                className="inline-flex items-center gap-1 text-xs font-mono text-blue-400 hover:text-blue-300"
               >
-                <Github size={18} />
-              </a>
-            )}
-            {project.links.demo && (
-              <a
-                href={project.links.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="transition-colors duration-150"
-                style={{ color: colors.textMuted }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.accent;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.textMuted;
-                }}
-                aria-label={`View ${project.title} demo`}
-              >
-                <ExternalLink size={18} />
-              </a>
-            )}
+                Read →
+                <ArrowRight size={12} />
+              </Link>
+            </div>
           </div>
         </div>
-      </article>
-    </Link>
+
+        {/* Right Column: Metadata */}
+        <div className="flex flex-col">
+          {project.constraints && project.constraints.length > 0 && (
+            <div>
+              <div className="text-xs text-slate-500 mb-2 font-mono uppercase tracking-wide">
+                Constraints
+              </div>
+              <ConstraintTags constraints={project.constraints} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
