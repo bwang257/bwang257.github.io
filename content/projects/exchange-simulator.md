@@ -7,56 +7,42 @@ tools:
   - "CMake"
   - "Testing"
 evidenceLinks:
-  caseStudy: "/projects/exchange-simulator"
   github: "https://github.com/bwang257/exchange-simulator"
-  tests: "https://github.com/bwang257/exchange-simulator/tree/main/tests"
-  benchmarks: "https://github.com/bwang257/exchange-simulator/tree/main/benchmarks"
-  readme: "https://github.com/bwang257/exchange-simulator/blob/main/README.md"
-facts:
-  - "Price-time priority matching with deterministic results"
-  - "Cancel and modify operations with race condition handling"
-  - "Comprehensive GoogleTest suite covering edge cases"
 ---
 
 ## Impact & Motivation
+I built this project to understand how a basic exchange matching engine works at a systems level and to use it as a structured way to learn modern C++ development practices. The goal was not to build a production exchange, but to implement a correct and readable limit order book, document design decisions, and measure performance in a controlled setting.
 
-Built a production-grade matching engine to understand how exchanges process millions of orders per second while maintaining correctness under concurrent load. This project demonstrates deep systems programming skills—handling lock-free data structures, atomic operations, and deterministic execution guarantees that are critical for financial systems.
+This project also served as my first experience treating a personal project like an engineering codebase: making disciplined commits, writing clear documentation, and validating behavior with tests and benchmarks.
 
-**Key Achievement:** Implemented a matching engine that processes 2M+ orders/second on a single core with sub-10 microsecond P99 latency, while guaranteeing deterministic results and zero race conditions under concurrent submission.
+## Core Challenges Addressed
 
-## Technical Challenges Solved
+**Correct Price-Time Matching**
+Implemented a FIFO limit order book that matches orders using standard price–time priority rules. This required careful handling of partial fills, order removal, and maintaining consistent state across the order book.
 
-**Deterministic Concurrent Execution:**
-The core challenge was maintaining deterministic matching results while allowing multiple threads to submit orders concurrently. Solved by decoupling concurrent submission (lock-free queue) from sequential matching (single-threaded matcher), ensuring identical order sequences always produce identical results—critical for backtesting and correctness verification.
+**Order Cancellation and Modification:**
+Added support for cancel and modify operations, ensuring that orders are not executed after being cancelled and that modifications preserve correct ordering semantics. This exposed subtle edge cases around order lifecycle management.
 
-**Race Condition in Order Cancellation:**
-Initial implementation allowed orders to be cancelled while being matched, causing double-execution bugs. Fixed by implementing atomic cancellation flags that are checked before order execution, with proper memory barriers to ensure visibility across threads.
-
-**Performance Under Constraints:**
-Achieved high throughput while maintaining correctness guarantees by implementing custom memory allocators, cache-aligned data structures (64-byte alignment), and minimizing heap allocations in the hot path. The lock-free submission queue eliminates mutex contention bottlenecks.
+**Deterministic Execution:**
+Focused on deterministic behavior: given the same sequence of inputs, the simulator produces the same sequence of trades. This constraint simplified reasoning about correctness and made testing more reliable.
 
 ## Architecture & Design Decisions
+**Single-Threaded Matching Engine**
+Chose a single-threaded matching loop to prioritize correctness and simplicity. This avoided concurrency complexity while still allowing me to reason about performance characteristics and algorithmic efficiency.
 
-**Single-Threaded Matching with Concurrent Submission:**
-Chose single-threaded matching to guarantee correctness and determinism, accepting a trade-off in maximum throughput to eliminate complex synchronization and race conditions. This architectural choice prioritizes correctness over raw performance—appropriate for financial systems where correctness is non-negotiable.
+**Event-Driven Design**
+Structured the simulator around explicit events (new order, cancel, modify, trade) to keep the control flow clear and extensible. This made the system easier to test and reason about.
 
-**Lock-Free Order Submission Queue:**
-Implemented a lock-free queue using atomic compare-and-swap operations for queue head/tail pointers. More complex than mutex-protected queues but eliminates blocking and contention, enabling true scalability for high-frequency order submission.
+**Clear Data Structure Boundaries**
+Separated concerns between the order book, matching logic, and input parsing. This reinforced good modular design and made the codebase easier to extend.
 
-**Price-Time Priority Matching:**
-Implemented standard exchange matching logic using custom comparators on priority queues. Price is primary (bids descending, asks ascending), timestamp is secondary. This ensures fair order execution matching real exchange behavior.
-
-## Technical Depth
-
-**Memory Layout & Cache Optimization:**
-Designed data structures with explicit cache line alignment to minimize false sharing and improve cache locality. Used `alignas` directives to ensure 64-byte alignment, reducing cache misses in the critical matching path.
-
-**Atomic Operations & Memory Ordering:**
-Leveraged C++ atomic operations with appropriate memory orderings (acquire/release semantics) to ensure correct visibility of order state across threads without expensive memory fences.
-
-**Comprehensive Testing Strategy:**
-Built 1000+ test cases covering edge cases: empty order books, same-price orders, partial fills, concurrent cancellations, and determinism verification. Tests run the same order sequence twice and verify byte-for-byte identical results.
 
 ## Key Learnings
 
-This project taught me that **correctness must be proven, not assumed**—especially in concurrent systems. The determinism requirement forced rigorous testing and careful consideration of every memory access pattern. Building an exchange simulator revealed engineering challenges that academic papers gloss over: cache line alignment, memory ordering semantics, and the complexity of lock-free data structures.
+This project taught me how much rigor is required even for a “simple” systems problem. I learned the importance of:
+- enforcing invariants explicitly
+- writing tests before trusting behavior
+- documenting assumptions and trade-offs
+- measuring performance instead of guessing
+
+Most importantly, it shifted my mindset from “making it work” to building something that is correct, explainable, and maintainable.

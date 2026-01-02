@@ -21,7 +21,6 @@ export interface Project {
   summary: string; // One-line problem statement
   tools: string[]; // Tools and technologies used
   evidenceLinks: EvidenceLinks;
-  facts: string[]; // 3 verifiable facts without numbers
   // Case study sections
   sections: ProjectSection[];
   order: number; // Order for display (lower numbers appear first)
@@ -32,7 +31,6 @@ interface ProjectFrontmatter {
   summary: string;
   tools: string[];
   evidenceLinks: EvidenceLinks;
-  facts: string[];
   order?: number; // Optional order field for custom ordering
 }
 
@@ -102,7 +100,6 @@ function loadProjects(): Project[] {
         summary: frontmatter.summary,
         tools: frontmatter.tools || [],
         evidenceLinks: frontmatter.evidenceLinks || {},
-        facts: frontmatter.facts || [],
         sections,
         order: frontmatter.order ?? 999 // Default to 999 if no order specified
       };

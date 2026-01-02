@@ -21,17 +21,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {project.summary}
           </p>
 
-          {project.facts && project.facts.length > 0 && (
-            <ul className="space-y-1 mb-4 text-xs text-slate-400">
-              {project.facts.map((fact, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <span className="text-slate-600 mt-0.5">•</span>
-                  <span>{fact}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-
           <div className="mt-auto pt-4 border-t border-slate-800">
             <div className="flex items-center justify-between">
               <EvidenceLinks links={project.evidenceLinks} projectSlug={project.slug} />

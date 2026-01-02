@@ -8,54 +8,59 @@ tools:
 - "JavaScript"
 - "Flask"
 - "AWS"
-evidenceLinks:
-  caseStudy: "/projects/internship-tracker"
-  github: "https://github.com/bwang257/internship-tracker"
-facts:
-  - "Production-deployed scraping pipeline"
-  - "Handles concurrent user sessions"
-  - "Optimized SQL queries for analytics"
 ---
 
 ## Impact & Motivation
+A course project for WPI's Software Engineering Course, this project was built as a team of four to explore what it takes to ship a moderately complex web application end to end. My goal was to learn how to collaborate, plan, and deliver software under real constraints—uncertain requirements, time pressure, and coordination across contributors.
 
-Built a production data pipeline that aggregates internship opportunities from multiple job boards and provides user analytics. This project demonstrates end-to-end system design—from web scraping and data normalization to database optimization and concurrent user handling in a production environment.
+The application helps students track internship applications using lightweight gamification (XP, streaks, leaderboards) to encourage consistent behavior.
 
-**Key Achievement:** Delivered a production-deployed system handling automated data collection, normalization across inconsistent sources, and concurrent user sessions with optimized database queries for analytics.
+## Team Process & Collaboration
 
-## Technical Challenges Solved
+**Scrum/Agile Development Process**
+Worked in short sprints/iterations with clearly scoped tasks and milestones. Features were broken down and tracked using GitHub Issues, with regular check-ins to reassess scope and priorities.
 
-**Data Normalization Across Inconsistent Sources:**
-Different job boards have completely different HTML structures, data formats, and field naming conventions. Solved by building a modular scraper framework where each source has a custom parser but outputs to a normalized schema, enabling consistent downstream processing despite source diversity.
+**Version Control**
+Used Github for:
+- issue tracking
+- feature branches
+- pull requests
 
-**Rate Limiting & Respectful Crawling:**
-Implemented intelligent rate limiting and respectful crawling practices to avoid IP bans while maintaining fresh data. This required balancing crawl frequency with respect for target sites, implementing exponential backoff on errors, and rotating user agents.
+**Stakeholder Communication**
 
-**Database Performance Under Concurrent Load:**
-Optimized SQL queries to handle concurrent user sessions without contention. Achieved through composite indexes on frequently queried columns (user_id, status, created_at), query optimization to reduce table scans, and connection pooling for efficient resource utilization.
+Worked with a TA and course instructor as stakeholders, incorporating feedback on:
+- feature scope
+- usability
+- technical tradeoffs
 
-## Architecture & Design Decisions
+This forced prioritization and scope control rather than continuous feature expansion.
 
-**Modular Scraper Framework:**
-Designed scraper architecture where each job board has an isolated scraper module with error handling and retry logic. This modularity enables adding new sources without affecting existing scrapers and allows independent failure handling.
 
-**Data Normalization Layer:**
-Implemented a normalization layer that transforms source-specific data into a consistent schema. This abstraction enables downstream analytics and filtering to work uniformly across all sources, regardless of origin.
+## Technical Scope
+- Backend: Flask application with role-based user flows, authentication, and CRUD APIs backed by PostgreSQL via SQLAlchemy
+- Database: Relational schema with many-to-many relationships, managed with migrations and basic indexing
+- Gamification: Simple XP, leveling, streaks, and badge logic implemented at the application layer
+- Web Scraping: Modular scraper framework used experimentally to import internship postings into a normalized schema
+- Frontend: Server-rendered pages using Jinja2 and Tailwind CSS with light JavaScript for interactivity
+- Testing: Unit tests covering core model logic and authentication flows
+- Deployment: Dockerized application deployed to AWS, with environment-based configuration
+- Process: Built by a team of four using Scrum-style iteration, GitHub Issues/PRs, and stakeholder feedback; AI tools (Cursor, Copilot) used selectively to accelerate late-stage development
 
-**Background Job Processing:**
-Separated scraping tasks into background jobs that run independently of user requests. This design prevents user-facing latency from blocking on network requests and enables better resource management (dedicated scraping workers vs API workers).
+## Use of AI-Assisted Development
+In the later stages of the project, we deliberately used tools like Cursor and GitHub Copilot to accelerate delivery of remaining features and improve test coverage.
 
-## Technical Depth
-
-**SQL Query Optimization:**
-Analyzed query execution plans and identified bottlenecks—table scans on unindexed columns, N+1 query patterns, and missing composite indexes. Implemented proper indexing strategy and optimized queries to use index-only scans where possible, reducing query time by 80% for common analytics queries.
-
-**Concurrent Session Handling:**
-Designed database access patterns to support concurrent users without lock contention. Used connection pooling to manage database connections efficiently, implemented read replicas for analytics queries where appropriate, and ensured transactions are short-lived to minimize lock duration.
-
-**Error Handling & Resilience:**
-Built robust error handling for network failures, parsing errors, and database issues. Implemented retry logic with exponential backoff, graceful degradation (continue serving cached data if scraping fails), and comprehensive logging for debugging production issues.
+This was a practical lesson in:
+- when AI tooling helps (boilerplate, repetitive patterns)
+- when it doesn’t (design decisions, debugging, coordination)
+- how to integrate AI output responsibly into a shared codebase
 
 ## Key Learnings
 
-This project taught me that **production systems require different thinking than prototypes**—data quality, error handling, and performance under load all become critical. Building a data pipeline revealed the complexity of real-world data: inconsistent formats, rate limits, and the constant tension between data freshness and system stability. The production deployment forced me to think about monitoring, error recovery, and graceful degradation—skills essential for any production system.
+
+This project taught me that shipping software as a team is fundamentally different from building solo projects.
+
+The hardest problems were not algorithmic: 
+- making design decisions early
+- coordinating parallel work
+- delegating tasks effectively
+- communicating progress clearly under time constraints.

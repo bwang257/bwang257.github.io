@@ -1,61 +1,50 @@
 ---
 title: "Algorithmic Trading System"
-summary: "Event-driven backtesting framework with order book simulation and statistical models for trading strategy development."
+summary: "Solo quantitative trading research project that deployed multiple strategies live to study the gap between backtested performance and real-market behavior."
 order: 3
 tools:
   - "Python"
-  - "Pandas"
-  - "NumPy"
-  - "Event-driven architecture"
-  - "Statistical modeling"
+  - "Jupyter"
+  - "Machine Learning"
+  - "Statistical Modeling"
 evidenceLinks:
-  caseStudy: "/projects/algorithmic-trading-system"
   github: "https://github.com/bwang257/IQP-2524-Stock-Market-Simulation"
-facts:
-  - "Event-driven backtesting with no look-ahead bias"
-  - "Price-time priority order matching for realistic execution"
-  - "Deterministic replay for strategy validation"
 ---
 
 ## Impact & Motivation
+This project was an intentional risk: I undertook a junior-level project at WPI solo, deploying live trading strategies with limited prior experience in professional quantitative research. The goal was not to “win” the market, but to experience the full lifecycle of quantitative strategy development—research, implementation, backtesting, live deployment, failure, and post-mortem—under real constraints.
 
-Built a complete backtesting framework from scratch to understand how trading strategies are developed and validated. This project demonstrates the ability to design event-driven systems, implement realistic market simulation, and ensure correctness in data processing—critical skills for quantitative finance and systems programming.
+I pushed strategies into live paper trading to force real feedback. The project provided firsthand exposure to the full quantitative workflow (research, implementation, validation, deployment, monitoring, and post-mortem) revealing gaps between academic models and practical robustness that are not visible in offline experimentation.
 
-**Key Achievement:** Created a framework that enforces temporal correctness (no look-ahead bias) and deterministic replay, enabling reproducible strategy development and validation against known outcomes.
+The outcome was not positive returns, but earned judgment: a clearer understanding of what fragile strategies look like, how quickly assumptions fail, and why robustness matters more than elegance.
 
 ## Technical Challenges Solved
 
-**Eliminating Look-Ahead Bias:**
-The most critical correctness issue in backtesting: strategies must only use data available at each timestamp. Solved by strict event-driven architecture where strategies only access historical data through a time-indexed interface, preventing access to future price data that wouldn't exist in real trading.
+**Strategy Fragility Under Regime Shifts**
+Multiple strategies performed well in historical testing but degraded rapidly in live markets dominated by persistent bullish momentum and event-driven volatility. This highlighted over-reliance on mean reversion assumptions and insufficient regime awareness. Attempts to layer indicators or switch strategies dynamically revealed how complexity can mask, rather than fix, underlying fragility.
 
-**Realistic Order Execution:**
-Implemented price-time priority matching logic matching real exchange behavior. Orders only fill when market price crosses limit price, not immediately—critical for realistic backtesting that accounts for execution risk.
+**Backtest vs Live Disconnect**
+Live deployment exposed issues that were invisible in backtests: delayed reactions to market events, sensitivity to parameter tuning, and unintended behavior under real-time data flow. This forced a shift away from chasing incremental performance improvements toward analyzing failure modes and stress conditions.
 
-**Deterministic Replay:**
-Ensured identical backtest runs produce identical results for strategy validation. Achieved by fixing random seeds, using deterministic data processing, and avoiding non-deterministic operations in the event loop.
+**Overfitting and Signal Leakage Risk**
+Iterating quickly across strategies increased the risk of fitting noise rather than signal. Tools like PCA, OU processes, and regime models were explored, but the project made clear that sophisticated methods do not compensate for weak assumptions or unstable inputs.
 
-## Architecture & Design Decisions
-
-**Event-Driven vs Vectorized:**
-Chose event-driven architecture over vectorized operations for flexibility and realism. Trade-off: slower execution but supports complex strategies with state-dependent logic and realistic order execution. Vectorized would be faster but less flexible.
-
-**Minimal Order Book Simulator:**
-Implemented sufficient order book functionality for backtesting without full exchange simulation complexity. Chose to focus on correctness (price-time priority, realistic fills) over features (level 2 data, advanced order types) appropriate for the scope.
-
-**Strategy Interface Design:**
-Created abstract base class that strategies inherit from, enforcing a clean interface (`on_tick()`, `buy()`, `sell()`) while allowing strategy-specific logic. This separation enabled testing strategies independently and comparing performance.
-
-## Technical Depth
-
-**Temporal Data Processing:**
-Designed the system to process historical price data in strict chronological order, with strategies receiving updates as events. Each strategy maintains its own state (positions, indicators) that updates incrementally—matching how real trading systems operate.
-
-**Performance Metrics Implementation:**
-Correctly implemented financial metrics: Sharpe ratio (risk-adjusted returns), maximum drawdown (peak-to-trough decline), and win rate. Handled edge cases like zero returns (avoid division by zero) and ensured calculations match manual verification.
-
-**Data Structure Choices:**
-Used Pandas DataFrames for time series data (indexed by timestamp) for convenient time-based indexing and operations. Priority queue for events ensures chronological processing. Dictionary-based order book with sorted lists enables efficient price-time priority matching.
+**Operational and Debugging Challenges**
+Running strategies live required monitoring execution, handling platform constraints, and diagnosing unexpected behavior without the safety net of hindsight. Managing deployments, logging, and strategy shutdowns under uncertainty built practical resilience beyond model design.
 
 ## Key Learnings
+**Backtests Are Hypotheses, Not Proof**
+The project reinforced that historical performance is a starting point, not validation. Live markets invalidate assumptions quickly, especially when regimes shift.
 
-This project taught me that **correctness in data processing is non-negotiable**—a single look-ahead bias bug can make an entire backtest meaningless. The event-driven architecture forced me to think carefully about temporal dependencies and state management. Building realistic market simulation revealed the complexity hidden behind simple concepts like "place an order"—execution timing, partial fills, and order priority all matter for accurate backtesting.
+**Complexity Is Not Robustness**
+Adding indicators, models, or learning components does not fix a weak foundation. Several iterations demonstrated that complexity often obscures failure rather than preventing it.
+
+**Judgment Emerges From Exposure**
+Running strategies live forced decisions about when to intervene, when to stop, and when to accept loss as information. This experience recalibrated my tolerance for risk and my definition of progress.
+
+**Failure Is Informative When Treated Rigorously**
+The negative results were not written off. They became constraints guiding future work—what to avoid, what signals are misleading, and where deeper modeling or systems thinking is required.
+
+**Direction Shift**
+This project directly influenced my pivot toward systems, execution, and infrastructure work. Understanding how strategies fail increased my appreciation for determinism, correctness, and control at the system level.
+

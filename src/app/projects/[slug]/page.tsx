@@ -1,10 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowLeft } from 'lucide-react';
 import { getProjectBySlug, projects } from '@/lib/projects';
-import ConstraintTags from '@/components/ConstraintTags';
-import EvidenceLinks from '@/components/EvidenceLinks';
 import CodeBlock from '@/components/CodeBlock';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
@@ -52,12 +49,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       <header className="mb-12 pb-8 border-b border-white/5">
         <h1 className="text-4xl section-header font-semibold mb-4 text-white">{project.title}</h1>
         <p className="text-xl text-slate-300 mb-8 leading-relaxed">{project.summary}</p>
-        
+
         {project.tools && project.tools.length > 0 && (
           <div className="mb-8">
-            <div className="text-sm text-slate-400 mb-4 font-mono uppercase tracking-wide">
-              Tech Stack
-            </div>
             <div className="flex flex-wrap gap-3">
               {project.tools.map((tool, idx) => (
                 <span
@@ -91,8 +85,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       {/* Case Study Sections */}
       <div className="space-y-0">
         {project.sections.map((section, idx) => (
-          <section key={idx} className={idx < project.sections.length - 1 ? 'pb-12 mb-12 border-b border-white/5' : 'pb-12'}>
-            <h2 className="text-2xl section-header font-semibold mb-4 text-white">{section.title}</h2>
+          <section key={idx} className={idx < project.sections.length - 1 ? 'pt-8 pb-8 mb-8 border-b border-white/5' : 'pt-8 pb-8'}>
+            <h2 className="text-2xl section-header font-semibold mb-6 text-white">{section.title}</h2>
             <div className="text-slate-300 leading-relaxed text-lg">
               <ReactMarkdown
                 remarkPlugins={[remarkMath]}
