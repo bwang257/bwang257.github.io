@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { projects } from '@/lib/projects';
 import ReactMarkdown from 'react-markdown';
+import GitHubLink from '@/components/GitHubLink';
 
 export default function HomePage() {
   // Technical visual anchors - code snippets for each project
@@ -16,49 +17,6 @@ auto match(Order& bid, Order& ask) -> Trade {
   return Trade{};
 }`,
       color: 'text-green-400'
-    },
-    'portfolio-optimization-engine': {
-      code: `# Markowitz Optimization
-def optimize_portfolio(returns, target_return):
-    cov = np.cov(returns.T)
-    n = len(returns.columns)
-    
-    # Minimize: w^T Σ w
-    # Subject to: w^T μ = target_return
-    #              Σw = 1, w >= 0
-    
-    result = minimize(
-        portfolio_variance, x0, 
-        method='SLSQP',
-        constraints=constraints
-    )
-    return result.x`,
-      color: 'text-yellow-400'
-    },
-    'algorithmic-trading-system': {
-      code: `# Event-Driven Strategy
-class MeanReversionStrategy(Strategy):
-    def on_tick(self, price_data):
-        sma = price_data.close.rolling(20).mean()
-        
-        if price_data.close[-1] < sma[-1] * 0.95:
-            self.buy(quantity=100)
-        elif price_data.close[-1] > sma[-1] * 1.05:
-            self.sell(quantity=100)`,
-      color: 'text-blue-400'
-    },
-    'internship-tracker': {
-      code: `// Optimized Query with Indexes
-async function getUserApplications(userId: string) {
-  return await db.query(
-    \`SELECT * FROM applications 
-     WHERE user_id = $1 
-     AND status != 'archived'
-     ORDER BY created_at DESC\`,
-    [userId]
-  );
-}`,
-      color: 'text-purple-400'
     }
   };
 
@@ -73,10 +31,10 @@ async function getUserApplications(userId: string) {
             </h1>
           </div>
           <p className="text-lg text-slate-300 leading-relaxed">
-            I'm an early-career systems developer focused on deterministic, correctness-first design.
+            I'm a sophomore at Worcester Polytechnic Institute (WPI) studying CS and Mathematics with an interest in performance, correctness, and applied data problems. 
             <br />
             <br />
-            I'm narrowing my work around systems where correctness and predictable behavior are specified before performance tuning, as reflected in my exchange simulator and supporting infrastructure.
+            I'm narrowing my work around systems where correctness and predictable behavior are specified before performance tuning, as reflected in my exchange simulator and my <a href="https://github.com/bwang257/cpp_learning" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors"> C++ learning repository</a>.
           </p>
         </header>
 
@@ -142,9 +100,14 @@ async function getUserApplications(userId: string) {
                 >
                   {/* Title */}
                   <div className="mb-4">
-                    <h2 className="text-2xl font-medium text-white group-hover:text-blue-100 transition-colors mb-3">
-                      {project.title}
-                    </h2>
+                    <div className="flex items-center justify-between gap-4 mb-3">
+                      <h2 className="text-2xl font-medium text-white group-hover:text-blue-100 transition-colors">
+                        {project.title}
+                      </h2>
+                      {project.evidenceLinks.github && (
+                        <GitHubLink href={project.evidenceLinks.github} />
+                      )}
+                    </div>
                     
                     {/* Tools Section */}
                     {project.tools && project.tools.length > 0 && (
@@ -226,10 +189,11 @@ async function getUserApplications(userId: string) {
                     </div>
                   )}
 
-                  {/* Link - Right Aligned with Arrow */}
-                  <div className="flex items-center justify-end mt-4">
+                  {/* Links - Right Aligned */}
+                  <div className="flex items-center justify-end gap-4 mt-4">
+
                     <span className="text-sm text-slate-500 group-hover:text-blue-400 transition-all inline-flex items-center gap-1 font-medium">
-                      Learn more
+                      Project Details and Takeaways
                       <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </span>
                   </div>
