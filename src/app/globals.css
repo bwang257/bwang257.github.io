@@ -11,32 +11,48 @@
   * {
     @apply border-gray-900;
   }
-
+  
   :root {
     --font-serif: 'Newsreader', serif;
   }
-
+  
   html {
     @apply bg-white text-black dark:bg-[#0B1120] dark:text-white;
-    overflow-x: hidden;
+    width: 100%;
   }
-
+  
   body {
     @apply font-sans antialiased text-base;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Only prevent horizontal scroll */
+    overflow-y: auto; /* Allow vertical scroll */
   }
 
+  p, h1, h2, h3, div {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+
+  pre, code {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-serif);
   }
-
+  
   code, pre {
     @apply font-mono;
   }
-
+  
   a {
     @apply text-accent hover:text-accent-hover transition-colors;
   }
-
+  
   a:focus-visible,
   button:focus-visible {
     @apply outline-2 outline-accent outline-offset-2;

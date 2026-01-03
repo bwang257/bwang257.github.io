@@ -21,16 +21,17 @@ auto match(Order& bid, Order& ask) -> Trade {
   };
 
   return (
-    <div className="grid md:grid-cols-12 gap-8 md:gap-12">
+    <div className="grid md:grid-cols-12 gap-8 md:gap-12 w-full max-w-full">
+      
       {/* Left Column (Col-Span-5, ~40%): Header & Links */}
-      <aside className="md:col-span-5 md:sticky md:top-24 md:h-fit">
-        <header className="mb-10">
-          <div className="mb-4">
-            <h1 className="text-5xl font-serif font-bold text-white leading-tight mb-2">
-              Brian Wang
-            </h1>
-          </div>
-          <p className="text-lg text-slate-300 leading-relaxed break-words">
+        <aside className="md:col-span-5 md:sticky md:top-24 md:h-fit w-full max-w-full overflow-hidden">
+          <header className="mb-10 w-full max-w-full">
+            <div className="mb-4">
+              <h1 className="text-5xl font-serif font-bold text-white leading-tight mb-2 break-words">
+                Brian Wang
+              </h1>
+            </div>
+            <p className="text-lg text-slate-300 leading-relaxed break-words overflow-wrap-anywhere w-full max-w-full">
             I'm a sophomore at Worcester Polytechnic Institute (WPI) studying CS and Mathematics with an interest in performance, correctness, and applied data problems. 
             <br />
             <br />
@@ -42,10 +43,11 @@ auto match(Order& bid, Order& ask) -> Trade {
               className="text-blue-400 hover:text-blue-300 underline transition-colors"
             >
               C++ learning repository
-            </a>.
-          </p>
-        </header>
+            </a>
+            </p>
+          </header>
 
+    
         {/* Contact Links */}
         <div className="mt-8 pt-8 border-t border-white/10">
           <div className="space-y-3">
@@ -102,7 +104,7 @@ auto match(Order& bid, Order& ask) -> Trade {
       </aside>
 
       {/* Right Column (Col-Span-7, ~60%): Projects */}
-      <main className="md:col-span-7">
+      <main className="md:col-span-7 w-full max-w-full overflow-hidden">
         <h2 className="text-4xl font-serif font-bold text-white mb-4">Projects</h2>
         <section className="space-y-0">
           {projects.map((project, idx) => {
