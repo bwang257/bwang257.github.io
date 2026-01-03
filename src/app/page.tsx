@@ -54,7 +54,7 @@ auto match(Order& bid, Order& ask) -> Trade {
             {/* LinkedIn / GitHub / Email Row */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm">
               <a
-                href="https://www.linkedin.com/in/brian-wang-372"
+                href="www.linkedin.com/in/brian372"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-slate-400 hover:text-blue-400 transition-colors flex items-center gap-2"

@@ -31,9 +31,9 @@
   }
 
   p, h1, h2, h3, div {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    hyphens: auto;
+    word-break: normal; /* Only breaks at spaces, not in the middle of words */
+    overflow-wrap: break-word; /* Only breaks long words if absolutely necessary */
+    hyphens: none; /* No hyphens */
   }
 
   pre, code {
