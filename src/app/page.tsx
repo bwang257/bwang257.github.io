@@ -35,15 +35,29 @@ auto match(Order& bid, Order& ask) -> Trade {
             I'm a sophomore at Worcester Polytechnic Institute (WPI) studying CS and Mathematics with an interest in performance, correctness, and applied data problems. 
             <br />
             <br />
-            I'm narrowing my work around systems where correctness and predictable behavior are specified before performance tuning, as reflected in my exchange simulator and my{' '}
+            I’m narrowing my work around correctness-driven systems development, with research and statistical analysis prototyped in Python.
+            <br />
+            <br />
+            This is reflected in my exchange simulator and supporting{' '}
             <a 
               href="https://github.com/bwang257/cpp_learning" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-blue-400 hover:text-blue-300 underline transition-colors"
             >
-              C++ learning repository
+              C++
             </a>
+              {' '}and{' '}
+            <a
+
+              href="https://github.com/bwang257/python_learning"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 underline transition-colors"
+            >
+              Python
+            </a>{' '}
+            learning repositories.
             </p>
           </header>
 
