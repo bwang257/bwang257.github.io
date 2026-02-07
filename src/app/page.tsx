@@ -32,13 +32,14 @@ auto match(Order& bid, Order& ask) -> Trade {
               </h1>
             </div>
             <p className="text-lg text-slate-300 leading-relaxed break-words overflow-wrap-anywhere w-full max-w-full">
-            I'm a sophomore at Worcester Polytechnic Institute (WPI) studying CS and Mathematics with an interest in performance, correctness, and applied data problems. 
+            I'm a second-year CS/Math double major at Worcester Polytechnic Institute (WPI), focused on performance, correctness, and efficiency,
             <br />
             <br />
-            I’m narrowing my work around correctness-driven systems development, with research and statistical analysis prototyped in Python.
+            I am building out my C++ skillset, with a particular focus on systems programming and low-level performance optimization.
+            {/* I am building out my C++ and Python skillsets, with a particular focus on systems programming, low-level performance optimization, and statistical analysis. */}
             <br />
             <br />
-            This is reflected in my exchange simulator and supporting{' '}
+            This is reflected in my supporting{' '}
             <a 
               href="https://github.com/bwang257/cpp_learning" 
               target="_blank" 
@@ -47,7 +48,8 @@ auto match(Order& bid, Order& ask) -> Trade {
             >
               C++
             </a>
-              {' '}and{' '}
+              {' '}
+              {/* {' '}and{' '}
             <a
 
               href="https://github.com/bwang257/python_learning"
@@ -56,8 +58,8 @@ auto match(Order& bid, Order& ask) -> Trade {
               className="text-blue-400 hover:text-blue-300 underline transition-colors"
             >
               Python
-            </a>{' '}
-            learning repositories.
+            </a>{' '} */}
+            learning repository.
             </p>
           </header>
 
