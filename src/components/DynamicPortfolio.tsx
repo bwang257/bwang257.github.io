@@ -59,11 +59,11 @@ function ProjectWindow({ project, delay = 0, disableReveal = false }: { project?
       href={`/projects/${project.slug}`}
       className="window-card block p-8 cursor-pointer group relative overflow-hidden h-full flex flex-col justify-between"
     >
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-text-ghost/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-text-ghost/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-out" />
       <div>
         <div className="flex justify-between items-start mb-4">
-          <h3 className="text-2xl font-medium text-text group-hover:text-accent-warm transition-colors">{project.title}</h3>
-          <span className="text-text-ghost group-hover:text-text transition-colors">↗</span>
+          <h3 className="text-2xl font-medium text-text group-hover:text-accent-warm transition-colors duration-500 ease-out">{project.title}</h3>
+          <span className="text-text-ghost group-hover:text-text transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-500 ease-out">↗</span>
         </div>
         <p className="text-text-muted leading-relaxed mb-8">{project.summary}</p>
       </div>
@@ -88,7 +88,7 @@ function GridOverviewProjects({ exchange, portfolio, algo, tracker }: Props) {
   return (
     <section id="projects" className="py-24 w-full max-w-6xl mx-auto px-6 md:px-12 relative">
       <ScrollReveal offsetMultiplier={0.5}>
-        <SectionHeader title="Selected Work" />
+        <SectionHeader title="Selected Projects" />
       </ScrollReveal>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 mt-16">
@@ -167,17 +167,17 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
                   </p>
                   
                   <div className="flex gap-4 items-center flex-wrap justify-center md:justify-start">
-                    <a href="/resume.pdf" target="_blank" rel="noreferrer" className="px-6 py-3 bg-zinc-900 text-white rounded-full font-medium shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105 transition-all">
+                    <a href="/resume.pdf" target="_blank" rel="noreferrer" className="px-6 py-3 bg-zinc-900 text-white rounded-full font-medium shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-500 ease-out">
                       View Resume
                     </a>
                     <div className="ml-4 flex gap-4">
-                      <a href="https://github.com/bwang257" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white transition-all shadow-sm">
+                      <a href="https://github.com/bwang257" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
                         <Github className="w-5 h-5" />
                       </a>
-                      <a href="https://linkedin.com/in/bwang257" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white transition-all shadow-sm">
+                      <a href="https://linkedin.com/in/bwang257" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
                         <Linkedin className="w-5 h-5" />
                       </a>
-                      <a href="mailto:brian.wang372@gmail.com" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white transition-all shadow-sm">
+                      <a href="mailto:brian.wang372@gmail.com" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
                         <Mail className="w-5 h-5" />
                       </a>
                     </div>
@@ -201,7 +201,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
             <div className="space-y-6 mb-24">
               {EXPERIENCE.map((exp, idx) => (
                 <ScrollReveal key={idx} offsetMultiplier={1 + (idx * 0.2)}>
-                  <div className="window-card p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:-translate-y-1 transition-transform">
+                  <div className="window-card p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
                       <h3 className="text-2xl font-medium text-text mb-1">{exp.role}</h3>
                       <div className="text-accent-warm font-medium mb-3 text-lg">{exp.org}</div>
@@ -218,7 +218,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
             <SectionHeader title="Education" />
             
             <ScrollReveal offsetMultiplier={0.8}>
-              <div className="window-card p-8 md:p-10 relative overflow-hidden transition-all hover:shadow-[0_10px_50px_rgb(0,0,0,0.06)] hover:-translate-y-1">
+              <div className="window-card p-8 md:p-10 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-accent-warm/5 rounded-full blur-[80px] -mr-10 -mt-20 pointer-events-none" />
                 
                 <div className="flex flex-col md:flex-row justify-between mb-12 relative z-10">
@@ -241,7 +241,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
                     </ul>
                   </div>
                   <div>
-                    <div className="text-xs font-mono tracking-widest uppercase text-text-ghost mb-6">Quantitative Mathematics</div>
+                    <div className="text-xs font-mono tracking-widest uppercase text-text-ghost mb-6">Mathematics</div>
                     <ul className="space-y-3">
                       {COURSEWORK.math.map((course) => (
                          <li key={course} className="flex items-start gap-3 text-text font-medium">
