@@ -1,5 +1,5 @@
 ---
-title: "Algorithmic Trading System"
+title: "Quantitative Trading Simulation"
 summary: "Solo quantitative trading research project that deployed multiple strategies live to study the gap between backtested performance and real-market behavior."
 order: 3
 tools:

@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 @import 'katex/dist/katex.min.css';
 
 @tailwind base;
@@ -8,86 +5,83 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply border-gray-900;
-  }
-  
   :root {
-    --font-serif: 'Newsreader', serif;
+    --bg: #F9FAFB;
+    --surface: #FFFFFF;
+    --surface-raised: #FFFFFF;
+    --border: rgba(0, 0, 0, 0.08);
+    --border-subtle: rgba(0, 0, 0, 0.04);
+    --text: #09090B;
+    --text-muted: #52525B;
+    --text-ghost: #A1A1AA;
+    --accent: #2563EB;
+    --accent-warm: #EA580C;
+    --green: #16A34A;
+    --red: #DC2626;
+
+    /* Legacy fallbacks */
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-border: var(--border);
+    --color-text-primary: var(--text);
+    --color-text-muted: var(--text-muted);
   }
-  
+
   html {
-    @apply bg-white text-black dark:bg-[#0B1120] dark:text-white;
-    width: 100%;
+    background-color: var(--bg);
+    color: var(--text);
+    scroll-behavior: smooth;
   }
-  
+
   body {
-    @apply font-sans antialiased text-base;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     margin: 0;
     padding: 0;
     width: 100%;
-    overflow-x: hidden; /* Only prevent horizontal scroll */
-    overflow-y: auto; /* Allow vertical scroll */
+    overflow-x: hidden;
+    /* Beautiful subtle grid for an engineering canvas feel */
+    background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-origin: border-box;
+    background-attachment: fixed;
   }
 
-  p, h1, h2, h3, div {
-    word-break: normal; /* Only breaks at spaces, not in the middle of words */
-    overflow-wrap: break-word; /* Only breaks long words if absolutely necessary */
-    hyphens: none; /* No hyphens */
+  p, h1, h2, h3, h4, h5, h6, div {
+    word-break: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
   }
 
-  pre, code {
-    overflow-x: auto;
-    max-width: 100%;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-serif);
-  }
-  
-  code, pre {
-    @apply font-mono;
-  }
-  
-  a {
-    @apply text-accent hover:text-accent-hover transition-colors;
-  }
-  
   a:focus-visible,
   button:focus-visible {
-    @apply outline-2 outline-accent outline-offset-2;
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-@layer components {
-  .sidebar-link {
-    @apply text-sm text-slate-500 hover:text-slate-300 transition-colors font-medium;
-  }
+/* ── Custom Utilities ── */
 
-  .sidebar-link-active {
-    @apply text-slate-300 font-semibold;
-  }
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255,255,255,0.2);
+}
 
+.window-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
 
-  .badge {
-    @apply inline-flex items-center px-1.5 py-0.5 rounded text-xs font-mono bg-transparent text-slate-300 border border-slate-800;
-  }
-
-  .data-card {
-    @apply border border-slate-800 rounded-lg p-4 bg-transparent hover:border-slate-700 transition-colors;
-  }
-
-  .status-log {
-    @apply bg-[#0f172a]/30 border-l-4 border-blue-400 pl-4 pr-4 py-3 rounded-r font-mono text-sm;
-  }
-
-  .main-content-pattern {
-    background-image: radial-gradient(circle, rgb(30 41 55 / 0.2) 1px, transparent 1px);
-    background-size: 24px 24px;
-  }
-
-  .grid-white-pattern {
-    background-image: radial-gradient(circle, rgb(255 255 255 / 0.02) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
+.window-card:hover {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.15);
 }

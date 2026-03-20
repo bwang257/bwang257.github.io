@@ -6,47 +6,25 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Courier New', 'monospace'],
+        serif: ['"Instrument Serif"', 'serif'],
+        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"Geist Mono"', 'monospace'],
       },
       colors: {
-        accent: {
-          DEFAULT: '#3b82f6', // Electric Blue
-          hover: '#2563eb',
-        },
-      },
-      typography: {
-        DEFAULT: {
-          css: {
-            maxWidth: '65ch',
-            color: '#000000',
-            '[class~="lead"]': {
-              color: '#000000',
-            },
-            a: {
-              color: '#3b82f6',
-              textDecoration: 'underline',
-              '&:hover': {
-                color: '#2563eb',
-              },
-            },
-            code: {
-              color: '#000000',
-              backgroundColor: '#f5f5f5',
-              padding: '0.125rem 0.25rem',
-              borderRadius: '0.25rem',
-              fontFamily: 'JetBrains Mono',
-            },
-            pre: {
-              backgroundColor: '#000000',
-              color: '#ffffff',
-              fontFamily: 'JetBrains Mono',
-            },
-          },
-        },
+        background: 'var(--color-bg)',
+        surface: 'var(--color-surface)',
+        'surface-raised': 'var(--color-surface-raised)',
+        border: 'var(--color-border)',
+        'border-subtle': 'var(--color-border-subtle)',
+        primary: 'var(--color-text-primary)',
+        secondary: 'var(--color-text-secondary)',
+        muted: 'var(--color-text-muted)',
+        accent: 'var(--color-accent)',
+        'accent-warm': 'var(--color-accent-warm)',
+        green: 'var(--color-green)',
       },
     },
   },
   plugins: [],
   darkMode: 'class',
-};
+}

@@ -2,12 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'export',
+  trailingSlash: true,
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true,
   },
-  // If your repo name is not the root, uncomment and set basePath:
-  // basePath: '/brian-portfolio',
-  // trailingSlash: true,
 }
 
 export default nextConfig
