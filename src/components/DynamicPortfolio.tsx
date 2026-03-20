@@ -174,7 +174,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
                       <a href="https://github.com/bwang257" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
                         <Github className="w-5 h-5" />
                       </a>
-                      <a href="https://linkedin.com/in/bwang257" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
+                      <a href="https://www.linkedin.com/in/brian372/" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
                         <Linkedin className="w-5 h-5" />
                       </a>
                       <a href="mailto:brian.wang372@gmail.com" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
@@ -251,6 +251,29 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
                     </ul>
                   </div>
                 </div>
+              </div>
+            </ScrollReveal>
+          </section>
+
+          {/* LET'S CONNECT SECTION */}
+          <section id="contact" className="py-32 w-full max-w-4xl mx-auto px-6 md:px-12 text-center border-t border-black/5 mt-12">
+            <ScrollReveal offsetMultiplier={0.8}>
+              <h2 
+                className="text-5xl md:text-6xl font-medium tracking-tight text-text mb-6"
+                style={{ fontFamily: '"Instrument Serif", serif' }}
+              >
+                Let's build something.
+              </h2>
+              <p className="text-lg md:text-xl text-text-ghost leading-relaxed mb-10 max-w-2xl mx-auto">
+                Whether you have an opportunity in mind, a project to discuss, or just want to chat about math and systems, my inbox is always open.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="mailto:brian.wang372@gmail.com" className="w-full sm:w-auto px-8 py-4 bg-zinc-900 text-white rounded-full font-medium shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-500 ease-out flex items-center justify-center gap-2">
+                  Say Hello <span>↗</span>
+                </a>
+                <a href="https://www.linkedin.com/in/brian372/" target="_blank" rel="noreferrer" className="w-full sm:w-auto px-8 py-4 bg-white border border-black/10 text-text rounded-full font-medium hover:shadow-[0_12px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500 ease-out flex items-center justify-center">
+                  Connect on LinkedIn
+                </a>
               </div>
             </ScrollReveal>
           </section>
