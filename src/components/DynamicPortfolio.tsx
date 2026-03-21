@@ -139,8 +139,8 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
 
       <main className="w-full relative">
         {/* HERO - STICKY PARALLAX SECTION */}
-        <section className="sticky top-0 w-full min-h-[100svh] flex flex-col justify-center px-6 md:px-12 z-0 pb-28 md:pb-0 pt-20 md:pt-0">
-          <div className="max-w-6xl mx-auto w-full mt-4 md:mt-[-10vh]">
+        <section className="sticky top-0 w-full min-h-[100svh] flex flex-col justify-center px-6 md:px-12 z-0 pb-28 md:pb-0 pt-12 md:pt-0">
+          <div className="max-w-6xl mx-auto w-full mt-0 md:mt-[-10vh]">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
