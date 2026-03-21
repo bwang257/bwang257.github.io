@@ -126,21 +126,22 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
       </div>
       {/* Floating Nav */}
       <motion.nav 
-        initial={{ y: -100, opacity: 0 }}
+        initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 glass-panel rounded-full px-6 py-3 flex items-center gap-6"
+        className="fixed bottom-6 md:top-6 md:bottom-auto left-1/2 -translate-x-1/2 z-50 glass-panel rounded-full px-5 md:px-6 py-3 flex items-center gap-4 md:gap-6 shadow-lg shadow-black/5"
       >
-        <div className="font-semibold tracking-tight whitespace-nowrap">Brian Wang</div>
-        <div className="w-px h-4 bg-border" />
-        <a href="#projects" className="text-sm text-text-muted hover:text-text transition-colors font-medium">Projects</a>
-        <a href="#experience" className="text-sm text-text-muted hover:text-text transition-colors font-medium">Experience</a>
+        <div className="font-semibold tracking-tight whitespace-nowrap hidden md:block">Brian Wang</div>
+        <div className="w-px h-4 bg-border hidden md:block" />
+        <a href="#projects" className="text-sm text-text-muted hover:text-text transition-colors font-medium whitespace-nowrap">Projects</a>
+        <a href="#experience" className="text-sm text-text-muted hover:text-text transition-colors font-medium whitespace-nowrap">Experience</a>
+        <a href="#contact" className="text-sm text-text-muted hover:text-text transition-colors font-medium whitespace-nowrap">Contact</a>
       </motion.nav>
 
       <main className="w-full relative">
         {/* HERO - STICKY PARALLAX SECTION */}
         <section className="sticky top-0 w-full min-h-screen flex flex-col justify-center px-6 md:px-12 z-0">
-          <div className="max-w-6xl mx-auto w-full mt-[-10vh]">
+          <div className="max-w-6xl mx-auto w-full mt-[-5vh] md:mt-[-10vh]">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
