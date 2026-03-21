@@ -23,7 +23,7 @@ interface Props {
 // Data
 const EXPERIENCE = [
   { role: 'SWE Intern', org: 'Cyvl.ai', period: 'Summer 2026', desc: 'Geospatial infrastructure startup — AI-powered subsurface mapping for civil engineering.' },
-  { role: 'Tech Sector Analyst', org: 'WPIA', period: '2024–Present', desc: 'Quantitative research and analysis of technology equities based on financial modeling.' },
+  { role: 'Tech Sector Analyst', org: 'WPIA', period: '2025–Present', desc: 'Quantitative research and analysis of technology equities based on financial modeling.' },
   { role: 'Peer Mentor', org: 'SASE', period: '2024–Present', desc: 'Mentoring underclassmen in technical and professional development.' }
 ]
 
@@ -129,19 +129,18 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed bottom-6 md:top-6 md:bottom-auto left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 glass-panel rounded-full px-4 md:px-6 py-3 flex items-center justify-around md:justify-center gap-2 md:gap-6 shadow-lg shadow-black/5"
+        className="fixed bottom-6 md:top-6 md:bottom-auto left-4 right-4 md:right-8 md:left-auto z-50 glass-panel rounded-full px-4 md:px-6 py-3 flex items-center justify-around md:justify-center gap-2 md:gap-6 shadow-lg shadow-black/5"
       >
         <div className="font-semibold tracking-tight whitespace-nowrap hidden md:block">Brian Wang</div>
         <div className="w-px h-4 bg-border hidden md:block" />
         <a href="#projects" className="text-sm text-text-muted hover:text-text transition-colors font-medium whitespace-nowrap">Projects</a>
         <a href="#experience" className="text-sm text-text-muted hover:text-text transition-colors font-medium whitespace-nowrap">Experience</a>
-        <a href="#contact" className="text-sm text-text-muted hover:text-text transition-colors font-medium whitespace-nowrap">Contact</a>
       </motion.nav>
 
       <main className="w-full relative">
         {/* HERO - STICKY PARALLAX SECTION */}
-        <section className="sticky top-0 w-full min-h-[100svh] flex flex-col justify-center px-6 md:px-12 z-0 pb-28 md:pb-0">
-          <div className="max-w-6xl mx-auto w-full mt-[-5vh] md:mt-[-10vh]">
+        <section className="sticky top-0 w-full min-h-[100svh] flex flex-col justify-center px-6 md:px-12 z-0 pb-28 md:pb-0 pt-20 md:pt-0">
+          <div className="max-w-6xl mx-auto w-full mt-4 md:mt-[-10vh]">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -164,7 +163,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
                   
                   <p className="text-xl md:text-2xl text-text-ghost max-w-2xl leading-relaxed font-light mb-10 mx-auto md:mx-0">
                     Math & CS student at WPI. <br className="hidden md:block"/>
-                    My interests lie in <strong className="font-medium text-text">low latency, systems, stochastic processes</strong>, and <strong className="font-medium text-text">financial mathematics.</strong>
+                    My interests lie in <strong className="font-medium text-text">low latency systems, stochastic processes</strong>, and <strong className="font-medium text-text">financial mathematics.</strong>
                   </p>
                   
                   <div className="flex gap-4 items-center flex-wrap justify-center md:justify-start">
@@ -257,23 +256,25 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
           </section>
 
           {/* LET'S CONNECT SECTION */}
-          <section id="contact" className="py-32 w-full max-w-4xl mx-auto px-6 md:px-12 text-center border-t border-black/5 mt-12">
+          <section id="contact" className="py-32 w-full max-w-4xl mx-auto px-6 md:px-12 text-center border-t border-black/5 mt-20">
             <ScrollReveal offsetMultiplier={0.8}>
               <h2 
-                className="text-4xl md:text-6xl font-medium tracking-tight text-text mb-6"
+                className="text-5xl md:text-6xl font-medium tracking-tight mb-8 text-text"
                 style={{ fontFamily: '"Instrument Serif", serif' }}
               >
-                Let's build something.
+                Contact
               </h2>
-              <p className="text-lg md:text-xl text-text-ghost leading-relaxed mb-10 max-w-2xl mx-auto">
-                Whether you have an opportunity in mind, a project to discuss, or just want to chat about math and systems, my inbox is always open.
+              
+              <p className="text-lg md:text-xl text-text-ghost mb-12 max-w-lg mx-auto leading-relaxed">
+                My inbox is always open. Whether you have a project in mind or just want to say hello, I'd love to hear from you.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="mailto:brian.wang372@gmail.com" className="w-full sm:w-auto px-8 py-4 bg-zinc-900 text-white rounded-full font-medium shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-500 ease-out flex items-center justify-center gap-2">
-                  Say Hello <span>↗</span>
+              
+              <div className="flex flex-col sm:flex-row gap-8 justify-center items-center font-medium">
+                <a href="mailto:brian.wang372@gmail.com" className="text-text hover:text-accent-warm hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 group">
+                   brian.wang372@gmail.com <span className="text-text-ghost group-hover:text-accent-warm transition-colors group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
                 </a>
-                <a href="https://www.linkedin.com/in/brian372/" target="_blank" rel="noreferrer" className="w-full sm:w-auto px-8 py-4 bg-white border border-black/10 text-text rounded-full font-medium hover:shadow-[0_12px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-500 ease-out flex items-center justify-center">
-                  Connect on LinkedIn
+                <a href="https://www.linkedin.com/in/brian372/" target="_blank" rel="noreferrer" className="text-text hover:text-accent-warm hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 group">
+                   LinkedIn <span className="text-text-ghost group-hover:text-accent-warm transition-colors group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
                 </a>
               </div>
             </ScrollReveal>
