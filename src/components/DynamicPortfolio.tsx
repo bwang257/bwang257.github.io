@@ -129,7 +129,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed bottom-6 md:top-6 md:bottom-auto left-1/2 -translate-x-1/2 z-50 glass-panel rounded-full px-5 md:px-6 py-3 flex items-center gap-4 md:gap-6 shadow-lg shadow-black/5"
+        className="fixed bottom-6 md:top-6 md:bottom-auto left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 glass-panel rounded-full px-4 md:px-6 py-3 flex items-center justify-around md:justify-center gap-2 md:gap-6 shadow-lg shadow-black/5"
       >
         <div className="font-semibold tracking-tight whitespace-nowrap hidden md:block">Brian Wang</div>
         <div className="w-px h-4 bg-border hidden md:block" />
@@ -140,7 +140,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
 
       <main className="w-full relative">
         {/* HERO - STICKY PARALLAX SECTION */}
-        <section className="sticky top-0 w-full min-h-screen flex flex-col justify-center px-6 md:px-12 z-0">
+        <section className="sticky top-0 w-full min-h-[100svh] flex flex-col justify-center px-6 md:px-12 z-0 pb-28 md:pb-0">
           <div className="max-w-6xl mx-auto w-full mt-[-5vh] md:mt-[-10vh]">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -171,7 +171,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
                     <a href="/resume.pdf" target="_blank" rel="noreferrer" className="px-6 py-3 bg-zinc-900 text-white rounded-full font-medium shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-500 ease-out">
                       View Resume
                     </a>
-                    <div className="ml-4 flex gap-4">
+                    <div className="flex flex-wrap sm:flex-nowrap gap-4 justify-center">
                       <a href="https://github.com/bwang257" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
                         <Github className="w-5 h-5" />
                       </a>
@@ -260,7 +260,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
           <section id="contact" className="py-32 w-full max-w-4xl mx-auto px-6 md:px-12 text-center border-t border-black/5 mt-12">
             <ScrollReveal offsetMultiplier={0.8}>
               <h2 
-                className="text-5xl md:text-6xl font-medium tracking-tight text-text mb-6"
+                className="text-4xl md:text-6xl font-medium tracking-tight text-text mb-6"
                 style={{ fontFamily: '"Instrument Serif", serif' }}
               >
                 Let's build something.
