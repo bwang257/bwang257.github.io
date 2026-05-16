@@ -4,7 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Brian Wang',
   description:
-    'Low-latency C++ engineer and financial mathematics researcher. CS & Math at WPI, incoming SWE Intern at Cyvl.ai.',
+    'Applied AI and machine learning engineer. CS & Math at WPI, incoming Applied AI Intern at Cyvl.ai.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

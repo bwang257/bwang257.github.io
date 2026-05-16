@@ -22,13 +22,13 @@ interface Props {
 
 // Data
 const EXPERIENCE = [
-  { role: 'SWE Intern', org: 'Cyvl.ai', period: 'Summer 2026', desc: 'Geospatial infrastructure startup — AI-powered subsurface mapping for civil engineering.' },
+  { role: 'Applied AI Intern', org: 'Cyvl.ai', period: 'Summer 2026', desc: 'Building machine learning and prediction models for AI-powered road and infrastructure assessment.' },
   { role: 'Tech Sector Analyst', org: 'WPIA', period: '2025–Present', desc: 'Quantitative research and analysis of technology equities based on financial modeling.' },
   { role: 'Peer Mentor', org: 'SASE', period: '2024–Present', desc: 'Mentoring underclassmen in technical and professional development.' }
 ]
 
 const COURSEWORK = {
-  cs: ['Operating Systems', 'Systems Programming Concepts', 'Software Engineering', 'Database Systems I', 'Algorithms', 'Artificial Intelligence', 'Object-Oriented Design'],
+  cs: ['Operating Systems', 'Systems Programming Concepts', 'Software Engineering', 'Database Systems I', 'Algorithms', 'Artificial Intelligence', 'Machine Learning', 'Object-Oriented Design'],
   math: ['Stochastic Processes', 'Portfolio Valuation & Risk', 'Probability for Applications', 'Numerical Methods', 'Linear Programming', 'Matrices & Linear Algebra II']
 }
 
@@ -163,7 +163,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
                   
                   <p className="text-xl md:text-2xl text-text-ghost max-w-2xl leading-relaxed font-light mb-10 mx-auto md:mx-0">
                     Math & CS student at WPI. <br className="hidden md:block"/>
-                    My interests lie in <strong className="font-medium text-text">low latency systems, stochastic processes</strong>, and <strong className="font-medium text-text">financial mathematics.</strong>
+                    My interests lie in <strong className="font-medium text-text">machine learning, low-latency systems</strong>, and <strong className="font-medium text-text">stochastic processes.</strong>
                   </p>
                   
                   <div className="flex gap-4 items-center flex-wrap justify-center md:justify-start">
@@ -231,7 +231,7 @@ export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }:
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
                   <div>
-                    <div className="text-xs font-mono tracking-widest uppercase text-text-ghost mb-6">Systems & Algorithms</div>
+                    <div className="text-xs font-mono tracking-widest uppercase text-text-ghost mb-6">Systems & Intelligence</div>
                     <ul className="space-y-3">
                       {COURSEWORK.cs.map((course) => (
                          <li key={course} className="flex items-start gap-3 text-text font-medium">
