@@ -22,7 +22,7 @@ interface Props {
 
 // Data
 const EXPERIENCE = [
-  { role: 'Applied AI Intern', org: 'Cyvl.ai', period: 'Summer 2026', desc: 'Building machine learning and prediction models for AI-powered road and infrastructure assessment.' },
+  { role: 'SWE Intern', org: 'CYVL', period: 'Summer 2026', desc: 'Building machine learning and prediction models for AI-powered road and infrastructure assessment.' },
   { role: 'Tech Sector Analyst', org: 'WPIA', period: '2025–Present', desc: 'Quantitative research and analysis of technology equities based on financial modeling.' },
   { role: 'Peer Mentor', org: 'SASE', period: '2024–Present', desc: 'Mentoring underclassmen in technical and professional development.' }
 ]
