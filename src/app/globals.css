@@ -6,25 +6,31 @@
 
 @layer base {
   :root {
-    --bg: #F9FAFB;
+    --bg: #F8FAFC;
     --surface: #FFFFFF;
     --surface-raised: #FFFFFF;
-    --border: rgba(0, 0, 0, 0.08);
-    --border-subtle: rgba(0, 0, 0, 0.04);
-    --text: #09090B;
-    --text-muted: #52525B;
-    --text-ghost: #A1A1AA;
-    --accent: #2563EB;
-    --accent-warm: #EA580C;
-    --green: #16A34A;
-    --red: #DC2626;
+    --border: rgba(30, 41, 59, 0.08);
+    --border-subtle: rgba(30, 41, 59, 0.04);
+    --text: #0F172A;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
+    --text-ghost: #CBD5E1;
+    --accent: #1D4ED8;
+    --accent-warm: #0284C7;
+    --green: #15803D;
+    --red: #B91C1C;
 
-    /* Legacy fallbacks */
     --color-bg: var(--bg);
     --color-surface: var(--surface);
+    --color-surface-raised: var(--surface-raised);
     --color-border: var(--border);
+    --color-border-subtle: var(--border-subtle);
     --color-text-primary: var(--text);
+    --color-text-secondary: var(--text-secondary);
     --color-text-muted: var(--text-muted);
+    --color-accent: var(--accent);
+    --color-accent-warm: var(--accent-warm);
+    --color-green: var(--green);
   }
 
   html {
@@ -41,12 +47,7 @@
     padding: 0;
     width: 100%;
     overflow-x: hidden;
-    /* Beautiful subtle grid for an engineering canvas feel */
-    background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
-    background-size: 32px 32px;
-    background-origin: border-box;
-    background-attachment: fixed;
+    background: var(--bg);
   }
 
   p, h1, h2, h3, h4, h5, h6, div {
@@ -59,30 +60,5 @@
   button:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
-    border-radius: 4px;
   }
-}
-
-/* ── Custom Utilities ── */
-
-.glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255,255,255,0.2);
-}
-
-.window-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
-  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.window-card:hover {
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.12);
-  border-color: rgba(0, 0, 0, 0.15);
-  transform: translateY(-4px);
 }

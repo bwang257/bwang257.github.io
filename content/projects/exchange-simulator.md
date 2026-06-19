@@ -1,48 +1,35 @@
 ---
-title: "Exchange Simulator"
-summary: "High-performance C++17 limit order book simulator using price-time matching, event-driven architecture, and performance profiling  (latency and throughput analysis)."
+title: "Limit Order Book Engine"
+summary: "High-performance, single-ticker matching engine built in C++17. Achieved 327K orders/sec throughput and 4.3µs P99 latency under synthetic load."
 order: 1
 tools:
-  - "C++"
+  - "C++17"
   - "CMake"
-  - "Testing"
+  - "STL"
+  - "Performance Profiling"
 evidenceLinks:
   github: "https://github.com/bwang257/exchange-simulator"
 ---
 
-## Impact & Motivation
-I built this project to understand how a basic exchange matching engine works at a systems level and to use it as a structured way to learn modern C++ development practices. The goal was not to build a production exchange, but to implement a correct and readable limit order book, document design decisions, and measure performance in a controlled setting.
+## System Architecture
 
-This project also served as my first experience treating a personal project like an engineering codebase: making disciplined commits, writing clear documentation, and validating behavior with tests and benchmarks.
+I built this project because I enjoy the precision of C++ and wanted to implement a system where execution state is strictly deterministic. The engine supports limit orders, market orders, cancellations, and partial fills, maintaining strict FIFO price-time priority.
 
-## Core Challenges Addressed
+To enforce correctness, the engine was built as a single-threaded, event-driven loop. This eliminated threading nondeterminism and isolated performance bottlenecks, allowing me to focus directly on data structure layout and memory access patterns.
 
-**Correct Price-Time Matching**
-Implemented a FIFO limit order book that matches orders using standard price–time priority rules. This required careful handling of partial fills, order removal, and maintaining consistent state across the order book.
+## Data Structures and Optimization
 
-**Order Cancellation and Modification:**
-Added support for cancel and modify operations, ensuring that orders are not executed after being cancelled and that modifications preserve correct ordering semantics. This exposed subtle edge cases around order lifecycle management.
+**Ordered Price Levels and O(1) Lookup**
+The core limit order book utilizes ordered price levels to maintain best-bid/best-ask access, paired with an `unordered_map` for O(1) order-id lookups. This structure ensures that cancellation and modification paths do not require linear scans of the book.
 
-**Deterministic Execution:**
-Focused on deterministic behavior: given the same sequence of inputs, the simulator produces the same sequence of trades. This constraint simplified reasoning about correctness and made testing more reliable.
+**Performance Profiling**
+Execution metrics were captured using RAII timers around the matching path. Under reproducible synthetic loads (generated via Python scripts mimicking randomized market events), the engine sustained a throughput of 327,000 orders per second with a P99 execution latency of 4.3µs on an M4 MacBook Air.
 
-## Architecture & Design Decisions
-**Single-Threaded Matching Engine**
-Chose a single-threaded matching loop to prioritize correctness and simplicity. This avoided concurrency complexity while still allowing me to reason about performance characteristics and algorithmic efficiency.
+## Testing and Correctness
 
-**Event-Driven Design**
-Structured the simulator around explicit events (new order, cancel, modify, trade) to keep the control flow clear and extensible. This made the system easier to test and reason about.
+A matching engine is only useful if it is perfectly predictable. I wrote deterministic unit tests to validate state transitions across edge cases:
+- Executing partial fills that clear multiple resting orders.
+- Rejecting cancellations for fully filled orders.
+- Ensuring that modifications correctly append to the back of the queue at the same price level.
 
-**Clear Data Structure Boundaries**
-Separated concerns between the order book, matching logic, and input parsing. This reinforced good modular design and made the codebase easier to extend.
-
-
-## Key Learnings
-
-This project taught me how much rigor is required even for a “simple” systems problem. I learned the importance of:
-- enforcing invariants explicitly
-- writing tests before trusting behavior
-- documenting assumptions and trade-offs
-- measuring performance instead of guessing
-
-Most importantly, it shifted my mindset from “making it work” to building something that is correct, explainable, and maintainable.
+Working at this level of the stack reinforced my preference for software where performance can be explicitly measured and invariants can be strictly enforced.

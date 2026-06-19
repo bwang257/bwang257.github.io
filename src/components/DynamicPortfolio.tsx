@@ -1,9 +1,9 @@
 'use client'
 
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useState, useEffect, useRef } from 'react'
-import { Github, Linkedin, Mail } from 'lucide-react'
-import ScrollReveal from '@/components/ScrollReveal'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { ArrowUpRight, Github, Linkedin, FileText } from 'lucide-react'
+import OrderBookSimulator from './OrderBookSimulator'
 
 export type ProjectData = {
   slug: string
@@ -20,268 +20,172 @@ interface Props {
   portfolio?: ProjectData
 }
 
-// Data
-const EXPERIENCE = [
-  { role: 'SWE Intern', org: 'CYVL', period: 'Summer 2026', desc: 'Building machine learning and prediction models for AI-powered road and infrastructure assessment. Also working with computer vision and AWS.' },
-  { role: 'Tech Sector Analyst', org: 'WPIA', period: '2025–Present', desc: 'Fundamental Analysis of technology equities.' },
-  { role: 'Peer Mentor', org: 'SASE', period: '2024–Present', desc: 'Mentoring underclassmen in technical and professional development.' }
-]
-
-const COURSEWORK = {
-  cs: ['Operating Systems', 'Systems Programming Concepts', 'Software Engineering', 'Database Systems I', 'Algorithms', 'Artificial Intelligence', 'Machine Learning', 'Object-Oriented Design'],
-  math: ['Stochastic Processes', 'Portfolio Valuation & Risk', 'Probability for Applications', 'Numerical Methods', 'Linear Programming', 'Matrices & Linear Algebra II']
-}
-
-const STACK = [
-  { category: 'Systems & Low-Level', items: ['C++17', 'POSIX', 'mmap', 'Lock-free queues'] },
-  { category: 'Math & Quant', items: ['Stochastic processes', 'SDEs', 'Itô calculus', 'Python'] },
-  { category: 'Web & Cloud', items: ['TypeScript', 'React', 'Next.js', 'AWS', 'PostgreSQL'] }
-]
-
-function SectionHeader({ title }: { title: string }) {
+// Subtle non-blocking scroll animation
+function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) {
   return (
-    <ScrollReveal offsetMultiplier={0.5}>
-      <h2 
-        className="text-4xl md:text-5xl font-semibold tracking-tight text-text mb-12"
-        style={{ fontFamily: '"Instrument Serif", serif' }}
-      >
-        {title}
-      </h2>
-    </ScrollReveal>
-  )
-}
-
-function ProjectWindow({ project, delay = 0, disableReveal = false }: { project?: ProjectData, delay?: number, disableReveal?: boolean }) {
-  if (!project) return null
-  
-  const content = (
-    <a
-      href={`/projects/${project.slug}`}
-      className="window-card block p-8 cursor-pointer group relative overflow-hidden h-full flex flex-col justify-between"
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-5%" }}
+      transition={{ duration: 0.7, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
     >
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-text-ghost/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-out" />
-      <div>
-        <div className="flex justify-between items-start mb-4">
-          <h3 className="text-2xl font-medium text-text group-hover:text-accent-warm transition-colors duration-500 ease-out">{project.title}</h3>
-          <span className="text-text-ghost group-hover:text-text transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-500 ease-out">↗</span>
-        </div>
-        <p className="text-text-muted leading-relaxed mb-8">{project.summary}</p>
-      </div>
-      <div className="flex flex-wrap gap-2 mt-auto">
-        {project.tools.map(tool => (
-          <span key={tool} className="text-xs font-mono px-2.5 py-1 rounded-md bg-black/5 text-text-muted border border-black/5">
-            {tool}
-          </span>
-        ))}
-      </div>
-    </a>
-  )
-
-  return disableReveal ? content : (
-    <ScrollReveal offsetMultiplier={delay > 0 ? 1.5 : 1}>
-      {content}
-    </ScrollReveal>
-  )
-}
-
-function GridOverviewProjects({ exchange, portfolio, algo, tracker }: Props) {
-  return (
-    <section id="projects" className="py-24 w-full max-w-6xl mx-auto px-6 md:px-12 relative">
-      <ScrollReveal offsetMultiplier={0.5}>
-        <SectionHeader title="Selected Projects" />
-      </ScrollReveal>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 mt-16">
-        <div className="md:-mt-12 flex flex-col gap-8 md:gap-10">
-          <ProjectWindow project={exchange} delay={0.1} />
-          <ProjectWindow project={portfolio} delay={0.1} />
-        </div>
-        <div className="md:mt-12 flex flex-col gap-8 md:gap-10">
-          <ProjectWindow project={algo} delay={0.2} />
-          <ProjectWindow project={tracker} delay={0.2} />
-        </div>
-      </div>
-    </section>
+      {children}
+    </motion.div>
   )
 }
 
 export default function DynamicPortfolio({ exchange, algo, tracker, portfolio }: Props) {
-  const { scrollYProgress } = useScroll()
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, 800])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -800])
-  const rotate = useTransform(scrollYProgress, [0, 1], [0, 180])
+  const projects = [exchange, algo, tracker, portfolio].filter(Boolean) as ProjectData[]
 
   return (
-    <div className="min-h-screen selection:bg-accent-warm/20 relative">
-      {/* Background Animated Orbs */}
-      <div className="fixed inset-0 pointer-events-none -z-10 bg-transparent overflow-hidden">
-        <motion.div 
-          style={{ y: y1, rotate }} 
-          className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-blue-500/10 blur-[120px]" 
-        />
-        <motion.div 
-          style={{ y: y2 }} 
-          className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-orange-500/10 blur-[120px]" 
-        />
-      </div>
-      {/* Floating Nav */}
-      <motion.nav 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed bottom-6 md:top-6 md:bottom-auto left-4 right-4 md:right-8 md:left-auto z-50 glass-panel rounded-full px-4 md:px-6 py-3 flex items-center justify-around md:justify-center gap-2 md:gap-6 shadow-lg shadow-black/5"
-      >
-        <div className="font-semibold tracking-tight whitespace-nowrap hidden md:block">Brian Wang</div>
-        <div className="w-px h-4 bg-border hidden md:block" />
-        <a href="#projects" className="text-sm text-text-muted hover:text-text transition-colors font-medium whitespace-nowrap">Projects</a>
-        <a href="#experience" className="text-sm text-text-muted hover:text-text transition-colors font-medium whitespace-nowrap">Experience</a>
-      </motion.nav>
+    <div className="min-h-screen bg-background text-primary selection:bg-accent/15 font-sans">
+      <header className="fixed top-0 left-0 right-0 z-40 border-b border-border-subtle bg-surface/80 backdrop-blur-md">
+        <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+          <Link href="/" className="font-serif text-2xl tracking-tight text-primary">
+            Brian Wang
+          </Link>
+          <div className="flex gap-6 text-sm font-medium text-secondary">
+            <Link href="#work" className="hover:text-primary transition-colors">Work</Link>
+            <Link href="/learning" className="hover:text-primary transition-colors">Learning</Link>
+            <Link href="/notes" className="hover:text-primary transition-colors">Notes</Link>
+          </div>
+        </nav>
+      </header>
 
-      <main className="w-full relative">
-        {/* HERO - STICKY PARALLAX SECTION */}
-        <section className="sticky top-0 w-full min-h-[100svh] flex flex-col justify-center px-6 md:px-12 z-0 pb-28 md:pb-0 pt-12 md:pt-0">
-          <div className="max-w-6xl mx-auto w-full mt-0 md:mt-[-10vh]">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-            >
-              <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-10 md:gap-16">
-                {/* Profile Image */}
-                <div className="shrink-0 relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-                  <img src="/profile1.png" alt="Brian Wang" className="w-full h-full object-cover" />
-                </div>
-
-                {/* Text content */}
-                <div className="flex-1 mt-6 md:mt-0">
-                  <h1 
-                    className="text-6xl md:text-8xl font-medium tracking-tight text-text leading-[1.05] mb-6"
-                    style={{ fontFamily: '"Instrument Serif", serif' }}
-                  >
-                    Hi, I'm Brian.
-                  </h1>
-                  
-                  <p className="text-xl md:text-2xl text-text-ghost max-w-2xl leading-relaxed font-light mb-10 mx-auto md:mx-0">
-                    Math & CS student at WPI. <br className="hidden md:block"/>
-                    My interests lie in <strong className="font-medium text-text">machine learning, low-latency systems</strong>, and <strong className="font-medium text-text">stochastic processes.</strong>
-                  </p>
-                  
-                  <div className="flex gap-4 items-center flex-wrap justify-center md:justify-start">
-                    <a href="/resume.pdf" target="_blank" rel="noreferrer" className="px-6 py-3 bg-zinc-900 text-white rounded-full font-medium shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-500 ease-out">
-                      View Resume
-                    </a>
-                    <div className="flex flex-wrap sm:flex-nowrap gap-4 justify-center">
-                      <a href="https://github.com/bwang257" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
-                        <Github className="w-5 h-5" />
-                      </a>
-                      <a href="https://www.linkedin.com/in/brian372/" target="_blank" rel="noreferrer" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
-                        <Linkedin className="w-5 h-5" />
-                      </a>
-                      <a href="mailto:brian.wang372@gmail.com" className="p-3 bg-white/60 border border-black/5 rounded-full text-text-muted hover:text-text hover:bg-white hover:-translate-y-1 hover:shadow-md transition-all duration-500 ease-out shadow-sm">
-                        <Mail className="w-5 h-5" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
+      <main className="pt-32 pb-32">
+        <section className="mx-auto max-w-5xl px-6">
+          <Reveal>
+            <h1 className="font-serif text-5xl tracking-tight text-primary md:text-7xl lg:text-[5.5rem] leading-[1.05] max-w-4xl">
+              I build systems where I control the execution, and models where I validate the assumptions.
+            </h1>
+          </Reveal>
+          
+          <Reveal delay={0.1}>
+            <div className="mt-12 flex flex-col md:flex-row gap-8 md:items-end justify-between border-t border-border-subtle pt-8">
+              <p className="max-w-xl text-lg text-secondary leading-relaxed">
+                Computer Science and Mathematics student at Worcester Polytechnic Institute. 
+                Interested in systems programming, machine learning, and stochastic processes.
+              </p>
+              
+              <div className="flex flex-wrap gap-4">
+                <a href="/Brian_Wang_Resume_Apple_SWE_Intern_2027.pdf" target="_blank" className="inline-flex items-center gap-2 border border-border bg-surface px-4 py-2 text-sm font-medium text-primary hover:border-accent hover:text-accent transition-colors">
+                  <FileText className="h-4 w-4" />
+                  Resume
+                </a>
+                <a href="https://github.com/bwang257" target="_blank" rel="noreferrer" className="inline-flex h-10 w-10 items-center justify-center border border-border bg-surface text-secondary hover:border-primary hover:text-primary transition-colors">
+                  <Github className="h-4 w-4" />
+                </a>
+                <a href="https://www.linkedin.com/in/brian372/" target="_blank" rel="noreferrer" className="inline-flex h-10 w-10 items-center justify-center border border-border bg-surface text-secondary hover:border-primary hover:text-primary transition-colors">
+                  <Linkedin className="h-4 w-4" />
+                </a>
               </div>
-            </motion.div>
+            </div>
+          </Reveal>
+        </section>
+
+        <section className="mx-auto mt-40 max-w-5xl px-6">
+          <div className="grid lg:grid-cols-2 gap-16 lg:gap-12 items-center">
+            <div>
+              <Reveal>
+                <div className="font-mono text-xs uppercase tracking-widest text-muted mb-4">Systems & Correctness</div>
+                <h2 className="font-serif text-3xl tracking-tight text-primary mb-4">
+                  Deterministic Execution
+                </h2>
+                <p className="text-secondary leading-relaxed mb-8 max-w-md">
+                  Writing high-performance C++ matching engines requires absolute control over state transitions. 
+                  Below is a live visualization of the core logic handling partial fills and limit queueing.
+                </p>
+                {exchange && (
+                  <Link href={`/projects/${exchange.slug}`} className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:text-accent-warm transition-colors">
+                    Read the Exchange Simulator Case Study <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                )}
+              </Reveal>
+            </div>
+            
+            <Reveal delay={0.2} className="w-full">
+              <OrderBookSimulator />
+            </Reveal>
           </div>
         </section>
 
-        {/* FULLSCREEN SLIDING MODAL CONTAINER */}
-        <div className="relative z-10 w-full min-h-screen bg-white/80 backdrop-blur-3xl rounded-t-[48px] md:rounded-t-[64px] shadow-[0_-20px_80px_rgba(0,0,0,0.08)] border-t border-black/5 pt-16 pb-32">
+        <section id="work" className="mx-auto mt-48 max-w-5xl px-6">
+          <Reveal>
+            <div className="font-mono text-xs uppercase tracking-widest text-muted mb-4 border-b border-border-subtle pb-4">Selected Work</div>
+          </Reveal>
           
-          {/* GRID OVERVIEW PROJECTS SECTION */}
-          <GridOverviewProjects exchange={exchange} algo={algo} tracker={tracker} portfolio={portfolio} />
-
-          {/* EXPERIENCE & EDUCATION SECTION */}
-          <section id="experience" className="py-32 max-w-6xl mx-auto px-6 md:px-12">
-            <SectionHeader title="Experience" />
-            
-            <div className="space-y-6 mb-24">
-              {EXPERIENCE.map((exp, idx) => (
-                <ScrollReveal key={idx} offsetMultiplier={1 + (idx * 0.2)}>
-                  <div className="window-card p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="mt-8 flex flex-col gap-6">
+            {projects.map((project, index) => (
+              <Reveal key={project.slug} delay={index * 0.1}>
+                <Link href={`/projects/${project.slug}`} className="group block border border-border-subtle bg-surface p-8 transition-colors hover:border-accent">
+                  <div className="grid md:grid-cols-[1fr_200px] gap-8">
                     <div>
-                      <h3 className="text-2xl font-medium text-text mb-1">{exp.role}</h3>
-                      <div className="text-accent-warm font-medium mb-3 text-lg">{exp.org}</div>
-                      <p className="text-text-ghost text-sm md:text-base max-w-xl leading-relaxed">{exp.desc}</p>
+                      <h3 className="font-serif text-2xl tracking-tight text-primary mb-3 group-hover:text-accent transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="text-secondary leading-relaxed max-w-2xl">
+                        {project.summary}
+                      </p>
                     </div>
-                    <div className="font-mono text-sm text-text-muted shrink-0 text-left md:text-right md:border-r-2 border-border md:pr-4">
-                      {exp.period}
+                    <div className="flex flex-col gap-2 md:text-right">
+                      <div className="font-mono text-xs uppercase tracking-widest text-muted mb-2">Tools</div>
+                      <div className="flex flex-wrap gap-2 md:justify-end">
+                        {project.tools.slice(0, 4).map(tool => (
+                          <span key={tool} className="text-sm font-medium text-secondary">{tool}</span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </ScrollReveal>
-              ))}
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto mt-40 max-w-5xl px-6">
+          <Reveal>
+            <div className="grid md:grid-cols-[200px_1fr] gap-8 border-t border-border-subtle pt-12">
+              <div className="font-mono text-xs uppercase tracking-widest text-muted">Experience</div>
+              
+              <div className="flex flex-col gap-12">
+                <div>
+                  <h3 className="font-serif text-2xl tracking-tight text-primary">Software Engineering Intern</h3>
+                  <div className="font-mono text-sm text-accent mt-2 mb-4">CYVL • May 2026 – Present</div>
+                  <p className="text-secondary leading-relaxed max-w-2xl">
+                    Researching infrastructure condition forecasting under sparse historical-data constraints. 
+                    Analyzing public records, road-condition data, and LiDAR/video model outputs to evaluate scalable modeling approaches. 
+                    Developing Python-based analysis workflows for early-stage R&D expected to inform production engineering decisions.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-serif text-2xl tracking-tight text-primary">Peer Learning Assistant</h3>
+                  <div className="font-mono text-sm text-accent mt-2 mb-4">WPI Mathematical Sciences • Aug 2026 – May 2027</div>
+                  <p className="text-secondary leading-relaxed max-w-2xl">
+                    Selected by faculty to support undergraduate mathematics students; lead weekly problem-solving sessions and provide 1:1 instruction.
+                  </p>
+                </div>
+              </div>
             </div>
-
-            <SectionHeader title="Education" />
-            
-            <ScrollReveal offsetMultiplier={0.8}>
-              <div className="window-card p-8 md:p-10 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-accent-warm/5 rounded-full blur-[80px] -mr-10 -mt-20 pointer-events-none" />
-                
-                <div className="flex flex-col md:flex-row justify-between mb-12 relative z-10">
-                  <div>
-                    <h3 className="text-3xl font-medium text-text mb-2 tracking-tight">Worcester Polytechnic Institute</h3>
-                    <div className="text-lg text-text-muted">BS Computer Science & Mathematical Sciences</div>
-                  </div>
-                  <div className="font-mono text-accent-warm font-medium md:text-right mt-4 md:mt-0 tracking-widest text-sm uppercase">Class of 2028</div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
-                  <div>
-                    <div className="text-xs font-mono tracking-widest uppercase text-text-ghost mb-6">Systems & Intelligence</div>
-                    <ul className="space-y-3">
-                      {COURSEWORK.cs.map((course) => (
-                         <li key={course} className="flex items-start gap-3 text-text font-medium">
-                           <span className="text-accent-warm/50 mt-1">▹</span> {course}
-                         </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <div className="text-xs font-mono tracking-widest uppercase text-text-ghost mb-6">Mathematics</div>
-                    <ul className="space-y-3">
-                      {COURSEWORK.math.map((course) => (
-                         <li key={course} className="flex items-start gap-3 text-text font-medium">
-                           <span className="text-accent-warm/50 mt-1">▹</span> {course}
-                         </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          </section>
-
-          {/* LET'S CONNECT SECTION */}
-          <section id="contact" className="py-32 w-full max-w-4xl mx-auto px-6 md:px-12 text-center border-t border-black/5 mt-20">
-            <ScrollReveal offsetMultiplier={0.8}>
-              <h2 
-                className="text-5xl md:text-6xl font-medium tracking-tight mb-8 text-text"
-                style={{ fontFamily: '"Instrument Serif", serif' }}
-              >
-                Contact
-              </h2>
-              
-              <p className="text-lg md:text-xl text-text-ghost mb-12 max-w-lg mx-auto leading-relaxed">
-                My inbox is always open. Whether you have a project in mind or just want to say hello, I'd love to hear from you.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-8 justify-center items-center font-medium">
-                <a href="mailto:brian.wang372@gmail.com" className="text-text hover:text-accent-warm hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 group">
-                   brian.wang372@gmail.com <span className="text-text-ghost group-hover:text-accent-warm transition-colors group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
-                </a>
-                <a href="https://www.linkedin.com/in/brian372/" target="_blank" rel="noreferrer" className="text-text hover:text-accent-warm hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 group">
-                   LinkedIn <span className="text-text-ghost group-hover:text-accent-warm transition-colors group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
+          </Reveal>
+        </section>
+        
+        <section className="mx-auto mt-32 max-w-5xl px-6">
+          <Reveal>
+            <div className="grid md:grid-cols-[200px_1fr] gap-8 border-t border-border-subtle pt-12">
+              <div className="font-mono text-xs uppercase tracking-widest text-muted">Contact</div>
+              <div>
+                <p className="text-lg text-secondary mb-6">
+                  Available for opportunities where I can solve difficult problems.
+                </p>
+                <a href="mailto:brianwang372@gmail.com" className="font-serif text-3xl md:text-5xl text-primary hover:text-accent transition-colors underline decoration-border-subtle hover:decoration-accent underline-offset-8">
+                  brianwang372@gmail.com
                 </a>
               </div>
-            </ScrollReveal>
-          </section>
-
-        </div>
-
+            </div>
+          </Reveal>
+        </section>
       </main>
     </div>
   )

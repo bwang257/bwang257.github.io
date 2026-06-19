@@ -4,7 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Brian Wang',
   description:
-    'Applied AI and machine learning engineer. CS & Math at WPI, incoming Applied AI Intern at Cyvl.ai.',
+    'Brian Wang is a CS and Math student at WPI, expected December 2027, interested in C++ systems, ML prediction work, market models, and software with real constraints.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -19,20 +19,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        {/* Noise overlay */}
-        <svg
-          className="fixed inset-0 w-full h-full pointer-events-none opacity-[0.025]"
-          style={{ zIndex: 9999 }}
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <filter id="noise">
-            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#noise)" />
-        </svg>
-
         {children}
       </body>
     </html>

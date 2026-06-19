@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "export": "next build",
     "postexport": "echo '' > out/.nojekyll",
     "deploy": "npm run export && npm run postexport && gh-pages -d out"
@@ -38,6 +38,7 @@
     "autoprefixer": "^10.4.18",
     "baseline-browser-mapping": "^2.9.19",
     "eslint": "^9.36.0",
+    "eslint-config-next": "^16.2.9",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "gh-pages": "^6.3.0",

@@ -8,10 +8,10 @@ export default function IdentityHeader() {
             Brian Wang
           </h1>
           <h2 className="text-lg font-mono text-slate-400">
-            Systems Development & Quantitative Analysis @ WPI
+            CS & Math @ WPI
           </h2>
           <p className="text-slate-300 max-w-2xl leading-relaxed">
-            Specializing in low-latency architecture and algorithmic complexity. Building systems where correctness implies performance.
+            Interested in C++ systems, ML prediction work, market models, and software where assumptions get tested.
           </p>
         </div>
 
@@ -22,7 +22,7 @@ export default function IdentityHeader() {
               CLASS
             </div>
             <div className="text-sm font-mono text-blue-400">
-              Sophomore '27
+              Expected Dec 2027
             </div>
           </div>
           <div>
@@ -38,7 +38,7 @@ export default function IdentityHeader() {
               STATUS
             </div>
             <div className="text-sm font-mono text-blue-400">
-              🟢 Open to Internships
+              Open to Internships
             </div>
           </div>
           <div>
